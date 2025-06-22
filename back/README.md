@@ -102,7 +102,7 @@ Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 
 | Table Name            | שם ברברית 🐵             | תיאור קצר 📄                                |
 |-----------------------|--------------------------|---------------------------------------------|
-| company               |                          פה יש את כל החברות גם המנויים וגם כל ספק שיש לכל מנוי |                               חברה          |
+| company               |                     חברה |                               פה יש את כל החברות גם המנויים וגם כל ספק שיש לכל מנוי          |
 | product               |                          |                                             |
 | platoon               |                          |                                             |
 | recipe                |                          |                                             |
