@@ -12,7 +12,9 @@
 | recipe_product | מוצר במתכון  | הזנה של מוצר בתוך מתכון                                           |
 | tag            | תג           | תגים שמנויים מזינים על נק                                         |
 | create_product | הזנת הכנה    | הזנת הכנה של משהו וכמות                                           |
-| subscription   | מנוים        | רשימת כל המשתמשים במערכת בגדול זה חברה ומיספור שלה על מנת לשים לב |
+| subscription   | מנוים        | רשימת כל המשתמשים במערכת בגדול זה חברה ומיספור שלה על מנת לשים לב |.
+
+להוסיף בהמשך התחברות ושכל משתשמש יוכל להתחבר לחברה שהוא יכול לעבוד בה
 
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
