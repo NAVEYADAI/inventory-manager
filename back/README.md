@@ -97,3 +97,19 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+# 📦 טבלאות במסד הנתונים
+
+| Table Name            | שם ברברית 🐵             | תיאור קצר 📄                                |
+|-----------------------|--------------------------|---------------------------------------------|
+| company               |                          פה יש את כל החברות גם המנויים וגם כל ספק שיש לכל מנוי |                               חברה          |
+| product               |                          |                                             |
+| platoon               |                          |                                             |
+| recipe                |                          |                                             |
+| raw_material          |                          |                                             |
+| supplier              |                          |                                             |
+| invetory              |                          |                                             |
+| recipe_product        |                          |                                             |
+| tag                   |                          |                                             |
+| create_product        |                          |                                             |
+| subscription          |                          |                                             |
