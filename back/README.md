@@ -1,19 +1,18 @@
 # 📦 טבלאות במסד הנתונים
 
-| שם הטבלה       | שם בעברית 🐵 | תיאור קצר 📄                                                                                        |
-| -------------- | ------------ | --------------------------------------------------------------------------------------------------- |
-| company        | חברה         | פה יש את כל החברות גם המנויים וגם כל ספק שיש לכל מנוי                                               |
-| product        | מוצרים       | כל המוצרים שיש לכל אחד מהמנויים                                                                     |
-| platoon        | מחלקה        | מחלקת מוצרים של כל מנוי                                                                             |
-| recipe         | מתכונים      | רשימת כל המתכונים שיש לכל אחד מהמנויים                                                              |
-| raw_material   | חומר גלם     | רק סוג החומר גלם כל שאר הפרטים קיים במלאי                                                           |
-| supplier       | ספק          | חברה שמוגדרת ספק אצל מנוי כל שהוא                                                                   |
-| invetory       | מלאי         | טבלה עם הכמות מוצרים מכל סוג שיש לכל חברה                                                           |
-| recipe_product | מוצר במתכון  | הזנה של מוצר בתוך מתכון                                                                             |
-| tag            | תג           | תגים שמנויים מזינים על נק                                                                           |
-| create_product | הזנת הכנה    | הזנת הכנה של משהו וכמות                                                                             |
-| subscription   | מנוים        | רשימת כל המשתמשים במערכת בגדול זה חברה ומיספור שלה על מנת לשים לב (צריך להוסיף לשם משתמשים והתחברות |
-| )              |
+| שם הטבלה       | שם בעברית 🐵 | תיאור קצר 📄                                                      |
+| -------------- | ------------ | ----------------------------------------------------------------- |
+| company        | חברה         | פה יש את כל החברות גם המנויים וגם כל ספק שיש לכל מנוי             |
+| product        | מוצרים       | כל המוצרים שיש לכל אחד מהמנויים                                   |
+| platoon        | מחלקה        | מחלקת מוצרים של כל מנוי                                           |
+| recipe         | מתכונים      | רשימת כל המתכונים שיש לכל אחד מהמנויים                            |
+| raw_material   | חומר גלם     | רק סוג החומר גלם כל שאר הפרטים קיים במלאי                         |
+| supplier       | ספק          | חברה שמוגדרת ספק אצל מנוי כל שהוא                                 |
+| invetory       | מלאי         | טבלה עם הכמות מוצרים מכל סוג שיש לכל חברה                         |
+| recipe_product | מוצר במתכון  | הזנה של מוצר בתוך מתכון                                           |
+| tag            | תג           | תגים שמנויים מזינים על נק                                         |
+| create_product | הזנת הכנה    | הזנת הכנה של משהו וכמות                                           |
+| subscription   | מנוים        | רשימת כל המשתמשים במערכת בגדול זה חברה ומיספור שלה על מנת לשים לב |
 
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
