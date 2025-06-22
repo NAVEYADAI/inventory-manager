@@ -52,3 +52,9 @@ export default tseslint.config({
   },
 })
 ```
+# 🗃️ Database Schema Overview
+
+## User
+- מזהה משתמש במערכת.
+- שדות: `id`, `name`, `email`, `password`
+- קשרים: אחד-ל-רבים עם `Post`, `Like`
