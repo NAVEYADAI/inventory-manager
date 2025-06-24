@@ -1,9 +1,8 @@
 import { Subscription } from 'src/subscription/subscription.entity';
-import { Supplier } from 'src/supplier/supplier.entity';
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Company {
+export class Tag {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -11,17 +10,14 @@ export class Company {
   name: string;
 
   @Column()
-  identifier: string;
+  description: string;
 
   @Column()
-  address: string;
+  startDate: Date;
 
   @Column()
-  phone: string;
+  endDate: Date;
 
   @OneToOne(() => Subscription, (subscription) => subscription.company)
   subscription: Subscription;
-
-  @OneToOne(() => Supplier, (supplier) => supplier.company)
-  supplier: Supplier;
 }
