@@ -16,8 +16,6 @@ import { CreateProductModule } from './create-product/create-product.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import config from './config/config';
 
-console.log(process.env.DATABASE_URL);
-
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [config] }),
