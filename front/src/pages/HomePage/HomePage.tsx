@@ -8,6 +8,9 @@ const HomePage = () => {
       <Button component={Link} to="/calendar" variant="contained">
         לעבור ללוח השנה
       </Button>
+      <Button  component={Link} to="/calendar2" variant="contained">
+        למעבר ללוח האמיתי
+      </Button>
     </Box>
   );
 };
