@@ -14,12 +14,11 @@ function App() {
     stylisPlugins: [prefixer, rtlPlugin],
   });
   
-  // 🎨 יצירת ערכת עיצוב מותאמת ל־MUI עם עברית, RTL, ונגישות
   const theme = createTheme({
     direction: "rtl",
   
     palette: {
-      mode: "light", // אפשר לשנות ל-"dark" כשצריך
+      mode: "light",
       primary: { main: "#1976d2" },
       secondary: { main: "#9c27b0" },
       background: {
