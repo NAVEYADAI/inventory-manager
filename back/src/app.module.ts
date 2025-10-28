@@ -14,6 +14,8 @@ import { RecipeProductModule } from './recipe-product/recipe-product.module';
 import { TagModule } from './tag/tag.module';
 import { CreateProductModule } from './create-product/create-product.module';
 import { SubscriptionModule } from './subscription/subscription.module';
+import { AuthService } from './auth/auth.service';
+import { AuthController } from './auth/auth.controller';
 import config from './config/config';
 
 @Module({
@@ -45,7 +47,7 @@ import config from './config/config';
     CreateProductModule,
     SubscriptionModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, AuthController],
+  providers: [AppService, AuthService],
 })
 export class AppModule {}

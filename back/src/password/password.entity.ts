@@ -10,6 +10,9 @@ export class Password {
   password: string;
 
   @Column()
+  hash: string;
+
+  @Column()
   date: Date;
 
   @ManyToOne(() => User, (user) => user.id)
