@@ -14,8 +14,7 @@ import { RecipeProductModule } from './recipe-product/recipe-product.module';
 import { TagModule } from './tag/tag.module';
 import { CreateProductModule } from './create-product/create-product.module';
 import { SubscriptionModule } from './subscription/subscription.module';
-import { AuthService } from './auth/auth.service';
-import { AuthController } from './auth/auth.controller';
+import { AuthModule } from './auth/auth.module';
 import config from './config/config';
 
 @Module({
@@ -25,9 +24,9 @@ import config from './config/config';
       type: 'postgres',
       url: process.env.DATABASE_URL,
       autoLoadEntities: true,
-      synchronize: false, // 🔴 ביטול סנכרון אוטומטי
-      migrationsRun: true, // ✅ תריץ מיגרציות אוטומטית בעת עליית השרת
-      migrations: ['dist/migrations/*.js'], // או ts אם אתה מריץ TS ישירות
+      synchronize: false,
+      migrationsRun: true,
+      migrations: ['dist/migrations/*.js'],
       ssl: true,
       extra: {
         ssl: {
@@ -46,8 +45,9 @@ import config from './config/config';
     TagModule,
     CreateProductModule,
     SubscriptionModule,
+    AuthModule,
   ],
-  controllers: [AppController, AuthController],
-  providers: [AppService, AuthService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

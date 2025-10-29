@@ -12,9 +12,9 @@ export class Password {
   @Column()
   hash: string;
 
-  @Column()
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   date: Date;
 
-  @ManyToOne(() => User, (user) => user.id)
+  @ManyToOne(() => User, (user) => user.passwords, { onDelete: 'CASCADE' })
   user: User;
 }

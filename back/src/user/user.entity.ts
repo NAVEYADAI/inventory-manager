@@ -25,9 +25,9 @@ export class User {
   @Column()
   email: string;
 
-  @OneToMany(() => UserPermission, (userPremission) => userPremission.id)
-  userPremission: UserPermission;
+  @OneToMany(() => UserPermission, (userPermission) => userPermission.user)
+  userPermissions: UserPermission[];
 
-  @OneToMany(() => Password, (password) => password.id)
-  password: Password;
+  @OneToMany(() => Password, (password) => password.user)
+  passwords: Password[];
 }
