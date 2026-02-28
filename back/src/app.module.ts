@@ -14,6 +14,7 @@ import { RecipeProductModule } from './recipe-product/recipe-product.module';
 import { TagModule } from './tag/tag.module';
 import { CreateProductModule } from './create-product/create-product.module';
 import { SubscriptionModule } from './subscription/subscription.module';
+import { UserModule } from './user/user.module';
 import { AuthService } from './auth/auth.service';
 import { AuthController } from './auth/auth.controller';
 import config from './config/config';
@@ -24,10 +25,10 @@ import config from './config/config';
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
-      autoLoadEntities: true,
-      synchronize: false, // 🔴 ביטול סנכרון אוטומטי
-      migrationsRun: true, // ✅ תריץ מיגרציות אוטומטית בעת עליית השרת
-      migrations: ['dist/migrations/*.js'], // או ts אם אתה מריץ TS ישירות
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      synchronize: true,
+      migrationsRun: true,
+      migrations: ['dist/migrations/*.js'],
       ssl: true,
       extra: {
         ssl: {
@@ -46,8 +47,9 @@ import config from './config/config';
     TagModule,
     CreateProductModule,
     SubscriptionModule,
+    UserModule,
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService],
 })
-export class AppModule {}
+export class AppModule { }

@@ -7,6 +7,9 @@ import {
 import TextInput from "../../components/Inputs/TextInput";
 import { SignUpFields, SignUpFieldsHebNames, type Signup } from "./util";
 import { LogInTitle, SignUpTitle } from "../../titles";
+import { register } from "../../api/login";
+import { useState } from "react";
+
 type SignUpProps = {
   setIsLogin: React.Dispatch<React.SetStateAction<boolean>>;
   signUp: Signup;
@@ -14,6 +17,34 @@ type SignUpProps = {
 };
 
 const SignUp = ({ setIsLogin, signUp, setSignUp }: SignUpProps) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const payload = {
+        name: signUp.userName,
+        firstName: signUp.firstName,
+        lastName: signUp.lastName,
+        address: signUp.address,
+        phone: signUp.phone,
+        email: signUp.email,
+        password: String(signUp.password),
+      };
+      const res = await register(payload);
+      if (res.status === 201 || res.status === 200) {
+        setIsLogin(true);
+      }
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Registration failed");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <Stack>
       <SideContainer>
@@ -25,13 +56,14 @@ const SignUp = ({ setIsLogin, signUp, setSignUp }: SignUpProps) => {
           {LogInTitle}
         </StyledButton>
       </SideContainer>
-      <StyledForm>
+      <StyledForm onSubmit={handleSubmit}>
         <Typography variant="h4">{SignUpTitle}</Typography>
         {Object.values(SignUpFields).map((value) => (
           <TextInput
+            key={value}
             label={SignUpFieldsHebNames[value]}
             sx={{ margin: "8px", width: "250px" }}
-            state={signUp[value]}
+            state={signUp[value as keyof Signup] as string}
             setState={(str) =>
               setSignUp((prev) => ({
                 ...prev,
@@ -40,8 +72,9 @@ const SignUp = ({ setIsLogin, signUp, setSignUp }: SignUpProps) => {
             }
           />
         ))}
-        <StyledButton variant="contained" type="submit">
-          {SignUpTitle}
+        {error && <Typography color="error">{error}</Typography>}
+        <StyledButton variant="contained" type="submit" disabled={loading}>
+          {loading ? "Registering..." : SignUpTitle}
         </StyledButton>
       </StyledForm>
     </Stack>

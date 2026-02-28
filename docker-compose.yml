@@ -9,6 +9,8 @@ services:
       - ./back:/app
       - /app/node_modules
     command: npm run start:dev
+    env_file:
+      - ./back/.env
     environment:
       - NODE_ENV=development
   front:
