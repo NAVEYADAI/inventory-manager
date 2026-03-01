@@ -6,14 +6,14 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { useState } from "react";
 const FullCalendarManeger = () => {
   const [events, setEvents] = useState([
-    { title: "פגישה עם דני", date: "2025-07-14" },
-    { title: "הרצאה", date: "2025-07-16" },
+    { title: "פגישה עם דני", date: "2026-03-2" },
+    { title: "הרצאה", date: "2026-03-16" },
   ]);
   const handleDateClick = (arg: any) => {
     alert(`תאריך נבחר: ${arg.dateStr}`);
   };
   return (
-    <Box sx={{ width: " 1000px", height: "900px" }}>
+    <Box sx={{ width: "1000px", height: "900px" }}>
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
@@ -24,6 +24,7 @@ const FullCalendarManeger = () => {
         }}
         editable={true}
         selectable={true}
+        direction="rtl"  
         dateClick={handleDateClick}
         events={events}
         locale="he"
@@ -41,8 +42,6 @@ const FullCalendarManeger = () => {
           }
         }}
       />
-
-      <h2>dfrdfd</h2>
     </Box>
   );
 };
