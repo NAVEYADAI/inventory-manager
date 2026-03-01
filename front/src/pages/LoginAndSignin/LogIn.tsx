@@ -30,7 +30,7 @@ const LogIn = ({ setIsLogin, logIn, setLogIn }: LogInProps) => {
       // בלוגין - mapping userName לפיקט password
       const payload = { userName: logIn.userName, password: logIn.password };
       await login(payload);
-      navigate("/dashboard");
+      navigate("/home");
     } catch (err: any) {
       setError(err?.response?.data?.message || "Login failed");
     } finally {
