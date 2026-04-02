@@ -15,8 +15,7 @@ import { TagModule } from './tag/tag.module';
 import { CreateProductModule } from './create-product/create-product.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { UserModule } from './user/user.module';
-import { AuthService } from './auth/auth.service';
-import { AuthController } from './auth/auth.controller';
+import { AuthModule } from './auth/auth.module';
 import config from './config/config';
 
 @Module({
@@ -48,8 +47,9 @@ import config from './config/config';
     CreateProductModule,
     SubscriptionModule,
     UserModule,
+    AuthModule,
   ],
-  controllers: [AppController, AuthController],
-  providers: [AppService, AuthService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule { }

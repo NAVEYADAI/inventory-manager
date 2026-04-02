@@ -3,6 +3,8 @@ import CalendarPage from "../pages/CalendarPage/CalendarPage";
 import HomePage from "../pages/HomePage/HomePage";
 import FullCalendarManeger from "../pages/FullCalendar/FullCalendarManeger";
 import LoginAndSignin from "../pages/LoginAndSignin/LoginAndSignin";
+import CompanySetup from "../pages/CompanySetup/CompanySetup";
+import CompanyPicker from "../pages/CompanyPicker/CompanyPicker";
 
 export const Router = () => {
   return (
@@ -10,6 +12,8 @@ export const Router = () => {
       <Route path="/login" element={<LoginAndSignin />} />
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/home" element={<HomePage />} />
+      <Route path="/company-setup" element={<CompanySetup />} />
+      <Route path="/company-picker" element={<CompanyPicker />} />
       <Route path="/calendar" element={<CalendarPage />} />
       <Route path="/calendar2" element={<FullCalendarManeger />} />
     </Routes>

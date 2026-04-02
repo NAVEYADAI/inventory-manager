@@ -23,4 +23,15 @@ export class AuthController {
 		const user = await this.authService.validateToken(authHeader);
 		return { user };
 	}
+
+	@HttpCode(HttpStatus.OK)
+	@Post('select-company')
+	async selectCompany(
+		@Headers('authorization') authHeader: string,
+		@Body() body: { subscriptionId: number }
+	) {
+		const user = await this.authService.validateToken(authHeader);
+		const result = await this.authService.selectCompany((user as any).id, body.subscriptionId);
+		return result;
+	}
 }

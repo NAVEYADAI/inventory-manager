@@ -1,6 +1,5 @@
 import { Subscription } from 'src/subscription/subscription.entity';
-import { Supplier } from 'src/supplier/supplier.entity';
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, JoinColumn } from 'typeorm';
 
 @Entity()
 export class Company {
@@ -19,9 +18,7 @@ export class Company {
   @Column()
   phone: string;
 
-  @OneToOne(() => Subscription, (subscription) => subscription.company)
+  @OneToOne(() => Subscription, (subscription) => subscription.company, { cascade: true })
+  @JoinColumn()
   subscription: Subscription;
-
-  @OneToOne(() => Supplier, (supplier) => supplier.company)
-  supplier: Supplier;
 }

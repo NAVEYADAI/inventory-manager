@@ -11,9 +11,18 @@ export type LoginPayload = {
   password: string;
 };
 
+export type CompanyInfo = { id: number; name: string; subscriptionId: number };
+
 export type LoginResponse = {
   accessToken?: string;
-  user?: { id?: number; email?: string; name?: string };
+  user?: {
+    id?: number;
+    email?: string;
+    name?: string;
+    activeCompanies?: CompanyInfo[];
+    inactiveCompanies?: CompanyInfo[];
+    selectedCompany?: CompanyInfo | null;
+  };
 };
 
 export async function register(payload: RegisterPayload) {
@@ -26,6 +35,9 @@ export async function login(payload: { userName: string; password: string }) {
     const token = res?.data?.accessToken;
     if (token) {
       localStorage.setItem("token", token);
+      if (res.data.user) {
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+      }
     }
   } catch (e) {
     // ignore localStorage errors

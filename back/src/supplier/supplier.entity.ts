@@ -13,10 +13,6 @@ export class Supplier {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => Company, (company) => company.supplier, { cascade: true })
-  @JoinColumn()
-  company: Company;
-
   @OneToMany(() => Invetory, (invetory) => invetory.supplier)
   invetory: Invetory[];
 }

@@ -10,6 +10,7 @@ import { LogInTitle, SignUpTitle } from "../../titles";
 import { register } from "../../api/login";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../providers/AuthProvider";
 
 type SignUpProps = {
   setIsLogin: React.Dispatch<React.SetStateAction<boolean>>;
@@ -20,6 +21,7 @@ type SignUpProps = {
 const SignUp = ({ setIsLogin, signUp, setSignUp }: SignUpProps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { setUser } = useAuth();
   const navigate = useNavigate();
 
   async function handleSubmit(e: React.FormEvent) {
@@ -39,8 +41,8 @@ const SignUp = ({ setIsLogin, signUp, setSignUp }: SignUpProps) => {
       const res = await register(payload);
       if (res.status === 201 || res.status === 200) {
         setIsLogin(true);
-        navigate("/home");
-
+        navigate("/company-setup");
+        setUser(res.data)
       }
     } catch (err: any) {
       setError(err?.response?.data?.message || "Registration failed");

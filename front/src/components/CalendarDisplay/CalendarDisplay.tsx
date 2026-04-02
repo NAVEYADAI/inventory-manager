@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import { useCalendar } from '../../providers/calendar/useCalendar';
+import { useCalendar } from '../../providers/calendar';
 import CalendarItem from './CalendarItem';
 
 const CalendarDisplay = () => {

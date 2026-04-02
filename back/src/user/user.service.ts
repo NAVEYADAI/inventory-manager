@@ -73,4 +73,14 @@ export class UserService {
     await this.userRepo.delete(id);
     return { deleted: true };
   }
+
+  async getUserCompanies(userId: number) {
+    const user = await this.userRepo.findOne({
+      where: { id: userId },
+      relations: ['subscriptions', 'subscriptions.company'],
+    });
+    if (!user) throw new NotFoundException('User not found');
+    // return full subscription records so caller can split active/inactive
+    return user.subscriptions || [];
+  }
 }

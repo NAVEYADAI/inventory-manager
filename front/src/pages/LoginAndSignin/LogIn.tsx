@@ -29,8 +29,24 @@ const LogIn = ({ setIsLogin, logIn, setLogIn }: LogInProps) => {
     try {
       // בלוגין - mapping userName לפיקט password
       const payload = { userName: logIn.userName, password: logIn.password };
-      await login(payload);
-      navigate("/home");
+      const res = await login(payload);
+      const user = res?.data?.user;
+      const active = user?.activeCompanies || [];
+      const inactive = user?.inactiveCompanies || [];
+      const selected = user?.selectedCompany;      
+      if (selected) {
+        // exactly one active company was auto-selected
+        navigate("/home");
+      } else if (active.length > 1) {
+        // multiple active companies -> ask user to pick
+        navigate("/company-picker");
+      } else if (active.length === 0 && inactive.length > 0) {
+        // no active companies, show picker to activate
+        navigate("/company-picker");
+      } else {
+        // no subscriptions at all -> send to create new
+        navigate("/company-setup");
+      }
     } catch (err: any) {
       setError(err?.response?.data?.message || "Login failed");
     } finally {

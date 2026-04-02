@@ -1,6 +1,7 @@
 import { Password } from 'src/password/password.entity';
 import { UserPermission } from 'src/use-permissions/use-permission.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Subscription } from 'src/subscription/subscription.entity';
+import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -24,6 +25,9 @@ export class User {
 
   @Column()
   email: string;
+
+  @ManyToMany(() => Subscription, (subscription) => subscription.users)
+  subscriptions: Subscription[];
 
   @OneToMany(() => UserPermission, (userPermission) => userPermission.id)
   userPermission: UserPermission;
