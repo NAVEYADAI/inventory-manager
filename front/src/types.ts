@@ -7,4 +7,6 @@ export type User = {
     phone: string;
     email: string;
     password: string;
+    subscriptions: any[];
+    userPermission: any;
 }

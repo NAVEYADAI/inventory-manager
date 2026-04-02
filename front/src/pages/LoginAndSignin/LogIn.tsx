@@ -10,6 +10,8 @@ import { LogInTitle, SignUpTitle } from "../../titles";
 import { login } from "../../api/login";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../providers/AuthProvider";
+import type { User } from "../../types";
 
 type LogInProps = {
   setIsLogin: React.Dispatch<React.SetStateAction<boolean>>;
@@ -21,6 +23,8 @@ const LogIn = ({ setIsLogin, logIn, setLogIn }: LogInProps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { setUser } = useAuth();
+
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,18 +37,16 @@ const LogIn = ({ setIsLogin, logIn, setLogIn }: LogInProps) => {
       const user = res?.data?.user;
       const active = user?.activeCompanies || [];
       const inactive = user?.inactiveCompanies || [];
-      const selected = user?.selectedCompany;      
+      const selected = user?.selectedCompany;
+      console.log(res?.data);
+      setUser(res.data.user as User)
       if (selected) {
-        // exactly one active company was auto-selected
         navigate("/home");
       } else if (active.length > 1) {
-        // multiple active companies -> ask user to pick
         navigate("/company-picker");
       } else if (active.length === 0 && inactive.length > 0) {
-        // no active companies, show picker to activate
         navigate("/company-picker");
       } else {
-        // no subscriptions at all -> send to create new
         navigate("/company-setup");
       }
     } catch (err: any) {

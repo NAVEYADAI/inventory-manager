@@ -30,35 +30,21 @@ async create(createCompanyDto: CreateCompanyDto): Promise<{ company: Company; su
       const txCompanyRepo = manager.withRepository(this.companyRepo);
       const txSubscriptionRepo = manager.withRepository(this.subscriptionRepo);
       const txUserRepo = manager.withRepository(this.userRepo);
-
-      // חילוץ ה-ownerId והפרדתו משאר נתוני החברה
       const { ownerId, ...companyData } = createCompanyDto;
-
-      // יצירה ושמירת החברה בעזרת הרפוזיטורי של הטרנזקציה
       const company = txCompanyRepo.create(companyData);
       const savedCompany = await txCompanyRepo.save(company);
-
       let subscriptionResult = null;
-
-      // אם סופק מזהה משתמש, ניצור עבורו מנוי תחת הטרנזקציה
       if (ownerId) {
         const user = await txUserRepo.findOne({ where: { id: ownerId } });
         
         if (!user) {
           throw new NotFoundException(`Owner user with ID ${ownerId} not found`);
         }
-
         const subscription = txSubscriptionRepo.create({
           company: savedCompany,
           users: [user],
         });
-        try{
-
-          subscriptionResult = await txSubscriptionRepo.save(subscription);
-        }catch(err){
-          console.log(err);
-          
-        }
+        subscriptionResult = await txSubscriptionRepo.save(subscription);
       }
       
       return { company: savedCompany, subscription: subscriptionResult };

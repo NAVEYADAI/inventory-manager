@@ -14,34 +14,33 @@ export class AuthService {
     private readonly userService: UserService,
     @InjectRepository(Subscription)
     private readonly subscriptionRepo: Repository<Subscription>,
-  ) {}
+  ) { }
 
   async register(dto: RegisterDto) {
     const existing = await this.userService.findByUserName(dto.name);
     if (existing) throw new ConflictException('User already exists');
-    const user = await this.userService.create({
+    return await this.userService.create({
       userName: dto.name,
-      firstName: '',
-      lastName: '',
-      address: '',
-      phone: '',
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      address: dto.address,
+      phone: dto.phone,
       email: dto.email,
       password: dto.password,
     });
-    return { id: (user as any).id, email: (user as any).email, name: (user as any).name };
   }
 
   async login(dto: LoginDto) {
-    const user = await this.userService.findByUserName(dto.userName); 
+    const user = await this.userService.findByUserName(dto.userName);
     if (!user) throw new UnauthorizedException('Invalid credentials');
     const pwd = await this.userService.getLatestPasswordForUser((user as any).id);
     const hash = pwd?.hash;
     if (!hash) throw new UnauthorizedException('Invalid credentials');
     const match = await bcrypt.compare(dto.password, hash);
     if (!match) throw new UnauthorizedException('Invalid credentials');
-    
+
     // Fetch user's subscriptions and split active/inactive
-    const subs = await this.userService.getUserCompanies((user as any).id);
+    const subs = await this.userService.getUserCompanies((user).id);
     const activeSubs = subs.filter((s: any) => s.is_active);
     const inactiveSubs = subs.filter((s: any) => !s.is_active);
 
@@ -94,7 +93,7 @@ export class AuthService {
       where: { id: subscriptionId, users: { id: userId } },
       relations: ['company'],
     });
-    
+
     if (!subscription) {
       throw new NotFoundException('Subscription not found or user does not have access');
     }
@@ -116,7 +115,7 @@ export class AuthService {
       message: 'Company selected successfully',
     };
   }
-  
+
   /**
    * Helper to create a fresh JWT token including the selected company
    */

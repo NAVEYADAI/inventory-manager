@@ -3,8 +3,9 @@ import type { User } from "../../types";
 
 
 interface AuthContextType {
-    user: User | undefined; // מומלץ בהמשך להחליף את any בממשק מסודר של משתמש, למשל User
-    setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
+    //todo refactor
+    user: User | undefined | any;
+    setUser: React.Dispatch<React.SetStateAction<User | undefined | any>>;
 }
 export const AuthContext = createContext<AuthContextType | null>(null);
 
