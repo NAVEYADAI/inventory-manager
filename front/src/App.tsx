@@ -1,11 +1,12 @@
 import { BrowserRouter } from "react-router-dom";
 import { MainProvider } from "./providers/MainProvider";
 import { Router } from "./routes/AppRoutes";
-import { createTheme, ThemeProvider } from "@mui/material";
+import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { prefixer } from "stylis";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 import rtlPlugin from "stylis-plugin-rtl";
+import Navbar from "./components/Navbar/navbar";
 
 
 function App() {
@@ -13,10 +14,9 @@ function App() {
     key: "mui-rtl",
     stylisPlugins: [prefixer, rtlPlugin],
   });
-  
+
   const theme = createTheme({
     direction: "rtl",
-  
     palette: {
       mode: "light",
       primary: { main: "#1976d2" },
@@ -30,7 +30,6 @@ function App() {
         secondary: "#555",
       },
     },
-  
     typography: {
       fontFamily: `'Assistant', 'Arial', sans-serif`,
       fontSize: 14,
@@ -40,7 +39,6 @@ function App() {
       body1: { lineHeight: 1.6 },
       button: { textTransform: "uppercase", fontWeight: 500 },
     },
-  
     components: {
       MuiCssBaseline: {
         styleOverrides: {
@@ -58,8 +56,10 @@ function App() {
   return (
     <CacheProvider value={cacheRtl}>
       <ThemeProvider theme={theme}>
+        <CssBaseline />
         <BrowserRouter>
           <MainProvider>
+            <Navbar />
             <Router />
           </MainProvider>
         </BrowserRouter>
