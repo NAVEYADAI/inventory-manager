@@ -1,0 +1,9 @@
+{
+  "name": "inventory-manager",
+  "private": true,
+  "workspaces": [
+    "front",
+    "back",
+    "shared"
+  ]
+}

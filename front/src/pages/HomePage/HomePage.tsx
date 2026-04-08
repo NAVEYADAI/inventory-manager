@@ -1,5 +1,6 @@
 import { Button, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { UOM } from '@inventory-manager/shared';
 
 const HomePage = () => {
   const userStr = localStorage.getItem("user");
@@ -8,7 +9,7 @@ const HomePage = () => {
     try {
       const user = JSON.parse(userStr);
       currentCompany = user.selectedCompany;
-    } catch {}
+    } catch { }
   }
   return (
     <Box p={3}>
@@ -18,10 +19,13 @@ const HomePage = () => {
           <strong>חברה נבחרת:</strong> {currentCompany.name}
         </Box>
       )}
+      {Object.values(UOM).map((uom) => (
+        <Box key={uom}>{uom}</Box>
+      ))}
       <Button component={Link} to="/calendar" variant="contained">
         לעבור ללוח השנה
       </Button>
-      <Button  component={Link} to="/calendar2" variant="contained">
+      <Button component={Link} to="/calendar2" variant="contained">
         למעבר ללוח האמיתי
       </Button>
     </Box>

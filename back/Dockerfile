@@ -2,11 +2,13 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
+COPY shared ./shared
 
-COPY . .
+COPY back/package*.json ./back/
+RUN cd back && npm install
 
-EXPOSE 3000
+COPY back ./back
+
+WORKDIR /app/back
 
 CMD ["npm", "run", "start:dev"]

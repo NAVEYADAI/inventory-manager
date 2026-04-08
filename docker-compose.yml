@@ -1,27 +1,42 @@
 services:
+  shared:
+    build:
+      context: .
+      dockerfile: shared/Dockerfile
+    volumes:
+      - ./shared:/app/shared
+      - /app/shared/node_modules
+
   back:
     build:
-      context: ./back
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: back/Dockerfile
     ports:
       - "4000:4000"
     volumes:
-      - ./back:/app
-      - /app/node_modules
+      - ./back:/app/back
+      - ./shared:/app/shared
+      - /app/back/node_modules
     command: npm run start:dev
     env_file:
       - ./back/.env
     environment:
       - NODE_ENV=development
+    depends_on:
+      - shared
+
   front:
     build:
-      context: ./front
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: front/Dockerfile
     ports:
       - "3000:3000"
     volumes:
-      - ./front:/app
-      - /app/node_modules
+      - ./front:/app/front
+      - ./shared:/app/shared
+      - /app/front/node_modules
     command: npm run dev
     environment:
       - NODE_ENV=development
+    depends_on:
+      - shared
