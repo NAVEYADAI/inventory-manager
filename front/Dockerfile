@@ -2,11 +2,17 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
+COPY shared ./shared
+RUN cd shared && npm install && npm run build
 
-COPY . .
+COPY front/package*.json ./front/
+COPY shared/package*.json ./shared/
 
-EXPOSE 3000
+RUN cd front && npm install
+
+COPY front ./front
+COPY shared ./shared
+
+WORKDIR /app/front
 
 CMD ["npm", "run", "dev"]

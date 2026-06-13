@@ -1,5 +1,5 @@
-import { Product } from 'src/product/product.entity';
-import { Subscription } from 'src/subscription/subscription.entity';
+import { Product } from '../product/product.entity';
+import { Subscription } from '../subscription/subscription.entity';
 import {
   Column,
   Entity,

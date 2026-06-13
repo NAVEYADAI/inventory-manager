@@ -1,0 +1,14 @@
+{
+  "name": "inventory-manager",
+  "private": true,
+  "workspaces": [
+    "front",
+    "back",
+    "shared"
+  ],
+  "dependencies": {
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.4",
+    "headroom-ai": "^0.22.4"
+  }
+}

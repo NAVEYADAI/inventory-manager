@@ -1,6 +1,6 @@
-import { CreateProduct } from 'src/create-product/create-product.entity';
-import { RecipeProduct } from 'src/recipe-product/recipe-product.entity';
-import { Subscription } from 'src/subscription/subscription.entity';
+import { CreateProduct } from '../create-product/create-product.entity';
+import { RecipeProduct } from '../recipe-product/recipe-product.entity';
+import { Subscription } from '../subscription/subscription.entity';
 import {
   Column,
   Entity,
@@ -8,6 +8,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Product } from '../product/product.entity';
 
 @Entity()
 export class Recipe {
@@ -17,14 +18,11 @@ export class Recipe {
   @Column({ nullable: false })
   name: string;
 
-  @ManyToOne(() => Subscription, (subscription) => subscription.recipe)
-  subscription: Subscription;
-
   @Column()
   is_deleted: boolean;
 
-  @Column({ nullable: false })
-  sum_on_kg: number;
+  @ManyToOne(()=> Product, (product) => product.recipe)
+  product: Product;
 
   @OneToMany(() => RecipeProduct, (recipe_product) => recipe_product.recipe)
   recipe_product: RecipeProduct[];

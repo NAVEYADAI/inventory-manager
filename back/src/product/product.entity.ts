@@ -1,5 +1,6 @@
-import { Platoon } from 'src/platoon/platoon.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Platoon } from '../platoon/platoon.entity';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Recipe } from '../recipe/recipe.entity';
 
 @Entity()
 export class Product {
@@ -17,4 +18,7 @@ export class Product {
 
   @Column()
   available: boolean;
+
+  @OneToMany(() => Recipe, (recipe) => recipe.product)
+  recipe: Recipe;
 }

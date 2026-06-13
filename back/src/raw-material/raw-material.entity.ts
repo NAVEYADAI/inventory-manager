@@ -1,6 +1,7 @@
-import { Invetory } from 'src/invetory/invetory.entity';
-import { RecipeProduct } from 'src/recipe-product/recipe-product.entity';
-import { Subscription } from 'src/subscription/subscription.entity';
+import { Invetory } from '../invetory/invetory.entity';
+import { RecipeProduct } from '../recipe-product/recipe-product.entity';
+import { Subscription } from '../subscription/subscription.entity';
+import { MeasurementType } from '@inventory-manager/shared';
 import {
   Column,
   Entity,
@@ -18,8 +19,17 @@ export class RawMaterial {
   @Column({ nullable: false })
   name: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, default: false })
   priceIsOnUnit: boolean;
+
+  @Column({ nullable: false, default: MeasurementType.WEIGHT })
+  measurementType: MeasurementType;
+
+  @Column({ nullable: false, default: 'gram' })
+  uom: string;
+
+  @Column({ nullable: true })
+  category?: string;
 
   @ManyToOne(() => Subscription, (subscription) => subscription.raw_material)
   subscription: Subscription;

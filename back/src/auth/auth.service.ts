@@ -1,13 +1,13 @@
 import { ConflictException, Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { RegisterDto } from './dto/register-auth.dto';
-import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { LoginDto } from './dto/login-auth.dto';
 import { UserService } from 'src/user/user.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Subscription } from 'src/subscription/subscription.entity';
-
+const bcrypt = require('bcryptjs');
+ 
 @Injectable()
 export class AuthService {
   constructor(
