@@ -1,6 +1,6 @@
-import { Password } from 'src/password/password.entity';
-import { UserPermission } from 'src/use-permissions/use-permission.entity';
-import { Subscription } from 'src/subscription/subscription.entity';
+import { Password } from '../password/password.entity';
+import { UserPermission } from '../use-permissions/use-permission.entity';
+import { Subscription } from '../subscription/subscription.entity';
 import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()

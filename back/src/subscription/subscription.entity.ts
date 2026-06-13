@@ -1,9 +1,9 @@
-import { Company } from 'src/company/company.entity';
-import { User } from 'src/user/user.entity';
-import { Invetory } from 'src/invetory/invetory.entity';
-import { Platoon } from 'src/platoon/platoon.entity';
-import { RawMaterial } from 'src/raw-material/raw-material.entity';
-import { Recipe } from 'src/recipe/recipe.entity';
+import { Company } from '../company/company.entity';
+import { User } from '../user/user.entity';
+import { Invetory } from '../invetory/invetory.entity';
+import { Platoon } from '../platoon/platoon.entity';
+import { RawMaterial } from '../raw-material/raw-material.entity';
+import { Recipe } from '../recipe/recipe.entity';
 import {
   Column,
   Entity,
@@ -37,12 +37,12 @@ export class Subscription {
   @OneToMany(() => RawMaterial, (raw_material) => raw_material.subscription)
   raw_material: RawMaterial[];
 
-  @OneToMany(() => Recipe, (recipe) => recipe.subscription)
-  recipe: Recipe[];
+  // @OneToMany(() => Recipe, (recipe) => recipe.subscription)
+  // recipe: Recipe[];
 
-  @OneToMany(() => Platoon, (platoon) => platoon.subscription)
+  @OneToMany(() => Platoon, (platoon) => platoon.subscription) // מחלקות מוצרים
   platoon: Platoon[];
 
-  @OneToMany(() => Invetory, (invetory) => invetory.subscription)
+  @OneToMany(() => Invetory, (invetory) => invetory.subscription) // מלאי
   invetory: Invetory[];
 }

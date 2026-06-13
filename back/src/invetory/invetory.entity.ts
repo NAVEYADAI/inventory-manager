@@ -1,6 +1,6 @@
-import { RawMaterial } from 'src/raw-material/raw-material.entity';
-import { Subscription } from 'src/subscription/subscription.entity';
-import { Supplier } from 'src/supplier/supplier.entity';
+import { RawMaterial } from '../raw-material/raw-material.entity';
+import { Subscription } from '../subscription/subscription.entity';
+import { Supplier } from '../supplier/supplier.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
