@@ -21,10 +21,13 @@ export class Recipe {
   @Column()
   is_deleted: boolean;
 
-  @ManyToOne(()=> Product, (product) => product.recipe)
+  @ManyToOne(() => Subscription, (subscription) => subscription.recipes)
+  subscription: Subscription;
+
+  @ManyToOne(()=> Product, (product) => product.recipe, { nullable: true })
   product: Product;
 
-  @OneToMany(() => RecipeProduct, (recipe_product) => recipe_product.recipe)
+  @OneToMany(() => RecipeProduct, (recipe_product) => recipe_product.recipe, { cascade: true })
   recipe_product: RecipeProduct[];
 
   @OneToMany(() => CreateProduct, (create_product) => create_product.recipe)

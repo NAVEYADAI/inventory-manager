@@ -37,8 +37,8 @@ export class Subscription {
   @OneToMany(() => RawMaterial, (raw_material) => raw_material.subscription)
   raw_material: RawMaterial[];
 
-  // @OneToMany(() => Recipe, (recipe) => recipe.subscription)
-  // recipe: Recipe[];
+  @OneToMany(() => Recipe, (recipe) => recipe.subscription)
+  recipes: Recipe[];
 
   @OneToMany(() => Platoon, (platoon) => platoon.subscription) // מחלקות מוצרים
   platoon: Platoon[];

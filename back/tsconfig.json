@@ -17,11 +17,6 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "esModuleInterop": true,
-    "baseUrl": "/app/back",
-    "paths": {
-      "@inventory-manager/shared": [
-        "../../shared/src/index.ts"
-      ]
-    }
+    "baseUrl": "."
   }
 }

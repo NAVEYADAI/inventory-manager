@@ -5,6 +5,7 @@ import FullCalendarManeger from "../pages/FullCalendar/FullCalendarManeger";
 import LoginAndSignin from "../pages/LoginAndSignin/LoginAndSignin";
 import CompanySetup from "../pages/CompanySetup/CompanySetup";
 import CompanyPicker from "../pages/CompanyPicker/CompanyPicker";
+import RecipesPage from "../pages/RecipesPage/RecipesPage";
 
 export const Router = () => {
   return (
@@ -16,6 +17,7 @@ export const Router = () => {
       <Route path="/company-picker" element={<CompanyPicker />} />
       <Route path="/calendar" element={<CalendarPage />} />
       <Route path="/calendar2" element={<FullCalendarManeger />} />
+      <Route path="/recipes" element={<RecipesPage />} />
     </Routes>
   );
 };
