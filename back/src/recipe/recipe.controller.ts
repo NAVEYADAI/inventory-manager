@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { RecipeService } from './recipe.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
@@ -13,8 +13,11 @@ export class RecipeController {
   }
 
   @Get()
-  findAll() {
-    return this.recipeService.findAll();
+  findAll(@Query('subscriptionId') subscriptionId?: string) {
+    if (subscriptionId) {
+      return this.recipeService.findAllForSubscription(+subscriptionId);
+    }
+    return this.recipeService.findAllForSubscription(0);
   }
 
   @Get(':id')

@@ -51,9 +51,14 @@ const HomePage = () => {
           }
         }}
       />
-      <Button onClick={() => setCreateRawMaterialOpen(prev => !prev)} variant="contained">
-        הוספת חומרי גלם
-      </Button>
+      <Box display="flex" gap={2} mt={2}>
+        <Button onClick={() => setCreateRawMaterialOpen(prev => !prev)} variant="contained">
+          הוספת חומרי גלם
+        </Button>
+        <Button component={Link} to="/recipes" variant="contained" color="secondary">
+          ספר המתכונים
+        </Button>
+      </Box>
     </Box>
   );
 };

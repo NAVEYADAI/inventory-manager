@@ -37,11 +37,11 @@ const CompanySetup = () => {
       const res = await createCompany(payload);
       // if subscription returned, set as selected company
       if (res.data?.subscription) {
-        const compInfo = {
-          id: res.data.company.id,
-          name: res.data.company.name,
-          subscriptionId: res.data.subscription.id,
-        };
+        // const compInfo = {
+        //   id: res.data.company.id,
+        //   name: res.data.company.name,
+        //   subscriptionId: res.data.subscription.id,
+        // };
         const existingUser = user || {};
         // existingUser.selectedCompany = compInfo;
         // existingUser.activeCompanies = [compInfo];
