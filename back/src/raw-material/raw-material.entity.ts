@@ -1,7 +1,7 @@
 import { Invetory } from '../invetory/invetory.entity';
 import { RecipeProduct } from '../recipe-product/recipe-product.entity';
 import { Subscription } from '../subscription/subscription.entity';
-import { MeasurementType } from '@inventory-manager/shared';
+import { MeasurementType } from '../enums';
 import {
   Column,
   Entity,

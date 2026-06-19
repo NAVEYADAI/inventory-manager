@@ -9,7 +9,7 @@ export class CreateProduct {
   @ManyToOne(() => Recipe, (recipe) => recipe.create_product)
   recipe: Recipe;
 
-  @Column()
+  @Column({ type: 'float', nullable: true })
   batche_count: number;
 
   @Column()

@@ -3,8 +3,7 @@
   "private": true,
   "workspaces": [
     "front",
-    "back",
-    "shared"
+    "back"
   ],
   "dependencies": {
     "class-transformer": "^0.5.1",

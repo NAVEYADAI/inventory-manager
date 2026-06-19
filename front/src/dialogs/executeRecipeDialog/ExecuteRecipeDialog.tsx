@@ -1,0 +1,257 @@
+import React, { useState, useEffect } from 'react';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+  Box,
+  CircularProgress,
+  Typography,
+  Stack,
+  Divider,
+} from '@mui/material';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
+import { UOM, UOM_hebrew_names } from '../../enums';
+import { createProductExecution } from '../../api/createProduct';
+import { type RecipeDto } from '../../api/recipe';
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
+  recipe: RecipeDto | null;
+  onSave: () => void;
+}
+
+const ExecuteRecipeDialog = ({ open, onClose, recipe, onSave }: Props) => {
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
+  const [multiplier, setMultiplier] = useState('1');
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
+  // Reset states when dialog opens
+  useEffect(() => {
+    if (!open || !recipe) return;
+
+    const now = new Date();
+    // YYYY-MM-DD local format
+    const localDate = now.toLocaleDateString('en-CA');
+    // HH:mm local format
+    const localTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+    setDate(localDate);
+    setTime(localTime);
+    setMultiplier('1');
+    setError('');
+  }, [open, recipe]);
+
+  if (!recipe) return null;
+
+  const parsedMultiplier = parseFloat(multiplier) || 0;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!recipe) return;
+
+    const finalMultiplier = parseFloat(multiplier);
+    if (isNaN(finalMultiplier) || finalMultiplier <= 0) {
+      setError('כמות ההכפלה חייבת להיות מספר גדול מ-0');
+      return;
+    }
+
+    if (!date) {
+      setError('אנא בחר תאריך');
+      return;
+    }
+
+    if (!time) {
+      setError('אנא בחר שעה');
+      return;
+    }
+
+    setSubmitting(true);
+    setError('');
+
+    try {
+      // Combine date (YYYY-MM-DD) and time (HH:mm) into a local Date
+      const [year, month, day] = date.split('-').map(Number);
+      const [hours, minutes] = time.split(':').map(Number);
+      const executionDate = new Date(year, month - 1, day, hours, minutes, 0, 0);
+
+      await createProductExecution({
+        recipeId: recipe.id,
+        batche_count: finalMultiplier,
+        created_time: executionDate.toISOString(),
+      });
+
+      onSave();
+      onClose();
+    } catch (err) {
+      console.error('Failed to execute recipe', err);
+      setError('שגיאה ברישום הכנת המתכון');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth dir="rtl">
+      <DialogTitle sx={{ fontWeight: 800, pb: 1, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <RestaurantIcon color="primary" sx={{ fontSize: 32 }} />
+        <Box>
+          <Typography variant="h5" fontWeight={800} color="text.primary">
+            רשום הכנת מתכון: {recipe.name}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            מזהה מתכון: #{recipe.id}
+          </Typography>
+        </Box>
+      </DialogTitle>
+      <Divider />
+
+      <form onSubmit={handleSubmit}>
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 3, py: 3 }}>
+          {error && (
+            <Typography color="error" variant="body2" sx={{ textAlign: 'center', fontWeight: 600 }}>
+              {error}
+            </Typography>
+          )}
+
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+            <TextField
+              label="תאריך הכנה"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              disabled={submitting}
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+            />
+            <TextField
+              label="שעת הכנה"
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              disabled={submitting}
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+            />
+          </Stack>
+
+          <TextField
+            label="כמות להכפלה"
+            type="number"
+            value={multiplier}
+            onChange={(e) => setMultiplier(e.target.value)}
+            disabled={submitting}
+            fullWidth
+            inputProps={{ min: 0.01, step: 'any' }}
+            helperText="פי כמה להכפיל את חומרי הגלם במתכון (לדוגמה: 0.5)"
+          />
+
+          <Box>
+            <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1.5 }} color="text.primary">
+              חישוב כמויות רכיבים בפועל:
+            </Typography>
+            <Box
+              sx={{
+                maxHeight: '220px',
+                overflowY: 'auto',
+                pr: 1,
+                border: '1px solid #e2e8f0',
+                borderRadius: 2,
+                p: 1.5,
+                bgcolor: 'grey.50',
+                '&::-webkit-scrollbar': {
+                  width: '6px',
+                },
+                '&::-webkit-scrollbar-track': {
+                  background: 'transparent',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  background: '#cbd5e1',
+                  borderRadius: '3px',
+                },
+                '&::-webkit-scrollbar-thumb:hover': {
+                  background: '#94a3b8',
+                },
+              }}
+            >
+              <Stack spacing={1.5}>
+                {recipe.recipe_product && recipe.recipe_product.length > 0 ? (
+                  recipe.recipe_product.map((item) => {
+                    const uomHebrew = UOM_hebrew_names[item.uom as UOM] || item.uom;
+                    const baseVolume = item.volume;
+                    const actualVolume = parseFloat((baseVolume * parsedMultiplier).toFixed(3));
+
+                    return (
+                      <Box
+                        key={item.id}
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        sx={{
+                          px: 2,
+                          py: 1,
+                          borderRadius: 1.5,
+                          bgcolor: '#ffffff',
+                          border: '1px solid #f1f5f9',
+                        }}
+                      >
+                        <Typography variant="body2" fontWeight={600} color="text.primary">
+                          {item.raw_material?.name || 'חומר גלם לא ידוע'}
+                        </Typography>
+                        <Box display="flex" alignItems="center" gap={1}>
+                          <Typography variant="caption" color="text.secondary">
+                            ({baseVolume} {uomHebrew})
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary" fontWeight={500}>
+                            ⬅️ &nbsp;
+                            <Typography component="span" variant="body2" color="success.main" fontWeight={700}>
+                              {actualVolume} {uomHebrew}
+                            </Typography>
+                          </Typography>
+                        </Box>
+                      </Box>
+                    );
+                  })
+                ) : (
+                  <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
+                    אין רכיבים מתועדים במתכון זה.
+                  </Typography>
+                )}
+              </Stack>
+            </Box>
+          </Box>
+        </DialogContent>
+
+        <DialogActions sx={{ px: 3, pb: 3, justifyContent: 'space-between' }}>
+          <Button onClick={onClose} disabled={submitting} variant="outlined" color="inherit" sx={{ borderRadius: 2 }}>
+            ביטול
+          </Button>
+          <Button
+            type="submit"
+            disabled={submitting || parsedMultiplier <= 0}
+            variant="contained"
+            color="primary"
+            sx={{
+              borderRadius: 2,
+              px: 4,
+              fontWeight: 700,
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+              }
+            }}
+          >
+            {submitting ? <CircularProgress size={24} color="inherit" /> : 'רשום הכנה'}
+          </Button>
+        </DialogActions>
+      </form>
+    </Dialog>
+  );
+};
+
+export default ExecuteRecipeDialog;

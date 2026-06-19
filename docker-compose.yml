@@ -1,12 +1,4 @@
 services:
-  shared:
-    build:
-      context: .
-      dockerfile: shared/Dockerfile
-    volumes:
-      - ./shared:/app/shared
-      - /app/shared/node_modules
-
   back:
     build:
       context: .
@@ -15,15 +7,12 @@ services:
       - "4000:4000"
     volumes:
       - ./back:/app/back
-      - ./shared:/app/shared
       - /app/back/node_modules
     command: npm run start:dev
     env_file:
       - ./back/.env
     environment:
       - NODE_ENV=development
-    depends_on:
-      - shared
 
   front:
     build:
@@ -33,10 +22,7 @@ services:
       - "3000:3000"
     volumes:
       - ./front:/app/front
-      - ./shared:/app/shared
       - /app/front/node_modules
     command: npm run dev
     environment:
       - NODE_ENV=development
-    depends_on:
-      - shared

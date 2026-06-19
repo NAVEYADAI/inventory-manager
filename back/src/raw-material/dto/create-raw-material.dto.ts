@@ -1,4 +1,4 @@
-import { MeasurementType } from '@inventory-manager/shared';
+import { MeasurementType } from '../../enums';
 import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString, IsArray, ValidateNested, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 

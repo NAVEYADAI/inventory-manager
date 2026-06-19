@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { MeasurementType } from '@inventory-manager/shared';
+import { MeasurementType } from '../enums';
 import { CreateRawMaterialDto, RawMaterialItemDto } from './dto/create-raw-material.dto';
 import { UpdateRawMaterialDto } from './dto/update-raw-material.dto';
 import { InjectRepository } from '@nestjs/typeorm';

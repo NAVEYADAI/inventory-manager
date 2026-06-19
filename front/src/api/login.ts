@@ -48,6 +48,7 @@ export async function login(payload: { userName: string; password: string }) {
 export function logout() {
   try {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
   } catch (e) {
     // ignore
   }

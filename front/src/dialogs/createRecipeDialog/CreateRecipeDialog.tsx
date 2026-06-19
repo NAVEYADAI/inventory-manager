@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { UOM, UOM_hebrew_names, MeasurementType, MeasurementType_hebrew_names } from '@inventory-manager/shared';
+import { UOM, UOM_hebrew_names, MeasurementType, MeasurementType_hebrew_names } from '../../enums';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   Button, TextField, IconButton, Box,

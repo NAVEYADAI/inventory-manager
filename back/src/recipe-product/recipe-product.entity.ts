@@ -1,7 +1,7 @@
 import { RawMaterial } from '../raw-material/raw-material.entity';
 import { Recipe } from '../recipe/recipe.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { UOM } from '@inventory-manager/shared';
+import { UOM } from '../enums';
 
 
 @Entity()

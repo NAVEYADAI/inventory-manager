@@ -1,12 +1,21 @@
-import { Box, Button, List, ListItem, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Box, Typography, Stack, Alert, List, Paper, CircularProgress, Button } from "@mui/material";
+import {
+  PageBackground,
+  GlassCard,
+  BannerSide,
+  FormSide,
+} from "../LoginAndSignin/LoginAndSignin.style";
 import {
   activateSubscription,
   listMySubscriptions,
   selectSubscription,
 } from "../../api/subscription";
 import type { CompanyInfo } from "../../api/login";
+import BusinessIcon from "@mui/icons-material/Business";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 
 const CompanyPicker = () => {
   const [active, setActive] = useState<CompanyInfo[]>([]);
@@ -16,7 +25,6 @@ const CompanyPicker = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // If user info was stored in localStorage from login, use that first
     const userStr = localStorage.getItem("user");
     if (userStr) {
       try {
@@ -26,7 +34,6 @@ const CompanyPicker = () => {
       } catch {}
     }
 
-    // if neither list provided or to refresh, fetch from backend
     listMySubscriptions()
       .then((res) => {
         const subs = res.data;
@@ -43,7 +50,7 @@ const CompanyPicker = () => {
         });
         setActive(act);
         setInactive(inact);
-        // update localStorage so possible already-stored values reflect server state
+        
         const user = userStr ? JSON.parse(userStr) : {};
         localStorage.setItem(
           "user",
@@ -56,11 +63,9 @@ const CompanyPicker = () => {
   }, []);
 
   useEffect(() => {
-    // auto-select when exactly one active company
     if (active.length === 1) {
       handlePick(active[0].subscriptionId);
     }
-    // if no active and no inactive, send to company creation
     if (active.length === 0 && inactive.length === 0) {
       navigate("/company-setup");
     }
@@ -74,7 +79,6 @@ const CompanyPicker = () => {
       const user = JSON.parse(localStorage.getItem("user") || "{}");
       const comp: CompanyInfo = res.data.selectedCompany;
       user.selectedCompany = comp;
-      // move this company to active
       user.activeCompanies = [...(user.activeCompanies || []), comp];
       user.inactiveCompanies = (user.inactiveCompanies || []).filter(
         (c: CompanyInfo) => c.subscriptionId !== subId
@@ -85,7 +89,7 @@ const CompanyPicker = () => {
       }
       navigate("/home");
     } catch (e: any) {
-      setError(e?.response?.data?.message || "Activation failed");
+      setError(e?.response?.data?.message || "הפעלת המנוי נכשלה. אנא נסה שוב.");
     } finally {
       setLoading(false);
     }
@@ -104,51 +108,139 @@ const CompanyPicker = () => {
       }
       navigate("/home");
     } catch (e: any) {
-      setError(e?.response?.data?.message || "Selection failed");
+      setError(e?.response?.data?.message || "בחירת החברה נכשלה. אנא נסה שוב.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Box sx={{ padding: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Select a Company
-      </Typography>
-      {error && <Typography color="error">{error}</Typography>}
+    <PageBackground>
+      <GlassCard elevation={0} dir="rtl">
+        {/* Banner Section */}
+        <BannerSide>
+          <Stack spacing={3} alignItems="center">
+            <BusinessIcon sx={{ fontSize: 60, opacity: 0.9 }} />
+            <Typography variant="h3" fontWeight={800} sx={{ letterSpacing: 0.5 }}>
+              החברות שלך
+            </Typography>
+            <Typography variant="body1" sx={{ opacity: 0.9, maxWidth: "340px", lineHeight: 1.7, fontSize: "1.05rem" }}>
+              מקום אחד לנהל את כל העסקים שלך. בחר את החברה שברצונך לעבוד איתה כעת, או הפעל מנוי ממתין.
+            </Typography>
+          </Stack>
+        </BannerSide>
 
-      {active.length > 1 && (
-        <>
-          <Typography variant="h6">Active Companies</Typography>
-          <List>
-            {active.map((c) => (
-              <ListItem key={c.subscriptionId} sx={{ justifyContent: 'space-between' }}>
-                {c.name}
-                <Button onClick={() => handlePick(c.subscriptionId)} disabled={loading}>
-                  Use
-                </Button>
-              </ListItem>
-            ))}
-          </List>
-        </>
-      )}
+        {/* Form Section */}
+        <FormSide>
+          <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 3.5, height: "100%", justifyContent: "center" }}>
+            <Box sx={{ textAlign: "center" }}>
+              <Typography variant="h4" fontWeight={800} color="text.primary" gutterBottom>
+                בחירת חברה פעילה
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                בחר חברה כדי להמשיך למערכת הניהול
+              </Typography>
+            </Box>
 
-      {active.length === 0 && inactive.length > 0 && (
-        <>
-          <Typography variant="h6">Inactive Companies (activate one)</Typography>
-          <List>
-            {inactive.map((c) => (
-              <ListItem key={c.subscriptionId} sx={{ justifyContent: 'space-between' }}>
-                {c.name}
-                <Button onClick={() => handleActivate(c.subscriptionId)} disabled={loading}>
-                  Activate
-                </Button>
-              </ListItem>
-            ))}
-          </List>
-        </>
-      )}
-    </Box>
+            {error && (
+              <Alert severity="error" sx={{ borderRadius: "12px", py: 0.5 }}>
+                {error}
+              </Alert>
+            )}
+
+            {loading ? (
+              <Box display="flex" justifyContent="center" py={4}>
+                <CircularProgress />
+              </Box>
+            ) : (
+              <Stack spacing={3} sx={{ overflowY: "auto", pr: 0.5, maxHeight: "350px" }}>
+                {/* Active Companies List */}
+                {active.length > 1 && (
+                  <Box>
+                    <Typography variant="subtitle2" fontWeight={700} color="text.secondary" sx={{ mb: 1 }}>
+                      חברות פעילות
+                    </Typography>
+                    <List disablePadding>
+                      {active.map((c) => (
+                        <Paper
+                          key={c.subscriptionId}
+                          variant="outlined"
+                          sx={{
+                            p: 1.5,
+                            mb: 1.5,
+                            borderRadius: "12px",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            transition: "background-color 0.2s",
+                            "&:hover": { bgcolor: "action.hover" },
+                          }}
+                        >
+                          <Typography variant="body1" fontWeight={600}>
+                            {c.name}
+                          </Typography>
+                          <Button
+                            variant="contained"
+                            size="small"
+                            onClick={() => handlePick(c.subscriptionId)}
+                            startIcon={<CheckCircleOutlineIcon fontSize="small" />}
+                            sx={{ borderRadius: "8px", fontWeight: 700, px: 2 }}
+                          >
+                            כניסה
+                          </Button>
+                        </Paper>
+                      ))}
+                    </List>
+                  </Box>
+                )}
+
+                {/* Inactive Companies List */}
+                {inactive.length > 0 && (
+                  <Box>
+                    <Typography variant="subtitle2" fontWeight={700} color="text.secondary" sx={{ mb: 1 }}>
+                      חברות ממתינות להפעלה
+                    </Typography>
+                    <List disablePadding>
+                      {inactive.map((c) => (
+                        <Paper
+                          key={c.subscriptionId}
+                          variant="outlined"
+                          sx={{
+                            p: 1.5,
+                            mb: 1.5,
+                            borderRadius: "12px",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            borderColor: "warning.light",
+                            transition: "background-color 0.2s",
+                            "&:hover": { bgcolor: "warning.lighter" },
+                          }}
+                        >
+                          <Typography variant="body1" fontWeight={600} color="text.secondary">
+                            {c.name}
+                          </Typography>
+                          <Button
+                            variant="outlined"
+                            color="warning"
+                            size="small"
+                            onClick={() => handleActivate(c.subscriptionId)}
+                            startIcon={<PlayCircleOutlineIcon fontSize="small" />}
+                            sx={{ borderRadius: "8px", fontWeight: 700, px: 2 }}
+                          >
+                            הפעלה
+                          </Button>
+                        </Paper>
+                      ))}
+                    </List>
+                  </Box>
+                )}
+              </Stack>
+            )}
+          </Box>
+        </FormSide>
+      </GlassCard>
+    </PageBackground>
   );
 };
 

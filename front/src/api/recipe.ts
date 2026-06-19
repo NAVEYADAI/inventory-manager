@@ -1,4 +1,4 @@
-import { UOM } from '@inventory-manager/shared';
+import { UOM } from '../enums';
 import axiosInstance from './axiosInstance';
 
 export interface RecipeIngredientPayload {

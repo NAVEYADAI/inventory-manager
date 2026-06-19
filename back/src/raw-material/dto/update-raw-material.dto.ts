@@ -1,4 +1,4 @@
-import { MeasurementType } from '@inventory-manager/shared';
+import { MeasurementType } from '../../enums';
 import { PartialType } from '@nestjs/mapped-types';
 import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 import { CreateRawMaterialDto } from './create-raw-material.dto';

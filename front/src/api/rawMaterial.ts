@@ -1,4 +1,4 @@
-import { MeasurementType } from '@inventory-manager/shared';
+import { MeasurementType } from '../enums';
 import axiosInstance from './axiosInstance';
 
 export type RawMaterialRowPayload = {

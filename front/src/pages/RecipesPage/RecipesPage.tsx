@@ -9,9 +9,12 @@ import SearchIcon from '@mui/icons-material/Search';
 import LocalFloristIcon from '@mui/icons-material/LocalFlorist';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import AddIcon from '@mui/icons-material/Add';
-import { UOM_hebrew_names } from '@inventory-manager/shared';
+import { UOM_hebrew_names } from '../../enums';
 import { getRecipes, deleteRecipe, type RecipeDto } from '../../api/recipe';
 import CreateRecipeDialog from '../../dialogs/createRecipeDialog/CreateRecipeDialog';
+import RecipePreviewDialog from '../../dialogs/recipePreviewDialog/RecipePreviewDialog';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
+import ExecuteRecipeDialog from '../../dialogs/executeRecipeDialog/ExecuteRecipeDialog';
 
 const RecipesPage = () => {
   const [recipes, setRecipes] = useState<RecipeDto[]>([]);
@@ -19,6 +22,20 @@ const RecipesPage = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [editingRecipe, setEditingRecipe] = useState<RecipeDto | null>(null);
+  const [previewRecipe, setPreviewRecipe] = useState<RecipeDto | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [executeRecipe, setExecuteRecipe] = useState<RecipeDto | null>(null);
+  const [isExecuteOpen, setIsExecuteOpen] = useState(false);
+
+  const handleOpenExecute = (recipe: RecipeDto) => {
+    setExecuteRecipe(recipe);
+    setIsExecuteOpen(true);
+  };
+
+  const handleOpenPreview = (recipe: RecipeDto) => {
+    setPreviewRecipe(recipe);
+    setIsPreviewOpen(true);
+  };
 
   // Retrieve current subscriptionId
   const userStr = localStorage.getItem("user");
@@ -77,7 +94,7 @@ const RecipesPage = () => {
           alignItems: 'center',
           flexWrap: 'wrap',
           gap: 2,
-          background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+          background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #673ab7 100%)',
           boxShadow: '0 4px 20px rgba(25, 118, 210, 0.15)'
         }}
       >
@@ -170,25 +187,39 @@ const RecipesPage = () => {
               <Card
                 variant="outlined"
                 sx={{
-                  height: '100%',
+                  height: '340px',
                   display: 'flex',
                   flexDirection: 'column',
                   borderRadius: 3,
+                  cursor: 'pointer',
                   transition: 'transform 0.2s, box-shadow 0.2s',
                   '&:hover': {
                     transform: 'translateY(-4px)',
                     boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)'
                   }
                 }}
+                onClick={() => handleOpenPreview(recipe)}
               >
-                <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
                   <Box display="flex" justifyContent="space-between" alignItems="center" mb={1.5}>
-                    <Typography variant="h6" fontWeight={700} color="text.primary">
+                    <Typography variant="h6" fontWeight={700} color="text.primary" noWrap sx={{ maxWidth: '70%' }}>
                       {recipe.name}
                     </Typography>
                     <Box display="flex" gap={0.5}>
                       <IconButton
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenExecute(recipe);
+                        }}
+                        color="success"
+                        size="small"
+                        title="רשום הכנת מתכון"
+                      >
+                        <RestaurantIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setEditingRecipe(recipe);
                           setIsCreateOpen(true);
                         }}
@@ -199,7 +230,10 @@ const RecipesPage = () => {
                         <EditIcon fontSize="small" />
                       </IconButton>
                       <IconButton
-                        onClick={() => handleDelete(recipe.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(recipe.id);
+                        }}
                         color="error"
                         size="small"
                         title="מחק מתכון"
@@ -213,35 +247,59 @@ const RecipesPage = () => {
                   <Typography variant="subtitle2" fontWeight={600} mb={1} color="text.secondary">
                     רכיבים:
                   </Typography>
-                  <Stack spacing={1} sx={{ flexGrow: 1 }}>
-                    {recipe.recipe_product && recipe.recipe_product.length > 0 ? (
-                      recipe.recipe_product.map((item) => (
-                        <Box
-                          key={item.id}
-                          display="flex"
-                          justifyContent="space-between"
-                          alignItems="center"
-                          sx={{
-                            px: 1.5,
-                            py: 0.75,
-                            borderRadius: 1.5,
-                            bgcolor: 'action.hover'
-                          }}
-                        >
-                          <Typography variant="body2" fontWeight={500}>
-                            {item.raw_material?.name || 'חומר גלם לא ידוע'}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary" fontWeight={600}>
-                            {item.volume} {UOM_hebrew_names[item.uom] || item.uom}
-                          </Typography>
-                        </Box>
-                      ))
-                    ) : (
-                      <Typography variant="caption" color="text.secondary">
-                        אין רכיבים במתכון זה.
-                      </Typography>
-                    )}
-                  </Stack>
+
+                  {/* Scrollable list of ingredients */}
+                  <Box
+                    sx={{
+                      flexGrow: 1,
+                      overflowY: 'auto',
+                      maxHeight: '190px',
+                      pr: 0.5,
+                      '&::-webkit-scrollbar': {
+                        width: '4px',
+                      },
+                      '&::-webkit-scrollbar-track': {
+                        background: 'transparent',
+                      },
+                      '&::-webkit-scrollbar-thumb': {
+                        background: '#cbd5e1',
+                        borderRadius: '2px',
+                      },
+                      '&::-webkit-scrollbar-thumb:hover': {
+                        background: '#94a3b8',
+                      },
+                    }}
+                  >
+                    <Stack spacing={1}>
+                      {recipe.recipe_product && recipe.recipe_product.length > 0 ? (
+                        recipe.recipe_product.map((item) => (
+                          <Box
+                            key={item.id}
+                            display="flex"
+                            justifyContent="space-between"
+                            alignItems="center"
+                            sx={{
+                              px: 1.5,
+                              py: 0.75,
+                              borderRadius: 1.5,
+                              bgcolor: 'action.hover'
+                            }}
+                          >
+                            <Typography variant="body2" fontWeight={500}>
+                              {item.raw_material?.name || 'חומר גלם לא ידוע'}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                              {item.volume} {UOM_hebrew_names[item.uom] || item.uom}
+                            </Typography>
+                          </Box>
+                        ))
+                      ) : (
+                        <Typography variant="caption" color="text.secondary">
+                          אין רכיבים במתכון זה.
+                        </Typography>
+                      )}
+                    </Stack>
+                  </Box>
                 </CardContent>
               </Card>
             </Grid>
@@ -259,6 +317,35 @@ const RecipesPage = () => {
         onSave={loadRecipes}
         subscriptionId={subscriptionId}
         recipeToEdit={editingRecipe}
+      />
+
+      {/* Recipe Preview Dialog */}
+      <RecipePreviewDialog
+        open={isPreviewOpen}
+        onClose={() => {
+          setIsPreviewOpen(false);
+          setPreviewRecipe(null);
+        }}
+        recipe={previewRecipe}
+        onExecute={(recipe) => {
+          setIsPreviewOpen(false);
+          setPreviewRecipe(null);
+          handleOpenExecute(recipe);
+        }}
+      />
+
+      {/* Execute Recipe Dialog */}
+      <ExecuteRecipeDialog
+        open={isExecuteOpen}
+        onClose={() => {
+          setIsExecuteOpen(false);
+          setExecuteRecipe(null);
+        }}
+        recipe={executeRecipe}
+        onSave={() => {
+          // Reload recipes list if needed, or simply let the event log run
+          loadRecipes();
+        }}
       />
     </Box>
   );
