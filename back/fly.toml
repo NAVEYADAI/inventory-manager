@@ -4,10 +4,10 @@ app = "inventory-manager-back"
 primary_region = "fra"
 
 [build]
-  dockerfile = "Dockerfile"  # או Dockerfile.dev אם אתה רוצה את גרסת הפיתוח
+  dockerfile = "Dockerfile.prod"
 
 [http_service]
-  internal_port = 3000       # הפורט שבו ה-back מאזין
+  internal_port = 4000       # הפורט שבו ה-back מאזין
   force_https = true
   auto_stop_machines = "stop"
   auto_start_machines = true

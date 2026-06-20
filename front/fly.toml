@@ -4,7 +4,9 @@ app = "inventory-manager-frontend"
 primary_region = "fra"
 
 [build]
-  dockerfile = "Dockerfile"
+  dockerfile = "Dockerfile.prod"
+  [build.args]
+    VITE_BACK = "https://inventory-manager-back.fly.dev/"
 
 [http_service]
   internal_port = 3000     # הפורט שבו הפרונט שלך מאזין בפועל
