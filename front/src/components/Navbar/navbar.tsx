@@ -41,20 +41,32 @@ const Navbar: React.FC = () => {
         >
             <Toolbar sx={{ justifyContent: "space-between", py: 0.5 }} dir="rtl">
                 {/* Logo / Brand Title with Gradient Text */}
-                <Typography
-                    variant="h6"
-                    sx={{
-                        fontWeight: 800,
-                        display: "flex",
-                        alignItems: "center",
-                        background: "linear-gradient(135deg, #1e3c72 0%, #673ab7 100%)",
-                        WebkitBackgroundClip: "text",
-                        WebkitTextFillColor: "transparent",
-                        letterSpacing: "-0.5px",
-                    }}
-                >
-                    מנהל המלאי
-                </Typography>
+                <Box display="flex" alignItems="center" gap={1.5}>
+                    <Box
+                        component="img"
+                        src="/logo.png"
+                        alt="Logo"
+                        sx={{
+                            height: 38,
+                            width: "auto",
+                            filter: "drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.1))",
+                        }}
+                    />
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            fontWeight: 800,
+                            display: "flex",
+                            alignItems: "center",
+                            background: "linear-gradient(135deg, #1e3c72 0%, #673ab7 100%)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                            letterSpacing: "-0.5px",
+                        }}
+                    >
+                        מנהל המלאי
+                    </Typography>
+                </Box>
 
                 {/* Navigation Links and User Info */}
                 <Box display="flex" alignItems="center" gap={3}>

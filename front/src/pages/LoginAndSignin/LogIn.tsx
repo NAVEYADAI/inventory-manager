@@ -51,6 +51,18 @@ const LogIn = ({ logIn, setLogIn }: LogInProps) => {
   return (
     <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 3 }}>
       <Box sx={{ textAlign: "center" }}>
+        <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+          <Box
+            component="img"
+            src="/logo.png"
+            alt="KitchenIQ Logo"
+            sx={{
+              height: 90,
+              width: "auto",
+              filter: "drop-shadow(0px 8px 20px rgba(0, 0, 0, 0.12))",
+            }}
+          />
+        </Box>
         <Typography variant="h4" fontWeight={800} color="text.primary" gutterBottom>
           התחברות למערכת
         </Typography>
