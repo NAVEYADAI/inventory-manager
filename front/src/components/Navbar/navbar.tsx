@@ -1,9 +1,19 @@
 import React from "react";
-import { AppBar, Toolbar, Typography, Button, Box, IconButton, Tooltip } from "@mui/material";
+import { Box, Tooltip } from "@mui/material";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../providers/AuthProvider";
 import { logout as apiLogout } from "../../api/login";
 import LogoutIcon from "@mui/icons-material/Logout";
+import {
+  StyledAppBar,
+  StyledToolbar,
+  LogoImage,
+  BrandTitle,
+  NavButton,
+  UserSection,
+  UsernameText,
+  LogoutButton,
+} from "./navbar.style";
 
 const Navbar: React.FC = () => {
     const { user, setUser } = useAuth();
@@ -22,162 +32,71 @@ const Navbar: React.FC = () => {
     const isActive = (path: string) => location.pathname === path;
 
     return (
-        <AppBar
+        <StyledAppBar
             position="sticky"
             elevation={0}
-            sx={{
-                margin: "20px auto 0",
-                maxWidth: "1200px",
-                width: "calc(100% - 40px)",
-                borderRadius: "16px",
-                background: "rgba(255, 255, 255, 0.8)",
-                backdropFilter: "blur(12px)",
-                border: "1px solid rgba(255, 255, 255, 0.4)",
-                boxShadow: "0 10px 30px rgba(0, 0, 0, 0.04)",
-                color: "#1e293b",
-                top: "20px",
-                zIndex: 1100,
-            }}
         >
-            <Toolbar sx={{ justifyContent: "space-between", py: 0.5 }} dir="rtl">
+            <StyledToolbar dir="rtl">
                 {/* Logo / Brand Title with Gradient Text */}
                 <Box display="flex" alignItems="center" gap={1.5}>
-                    <Box
-                        component="img"
+                    <LogoImage
                         src="/logo.png"
                         alt="Logo"
-                        sx={{
-                            height: 38,
-                            width: "auto",
-                            filter: "drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.1))",
-                        }}
                     />
-                    <Typography
+                    <BrandTitle
                         variant="h6"
-                        sx={{
-                            fontWeight: 800,
-                            display: "flex",
-                            alignItems: "center",
-                            background: "linear-gradient(135deg, #1e3c72 0%, #673ab7 100%)",
-                            WebkitBackgroundClip: "text",
-                            WebkitTextFillColor: "transparent",
-                            letterSpacing: "-0.5px",
-                        }}
                     >
                         מנהל המלאי
-                    </Typography>
+                    </BrandTitle>
                 </Box>
 
                 {/* Navigation Links and User Info */}
                 <Box display="flex" alignItems="center" gap={3}>
                     {/* Navigation Buttons */}
                     <Box display="flex" gap={1}>
-                        <Button
+                        <NavButton
                             component={Link}
                             to="/home"
-                            sx={{
-                                fontWeight: isActive("/home") ? 700 : 500,
-                                px: 2,
-                                py: 1,
-                                borderRadius: "10px",
-                                textTransform: "none",
-                                color: isActive("/home") ? "#1e3c72" : "#64748b",
-                                backgroundColor: isActive("/home") ? "rgba(30, 60, 114, 0.08)" : "transparent",
-                                "&:hover": {
-                                    backgroundColor: isActive("/home")
-                                        ? "rgba(30, 60, 114, 0.12)"
-                                        : "rgba(0, 0, 0, 0.03)",
-                                },
-                            }}
+                            active={isActive("/home")}
                         >
                             ראשי
-                        </Button>
-                        <Button
+                        </NavButton>
+                        <NavButton
                             component={Link}
                             to="/recipes"
-                            sx={{
-                                fontWeight: isActive("/recipes") ? 700 : 500,
-                                px: 2,
-                                py: 1,
-                                borderRadius: "10px",
-                                textTransform: "none",
-                                color: isActive("/recipes") ? "#1e3c72" : "#64748b",
-                                backgroundColor: isActive("/recipes") ? "rgba(30, 60, 114, 0.08)" : "transparent",
-                                "&:hover": {
-                                    backgroundColor: isActive("/recipes")
-                                        ? "rgba(30, 60, 114, 0.12)"
-                                        : "rgba(0, 0, 0, 0.03)",
-                                },
-                            }}
+                            active={isActive("/recipes")}
                         >
                             מתכונים
-                        </Button>
-                        <Button
+                        </NavButton>
+                        <NavButton
                             component={Link}
                             to="/calendar2"
-                            sx={{
-                                fontWeight: isActive("/calendar2") ? 700 : 500,
-                                px: 2,
-                                py: 1,
-                                borderRadius: "10px",
-                                textTransform: "none",
-                                color: isActive("/calendar2") ? "#1e3c72" : "#64748b",
-                                backgroundColor: isActive("/calendar2") ? "rgba(30, 60, 114, 0.08)" : "transparent",
-                                "&:hover": {
-                                    backgroundColor: isActive("/calendar2")
-                                        ? "rgba(30, 60, 114, 0.12)"
-                                        : "rgba(0, 0, 0, 0.03)",
-                                },
-                            }}
+                            active={isActive("/calendar2")}
                         >
                             לוח שנה
-                        </Button>
+                        </NavButton>
                     </Box>
 
                     {/* User Section (Name & Logout) */}
-                    <Box
-                        display="flex"
-                        alignItems="center"
-                        gap={2}
-                        sx={{
-                            borderRight: "1px solid rgba(0, 0, 0, 0.08)",
-                            pr: 3,
-                        }}
-                    >
-                        <Typography
+                    <UserSection>
+                        <UsernameText
                             variant="body2"
-                            sx={{
-                                color: "#475569",
-                                fontWeight: 600,
-                                fontSize: "0.9rem",
-                            }}
                         >
                             שלום, {user.name || user.email}
-                        </Typography>
+                        </UsernameText>
 
                         <Tooltip title="התנתק מהמערכת">
-                            <IconButton
+                            <LogoutButton
                                 onClick={handleLogout}
                                 size="small"
-                                sx={{
-                                    backgroundColor: "rgba(239, 68, 68, 0.08)",
-                                    color: "#ef4444",
-                                    borderRadius: "10px",
-                                    p: 1,
-                                    transition: "all 0.2s ease-in-out",
-                                    "&:hover": {
-                                        backgroundColor: "rgba(239, 68, 68, 0.15)",
-                                        transform: "scale(1.05)",
-                                    },
-                                }}
                             >
                                 <LogoutIcon fontSize="small" />
-                            </IconButton>
+                            </LogoutButton>
                         </Tooltip>
-                    </Box>
+                    </UserSection>
                 </Box>
-            </Toolbar>
-        </AppBar>
+            </StyledToolbar>
+        </StyledAppBar>
     );
 };
 

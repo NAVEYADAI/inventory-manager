@@ -1,8 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Box, CardContent, Grid, Typography, Stack } from '@mui/material';
 import {
-  Box, Button, Card, CardContent, Grid, Typography, Paper, Stack
-} from '@mui/material';
+  HomeContainer,
+  WelcomeCard,
+  CompanyBadge,
+  ShortcutCard,
+  ShortcutButton
+} from './HomePage.style';
 import CreateRawMaterialDialog from '../../dialogs/createRawMaterialDialog/CreateRawMaterialDialog';
 import { createRawMaterials } from '../../api/rawMaterial';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -25,19 +30,9 @@ const HomePage = () => {
   }
 
   return (
-    <Box p={4} dir="rtl" sx={{ maxWidth: 1200, margin: '0 auto' }}>
+    <HomeContainer dir="rtl">
       {/* Welcome Header Card */}
-      <Paper
-        elevation={0}
-        sx={{
-          p: 4,
-          mb: 5,
-          borderRadius: 4,
-          color: '#ffffff',
-          background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #673ab7 100%)',
-          boxShadow: '0 8px 30px rgba(30, 60, 114, 0.15)',
-        }}
-      >
+      <WelcomeCard elevation={0}>
         <Stack direction="row" spacing={3} alignItems="center">
           <DashboardIcon sx={{ fontSize: 50, opacity: 0.95 }} />
           <Box>
@@ -48,26 +43,15 @@ const HomePage = () => {
               ברוך הבא למערכת ניהול המלאי החכמה של העסק שלך.
             </Typography>
             {currentCompany && (
-              <Box
-                sx={{
-                  mt: 2,
-                  display: "inline-block",
-                  bgcolor: "rgba(255,255,255,0.15)",
-                  px: 2,
-                  py: 0.75,
-                  borderRadius: "20px",
-                  border: "1px solid rgba(255,255,255,0.25)",
-                  backdropFilter: "blur(5px)",
-                }}
-              >
+              <CompanyBadge>
                 <Typography variant="subtitle2" fontWeight={700}>
                   חברה פעילה כעת: {currentCompany.name}
                 </Typography>
-              </Box>
+              </CompanyBadge>
             )}
           </Box>
         </Stack>
-      </Paper>
+      </WelcomeCard>
 
       {/* Dashboard Section */}
       <Typography variant="h5" fontWeight={800} color="text.primary" sx={{ mb: 3 }}>
@@ -77,20 +61,7 @@ const HomePage = () => {
       <Grid container spacing={4}>
         {/* Card 1: Recipes */}
         <Grid size={{ xs: 12, md: 4 }}>
-          <Card
-            variant="outlined"
-            sx={{
-              height: '100%',
-              borderRadius: 3.5,
-              display: 'flex',
-              flexDirection: 'column',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-              '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)'
-              }
-            }}
-          >
+          <ShortcutCard variant="outlined">
             <CardContent sx={{ p: 4, flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box display="flex" alignItems="center" gap={1.5}>
                 <MenuBookIcon color="primary" sx={{ fontSize: 35 }} />
@@ -101,34 +72,20 @@ const HomePage = () => {
               <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6, flexGrow: 1 }}>
                 ניהול כל מתכוני העסק, רכיבים, יחידות מידה וכמויות. רישום הכנת מתכונים בפועל לעדכון המלאי.
               </Typography>
-              <Button
+              <ShortcutButton
                 component={Link}
                 to="/recipes"
                 variant="contained"
-                sx={{ borderRadius: "10px", fontWeight: 700, mt: 1 }}
               >
                 לספר המתכונים
-              </Button>
+              </ShortcutButton>
             </CardContent>
-          </Card>
+          </ShortcutCard>
         </Grid>
 
         {/* Card 2: Calendar */}
         <Grid size={{ xs: 12, md: 4 }}>
-          <Card
-            variant="outlined"
-            sx={{
-              height: '100%',
-              borderRadius: 3.5,
-              display: 'flex',
-              flexDirection: 'column',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-              '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)'
-              }
-            }}
-          >
+          <ShortcutCard variant="outlined">
             <CardContent sx={{ p: 4, flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box display="flex" alignItems="center" gap={1.5}>
                 <CalendarMonthIcon color="primary" sx={{ fontSize: 35 }} />
@@ -139,35 +96,21 @@ const HomePage = () => {
               <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6, flexGrow: 1 }}>
                 מעקב אחר ביצועי הכנת מתכונים, תזמון אירועים ולוח זמנים שבועי וחודשי לייצור מלאי.
               </Typography>
-              <Button
+              <ShortcutButton
                 component={Link}
                 to="/calendar2"
                 variant="contained"
                 color="secondary"
-                sx={{ borderRadius: "10px", fontWeight: 700, mt: 1 }}
               >
                 למעבר ללוח
-              </Button>
+              </ShortcutButton>
             </CardContent>
-          </Card>
+          </ShortcutCard>
         </Grid>
 
         {/* Card 3: Raw Materials */}
         <Grid size={{ xs: 12, md: 4 }}>
-          <Card
-            variant="outlined"
-            sx={{
-              height: '100%',
-              borderRadius: 3.5,
-              display: 'flex',
-              flexDirection: 'column',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-              '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)'
-              }
-            }}
-          >
+          <ShortcutCard variant="outlined">
             <CardContent sx={{ p: 4, flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box display="flex" alignItems="center" gap={1.5}>
                 <LocalFloristIcon color="primary" sx={{ fontSize: 35 }} />
@@ -178,15 +121,14 @@ const HomePage = () => {
               <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6, flexGrow: 1 }}>
                 הוספה ועדכון מהיר של חומרי גלם וסוגי מדידה לתוך המלאי של העסק שלך.
               </Typography>
-              <Button
+              <ShortcutButton
                 onClick={() => setCreateRawMaterialOpen(true)}
                 variant="outlined"
-                sx={{ borderRadius: "10px", fontWeight: 700, mt: 1 }}
               >
                 הוספת חומרי גלם
-              </Button>
+              </ShortcutButton>
             </CardContent>
-          </Card>
+          </ShortcutCard>
         </Grid>
       </Grid>
 
@@ -208,7 +150,7 @@ const HomePage = () => {
           }
         }}
       />
-    </Box>
+    </HomeContainer>
   );
 };
 

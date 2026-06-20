@@ -1,8 +1,15 @@
 import { useEffect, useState } from 'react';
 import {
-  Box, Button, Card, CardContent, Grid, Typography,
+  Box, Button, CardContent, Grid, Typography,
   IconButton, Divider, CircularProgress, Paper, Stack, TextField
 } from '@mui/material';
+import {
+  RecipesContainer,
+  RecipesHeader,
+  RecipeCard,
+  IngredientList,
+  IngredientItem
+} from './RecipesPage.style';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SearchIcon from '@mui/icons-material/Search';
@@ -79,25 +86,9 @@ const RecipesPage = () => {
   );
 
   return (
-    <Box p={4} dir="rtl" sx={{ maxWidth: 1200, margin: '0 auto' }}>
+    <RecipesContainer dir="rtl">
       {/* Header section */}
-      <Paper
-        elevation={0}
-        sx={{
-          p: 3,
-          mb: 4,
-          borderRadius: 3,
-          bgcolor: 'primary.light',
-          color: 'primary.contrastText',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: 2,
-          background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #673ab7 100%)',
-          boxShadow: '0 4px 20px rgba(25, 118, 210, 0.15)'
-        }}
-      >
+      <RecipesHeader elevation={0}>
         <Stack direction="row" spacing={2} alignItems="center">
           <MenuBookIcon sx={{ fontSize: 40 }} />
           <Box>
@@ -126,7 +117,7 @@ const RecipesPage = () => {
         >
           מתכון חדש
         </Button>
-      </Paper>
+      </RecipesHeader>
 
       {/* Search Bar */}
       {recipes.length > 0 && (
@@ -184,20 +175,8 @@ const RecipesPage = () => {
         <Grid container spacing={3}>
           {filteredRecipes.map((recipe) => (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={recipe.id}>
-              <Card
+              <RecipeCard
                 variant="outlined"
-                sx={{
-                  height: '340px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  borderRadius: 3,
-                  cursor: 'pointer',
-                  transition: 'transform 0.2s, box-shadow 0.2s',
-                  '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)'
-                  }
-                }}
                 onClick={() => handleOpenPreview(recipe)}
               >
                 <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
@@ -249,49 +228,18 @@ const RecipesPage = () => {
                   </Typography>
 
                   {/* Scrollable list of ingredients */}
-                  <Box
-                    sx={{
-                      flexGrow: 1,
-                      overflowY: 'auto',
-                      maxHeight: '190px',
-                      pr: 0.5,
-                      '&::-webkit-scrollbar': {
-                        width: '4px',
-                      },
-                      '&::-webkit-scrollbar-track': {
-                        background: 'transparent',
-                      },
-                      '&::-webkit-scrollbar-thumb': {
-                        background: '#cbd5e1',
-                        borderRadius: '2px',
-                      },
-                      '&::-webkit-scrollbar-thumb:hover': {
-                        background: '#94a3b8',
-                      },
-                    }}
-                  >
+                  <IngredientList>
                     <Stack spacing={1}>
                       {recipe.recipe_product && recipe.recipe_product.length > 0 ? (
                         recipe.recipe_product.map((item) => (
-                          <Box
-                            key={item.id}
-                            display="flex"
-                            justifyContent="space-between"
-                            alignItems="center"
-                            sx={{
-                              px: 1.5,
-                              py: 0.75,
-                              borderRadius: 1.5,
-                              bgcolor: 'action.hover'
-                            }}
-                          >
+                          <IngredientItem key={item.id}>
                             <Typography variant="body2" fontWeight={500}>
                               {item.raw_material?.name || 'חומר גלם לא ידוע'}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" fontWeight={600}>
                               {item.volume} {UOM_hebrew_names[item.uom] || item.uom}
                             </Typography>
-                          </Box>
+                          </IngredientItem>
                         ))
                       ) : (
                         <Typography variant="caption" color="text.secondary">
@@ -299,9 +247,9 @@ const RecipesPage = () => {
                         </Typography>
                       )}
                     </Stack>
-                  </Box>
+                  </IngredientList>
                 </CardContent>
-              </Card>
+              </RecipeCard>
             </Grid>
           ))}
         </Grid>
@@ -347,7 +295,7 @@ const RecipesPage = () => {
           loadRecipes();
         }}
       />
-    </Box>
+    </RecipesContainer>
   );
 };
 

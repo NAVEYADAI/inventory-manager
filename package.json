@@ -5,6 +5,11 @@
     "front",
     "back"
   ],
+  "scripts": {
+    "deploy:back": "cd back && fly deploy",
+    "deploy:front": "cd front && fly deploy",
+    "deploy": "./deploy.sh"
+  },
   "dependencies": {
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.4",

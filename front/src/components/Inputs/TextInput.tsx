@@ -17,9 +17,10 @@ type TextInputProps = {
   state: any;
   setState: (str: string) => void;
   type?: string;
+  className?: string;
 };
 
-const TextInput = ({ label, variant, sx, state, setState, type }: TextInputProps) => {
+const TextInput = ({ label, variant, sx, state, setState, type, className }: TextInputProps) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleClickShowPassword = () => {
@@ -35,6 +36,7 @@ const TextInput = ({ label, variant, sx, state, setState, type }: TextInputProps
 
   return (
     <TextField
+      className={className}
       value={state}
       onChange={(e) => setState(e.target.value)}
       label={label}

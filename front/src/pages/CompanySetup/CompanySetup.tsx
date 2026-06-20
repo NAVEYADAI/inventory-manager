@@ -1,15 +1,23 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Typography, Box, Alert, CircularProgress, Grid, Stack } from "@mui/material";
+import { Typography, CircularProgress, Grid, Stack } from "@mui/material";
 import {
   PageBackground,
   GlassCard,
   BannerSide,
   FormSide,
   StyledForm,
-  ActionButton
 } from "../LoginAndSignin/LoginAndSignin.style";
-import TextInput from "../../components/Inputs/TextInput";
+import {
+  BannerTitle,
+  BannerDescription,
+  FormContainer,
+  FormHeader,
+  FormGridContainer,
+  StyledTextInput,
+  ErrorAlert,
+  SubmitButton,
+} from "./CompanySetup.style";
 import { createCompany } from "../../api/company";
 import { useAuth } from "../../providers/AuthProvider";
 
@@ -65,48 +73,40 @@ const CompanySetup = () => {
         {/* Banner Section */}
         <BannerSide>
           <Stack spacing={3} alignItems="center">
-            <Typography variant="h3" fontWeight={800} sx={{ letterSpacing: 0.5 }}>
+            <BannerTitle variant="h3" fontWeight={800}>
               הגדרת העסק שלך
-            </Typography>
-            <Typography variant="body1" sx={{ opacity: 0.9, maxWidth: "340px", lineHeight: 1.7, fontSize: "1.05rem" }}>
+            </BannerTitle>
+            <BannerDescription variant="body1">
               הזן את פרטי החברה כדי להקים את העסק שלך במערכת ולהתחיל לנהל מלאי, מתכונים ויומן עבודה בצורה חכמה.
-            </Typography>
+            </BannerDescription>
           </Stack>
         </BannerSide>
 
         {/* Form Section */}
         <FormSide>
-          <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 3.5 }}>
-            <Box sx={{ textAlign: "center" }}>
+          <FormContainer>
+            <FormHeader>
               <Typography variant="h4" fontWeight={800} color="text.primary" gutterBottom>
                 יצירת חברה חדשה
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 מלא את הפרטים הבאים כדי להשלים את ההגדרה
               </Typography>
-            </Box>
+            </FormHeader>
 
             <StyledForm onSubmit={handleSubmit}>
-              <Grid container spacing={2} sx={{ width: "100%" }}>
+              <FormGridContainer container spacing={2}>
                 {/* Row 1: Company Name & Identifier */}
                 <Grid size={{ xs: 6 }}>
-                  <TextInput
+                  <StyledTextInput
                     label="שם החברה"
-                    sx={{
-                      width: "100%",
-                      "& .MuiOutlinedInput-root": { borderRadius: "12px" },
-                    }}
                     state={company.name}
                     setState={(str) => setCompany((c) => ({ ...c, name: str }))}
                   />
                 </Grid>
                 <Grid size={{ xs: 6 }}>
-                  <TextInput
+                  <StyledTextInput
                     label="ח.פ. / מזהה חברה"
-                    sx={{
-                      width: "100%",
-                      "& .MuiOutlinedInput-root": { borderRadius: "12px" },
-                    }}
                     state={company.identifier}
                     setState={(str) => setCompany((c) => ({ ...c, identifier: str }))}
                   />
@@ -114,12 +114,8 @@ const CompanySetup = () => {
 
                 {/* Row 2: Address (Full Width) */}
                 <Grid size={{ xs: 12 }}>
-                  <TextInput
+                  <StyledTextInput
                     label="כתובת החברה"
-                    sx={{
-                      width: "100%",
-                      "& .MuiOutlinedInput-root": { borderRadius: "12px" },
-                    }}
                     state={company.address}
                     setState={(str) => setCompany((c) => ({ ...c, address: str }))}
                   />
@@ -127,39 +123,30 @@ const CompanySetup = () => {
 
                 {/* Row 3: Phone (Full Width) */}
                 <Grid size={{ xs: 12 }}>
-                  <TextInput
+                  <StyledTextInput
                     label="טלפון ליצירת קשר"
-                    sx={{
-                      width: "100%",
-                      "& .MuiOutlinedInput-root": { borderRadius: "12px" },
-                    }}
                     state={company.phone}
                     setState={(str) => setCompany((c) => ({ ...c, phone: str }))}
                   />
                 </Grid>
-              </Grid>
+              </FormGridContainer>
 
               {error && (
-                <Alert severity="error" sx={{ width: "100%", borderRadius: "12px", py: 0.5 }}>
+                <ErrorAlert severity="error">
                   {error}
-                </Alert>
+                </ErrorAlert>
               )}
 
-              <ActionButton
+              <SubmitButton
                 variant="contained"
                 type="submit"
                 disabled={loading}
                 fullWidth
-                sx={{
-                  mt: 1.5,
-                  background: "linear-gradient(135deg, #1976d2 0%, #1565c0 100%)",
-                  color: "#ffffff",
-                }}
               >
                 {loading ? <CircularProgress size={24} color="inherit" /> : "צור חברה והמשך"}
-              </ActionButton>
+              </SubmitButton>
             </StyledForm>
-          </Box>
+          </FormContainer>
         </FormSide>
       </GlassCard>
     </PageBackground>

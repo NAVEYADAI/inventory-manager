@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Typography, Stack, Alert, List, Paper, CircularProgress, Button } from "@mui/material";
+import { Box, Typography, Stack, List, CircularProgress } from "@mui/material";
 import {
   PageBackground,
   GlassCard,
@@ -8,12 +8,24 @@ import {
   FormSide,
 } from "../LoginAndSignin/LoginAndSignin.style";
 import {
+  HeaderIcon,
+  BannerTitle,
+  BannerDescription,
+  FormContainer,
+  FormHeader,
+  ErrorAlert,
+  ScrollableStack,
+  SectionSubtitle,
+  ActiveCompanyPaper,
+  InactiveCompanyPaper,
+  PickerButton,
+} from "./CompanyPicker.style";
+import {
   activateSubscription,
   listMySubscriptions,
   selectSubscription,
 } from "../../api/subscription";
 import type { CompanyInfo } from "../../api/login";
-import BusinessIcon from "@mui/icons-material/Business";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 
@@ -120,32 +132,32 @@ const CompanyPicker = () => {
         {/* Banner Section */}
         <BannerSide>
           <Stack spacing={3} alignItems="center">
-            <BusinessIcon sx={{ fontSize: 60, opacity: 0.9 }} />
-            <Typography variant="h3" fontWeight={800} sx={{ letterSpacing: 0.5 }}>
+            <HeaderIcon />
+            <BannerTitle variant="h3" fontWeight={800}>
               החברות שלך
-            </Typography>
-            <Typography variant="body1" sx={{ opacity: 0.9, maxWidth: "340px", lineHeight: 1.7, fontSize: "1.05rem" }}>
+            </BannerTitle>
+            <BannerDescription variant="body1">
               מקום אחד לנהל את כל העסקים שלך. בחר את החברה שברצונך לעבוד איתה כעת, או הפעל מנוי ממתין.
-            </Typography>
+            </BannerDescription>
           </Stack>
         </BannerSide>
 
         {/* Form Section */}
         <FormSide>
-          <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 3.5, height: "100%", justifyContent: "center" }}>
-            <Box sx={{ textAlign: "center" }}>
+          <FormContainer>
+            <FormHeader>
               <Typography variant="h4" fontWeight={800} color="text.primary" gutterBottom>
                 בחירת חברה פעילה
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 בחר חברה כדי להמשיך למערכת הניהול
               </Typography>
-            </Box>
+            </FormHeader>
 
             {error && (
-              <Alert severity="error" sx={{ borderRadius: "12px", py: 0.5 }}>
+              <ErrorAlert severity="error">
                 {error}
-              </Alert>
+              </ErrorAlert>
             )}
 
             {loading ? (
@@ -153,42 +165,31 @@ const CompanyPicker = () => {
                 <CircularProgress />
               </Box>
             ) : (
-              <Stack spacing={3} sx={{ overflowY: "auto", pr: 0.5, maxHeight: "350px" }}>
+              <ScrollableStack spacing={3}>
                 {/* Active Companies List */}
                 {active.length > 1 && (
                   <Box>
-                    <Typography variant="subtitle2" fontWeight={700} color="text.secondary" sx={{ mb: 1 }}>
+                    <SectionSubtitle variant="subtitle2" fontWeight={700} color="text.secondary">
                       חברות פעילות
-                    </Typography>
+                    </SectionSubtitle>
                     <List disablePadding>
                       {active.map((c) => (
-                        <Paper
+                        <ActiveCompanyPaper
                           key={c.subscriptionId}
                           variant="outlined"
-                          sx={{
-                            p: 1.5,
-                            mb: 1.5,
-                            borderRadius: "12px",
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            transition: "background-color 0.2s",
-                            "&:hover": { bgcolor: "action.hover" },
-                          }}
                         >
                           <Typography variant="body1" fontWeight={600}>
                             {c.name}
                           </Typography>
-                          <Button
+                          <PickerButton
                             variant="contained"
                             size="small"
                             onClick={() => handlePick(c.subscriptionId)}
                             startIcon={<CheckCircleOutlineIcon fontSize="small" />}
-                            sx={{ borderRadius: "8px", fontWeight: 700, px: 2 }}
                           >
                             כניסה
-                          </Button>
-                        </Paper>
+                          </PickerButton>
+                        </ActiveCompanyPaper>
                       ))}
                     </List>
                   </Box>
@@ -197,47 +198,35 @@ const CompanyPicker = () => {
                 {/* Inactive Companies List */}
                 {inactive.length > 0 && (
                   <Box>
-                    <Typography variant="subtitle2" fontWeight={700} color="text.secondary" sx={{ mb: 1 }}>
+                    <SectionSubtitle variant="subtitle2" fontWeight={700} color="text.secondary">
                       חברות ממתינות להפעלה
-                    </Typography>
+                    </SectionSubtitle>
                     <List disablePadding>
                       {inactive.map((c) => (
-                        <Paper
+                        <InactiveCompanyPaper
                           key={c.subscriptionId}
                           variant="outlined"
-                          sx={{
-                            p: 1.5,
-                            mb: 1.5,
-                            borderRadius: "12px",
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            borderColor: "warning.light",
-                            transition: "background-color 0.2s",
-                            "&:hover": { bgcolor: "warning.lighter" },
-                          }}
                         >
                           <Typography variant="body1" fontWeight={600} color="text.secondary">
                             {c.name}
                           </Typography>
-                          <Button
+                          <PickerButton
                             variant="outlined"
                             color="warning"
                             size="small"
                             onClick={() => handleActivate(c.subscriptionId)}
                             startIcon={<PlayCircleOutlineIcon fontSize="small" />}
-                            sx={{ borderRadius: "8px", fontWeight: 700, px: 2 }}
                           >
                             הפעלה
-                          </Button>
-                        </Paper>
+                          </PickerButton>
+                        </InactiveCompanyPaper>
                       ))}
                     </List>
                   </Box>
                 )}
-              </Stack>
+              </ScrollableStack>
             )}
-          </Box>
+          </FormContainer>
         </FormSide>
       </GlassCard>
     </PageBackground>
