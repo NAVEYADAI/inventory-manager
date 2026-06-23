@@ -70,6 +70,7 @@ export class UserService {
   }
 
   async remove(id: number) {
+    await this.passwordRepo.delete({ user: { id } as any });
     await this.userRepo.delete(id);
     return { deleted: true };
   }

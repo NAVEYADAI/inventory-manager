@@ -18,7 +18,15 @@ export class AuthService {
 
   async register(dto: RegisterDto) {
     const existing = await this.userService.findByUserName(dto.name);
-    if (existing) throw new ConflictException('User already exists');
+    if (existing) {
+      const subs = await this.userService.getUserCompanies(existing.id);
+      if (subs.length === 0) {
+        // User has no companies/subscriptions (stale registration). Delete and allow registration.
+        await this.userService.remove(existing.id);
+      } else {
+        throw new ConflictException('User already exists');
+      }
+    }
     return await this.userService.create({
       userName: dto.name,
       firstName: dto.firstName,
