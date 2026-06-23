@@ -16,6 +16,9 @@ import RecipeExecutionDetailDialog from "../../dialogs/recipeExecutionDetailDial
 import { getProductExecutions } from "../../api/createProduct";
 import CustomCalendarToolbar from "../../components/CalendarDisplay/CustomCalendarToolbar";
 import { getHebrewDateText } from "../../utils/dateUtils";
+import { getTags, type TagDto } from "../../api/tag";
+import CreateTagDialog from "../../dialogs/createTagDialog/CreateTagDialog";
+import TagSummaryDialog from "../../dialogs/tagSummaryDialog/TagSummaryDialog";
 
 const FullCalendarManeger = () => {
   const holidays = useHolidays();
@@ -24,6 +27,12 @@ const FullCalendarManeger = () => {
   const [clickedDate, setClickedDate] = useState('');
   const [selectedExecution, setSelectedExecution] = useState<any | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+
+  const [tags, setTags] = useState<TagDto[]>([]);
+  const [selectedTag, setSelectedTag] = useState<TagDto | null>(null);
+  const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
+  const [isTagSummaryOpen, setIsTagSummaryOpen] = useState(false);
+  const [prefilledTag, setPrefilledTag] = useState<{ name: string; startDate: string; endDate: string } | null>(null);
 
   const calendarRef = useRef<any>(null);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -57,6 +66,25 @@ const FullCalendarManeger = () => {
     if (info.event.extendedProps.isRecipeExecution) {
       setSelectedExecution(info.event.extendedProps.execution);
       setIsDetailOpen(true);
+    } else if (info.event.extendedProps.isTag) {
+      setSelectedTag(info.event.extendedProps.tag);
+      setIsTagSummaryOpen(true);
+    } else if (info.event.extendedProps.isHoliday) {
+      const holidayName = info.event.extendedProps.holidayName;
+      const holidayDate = info.event.extendedProps.holidayDate;
+
+      // Calculate 1 month (30 days) before the holiday
+      const hDate = new Date(holidayDate);
+      const sDate = new Date(hDate);
+      sDate.setDate(hDate.getDate() - 30);
+
+      setPrefilledTag({
+        name: holidayName,
+        startDate: sDate.toISOString().substring(0, 10),
+        endDate: holidayDate,
+      });
+      setSelectedTag(null);
+      setIsTagDialogOpen(true);
     }
   };
 
@@ -80,9 +108,20 @@ const FullCalendarManeger = () => {
     }
   }, [subscriptionId]);
 
+  const loadTags = useCallback(async () => {
+    if (!subscriptionId) return;
+    try {
+      const data = await getTags(subscriptionId);
+      setTags(data);
+    } catch (e) {
+      console.error("Failed to load tags", e);
+    }
+  }, [subscriptionId]);
+
   useEffect(() => {
     loadExecutions();
-  }, [loadExecutions]);
+    loadTags();
+  }, [loadExecutions, loadTags]);
 
   const handleDateClick = (arg: any) => {
     setClickedDate(arg.dateStr);
@@ -132,6 +171,11 @@ const FullCalendarManeger = () => {
         color: style.color,
         textColor: style.textColor,
         display: 'block',
+        extendedProps: {
+          isHoliday: true,
+          holidayName: h.hebrew || h.title,
+          holidayDate: h.date,
+        }
       };
     }),
     ...executions.map((exec: any) => ({
@@ -146,6 +190,24 @@ const FullCalendarManeger = () => {
         execution: exec
       }
     })),
+    ...tags.map((tag: TagDto) => {
+      const end = new Date(tag.endDate);
+      end.setDate(end.getDate() + 1);
+      const endStr = end.toISOString().substring(0, 10);
+      return {
+        title: `📌 תג: ${tag.name}`,
+        start: tag.startDate.substring(0, 10),
+        end: endStr,
+        allDay: true,
+        color: '#9c27b0', // Purple tag color
+        textColor: '#ffffff',
+        display: 'block',
+        extendedProps: {
+          isTag: true,
+          tag: tag,
+        }
+      };
+    }),
   ];
 
   return (
@@ -174,6 +236,10 @@ const FullCalendarManeger = () => {
           onNext={handleNext}
           onViewChange={handleViewChange}
           onDateSelect={handleDateSelect}
+          onCreateTag={() => {
+            setSelectedTag(null);
+            setIsTagDialogOpen(true);
+          }}
         />
 
         <FullCalendar
@@ -274,6 +340,32 @@ const FullCalendarManeger = () => {
         }}
         execution={selectedExecution}
         onDelete={loadExecutions}
+      />
+
+      <CreateTagDialog
+        open={isTagDialogOpen}
+        onClose={() => {
+          setIsTagDialogOpen(false);
+          setSelectedTag(null);
+          setPrefilledTag(null);
+        }}
+        onSave={loadTags}
+        subscriptionId={subscriptionId}
+        tagToEdit={selectedTag}
+        prefilledData={prefilledTag}
+      />
+
+      <TagSummaryDialog
+        open={isTagSummaryOpen}
+        onClose={() => {
+          setIsTagSummaryOpen(false);
+          setSelectedTag(null);
+        }}
+        tagId={selectedTag ? selectedTag.id : null}
+        onEditClick={() => {
+          setIsTagSummaryOpen(false);
+          setIsTagDialogOpen(true);
+        }}
       />
     </CalendarContainer>
   );

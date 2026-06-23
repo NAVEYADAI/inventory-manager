@@ -18,6 +18,7 @@ interface BaseDialogProps {
   children: React.ReactNode;
   actions?: React.ReactNode;
   maxWidth?: "xs" | "sm" | "md" | "lg" | "xl";
+  onSubmit?: (e: React.FormEvent) => void;
 }
 
 const BaseDialog: React.FC<BaseDialogProps> = ({
@@ -29,6 +30,7 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
   children,
   actions,
   maxWidth = "sm",
+  onSubmit,
 }) => {
   return (
     <Dialog
@@ -38,6 +40,8 @@ const BaseDialog: React.FC<BaseDialogProps> = ({
       fullWidth
       dir="rtl"
       PaperProps={{
+        component: onSubmit ? "form" : "div",
+        onSubmit: onSubmit,
         sx: {
           borderRadius: "20px",
           boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",

@@ -1,5 +1,5 @@
 import { Subscription } from 'src/subscription/subscription.entity';
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Tag {
@@ -18,6 +18,6 @@ export class Tag {
   @Column()
   endDate: Date;
 
-  @OneToOne(() => Subscription, (subscription) => subscription.company)
+  @ManyToOne(() => Subscription)
   subscription: Subscription;
 }

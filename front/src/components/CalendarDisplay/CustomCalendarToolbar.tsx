@@ -14,6 +14,7 @@ interface CustomCalendarToolbarProps {
   onNext: () => void;
   onViewChange: (viewName: string) => void;
   onDateSelect: (year: number, month: number) => void;
+  onCreateTag?: () => void;
 }
 
 const CustomCalendarToolbar: React.FC<CustomCalendarToolbarProps> = ({
@@ -25,6 +26,7 @@ const CustomCalendarToolbar: React.FC<CustomCalendarToolbarProps> = ({
   onNext,
   onViewChange,
   onDateSelect,
+  onCreateTag,
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -47,6 +49,21 @@ const CustomCalendarToolbar: React.FC<CustomCalendarToolbarProps> = ({
         >
           היום
         </Button>
+        {onCreateTag && (
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={onCreateTag}
+            sx={{
+              borderRadius: "10px",
+              fontWeight: 700,
+              background: 'linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%)',
+              boxShadow: '0 4px 12px rgba(156, 39, 176, 0.25)',
+            }}
+          >
+            + תקופת ייצור (תג)
+          </Button>
+        )}
         <IconButton onClick={onPrev} sx={{ border: "1px solid #cbd5e1", borderRadius: "10px", p: 0.75 }}>
           <ChevronRightIcon />
         </IconButton>

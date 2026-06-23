@@ -40,6 +40,7 @@ const Navbar: React.FC = () => {
         { label: "ראשי", path: "/home" },
         { label: "מתכונים", path: "/recipes" },
         { label: "לוח שנה", path: "/calendar2" },
+        { label: "דוחות ייצור", path: "/tags" },
     ];
 
     return (
