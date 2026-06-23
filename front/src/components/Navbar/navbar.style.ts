@@ -2,7 +2,7 @@ import React from "react";
 import { styled } from "@mui/material/styles";
 import { AppBar, Toolbar, Typography, Button, Box, IconButton } from "@mui/material";
 
-export const StyledAppBar = styled(AppBar)(() => ({
+export const StyledAppBar = styled(AppBar)(({ theme }) => ({
   margin: "20px auto 0",
   maxWidth: "1200px",
   width: "calc(100% - 40px)",
@@ -14,6 +14,11 @@ export const StyledAppBar = styled(AppBar)(() => ({
   color: "#1e293b",
   top: "20px",
   zIndex: 1100,
+  [theme.breakpoints.down("sm")]: {
+    margin: "10px auto 0",
+    width: "calc(100% - 20px)",
+    top: "10px",
+  },
 }));
 
 export const StyledToolbar = styled(Toolbar)(({ theme }) => ({

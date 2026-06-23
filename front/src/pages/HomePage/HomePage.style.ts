@@ -2,19 +2,26 @@ import React from "react";
 import { styled } from "@mui/material/styles";
 import { Box, Paper, Card, Button } from "@mui/material";
 
-export const HomeContainer = styled(Box)(() => ({
+export const HomeContainer = styled(Box)(({ theme }) => ({
   padding: "32px",
   maxWidth: "1200px",
   margin: "0 auto",
+  [theme.breakpoints.down("sm")]: {
+    padding: "16px",
+  },
 }));
 
-export const WelcomeCard = styled(Paper)(() => ({
+export const WelcomeCard = styled(Paper)(({ theme }) => ({
   padding: "32px",
   marginBottom: "40px",
   borderRadius: "24px",
   color: "#ffffff",
   background: "linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #673ab7 100%)",
   boxShadow: "0 8px 30px rgba(30, 60, 114, 0.15)",
+  [theme.breakpoints.down("sm")]: {
+    padding: "20px",
+    marginBottom: "24px",
+  },
 }));
 
 export const CompanyBadge = styled(Box)(() => ({

@@ -54,8 +54,7 @@ export const BannerSide = styled(Box)(({ theme }) => ({
     pointerEvents: "none",
   },
   [theme.breakpoints.down("md")]: {
-    padding: "30px 20px",
-    order: 2,
+    display: "none",
   },
 }));
 
@@ -139,4 +138,28 @@ export const StyledButton = styled(Button)(({ theme }) => ({
   "&:hover": {
     backgroundColor: theme.palette.primary.dark,
   },
+}));
+
+export const LogoImage = styled("img")(() => ({
+  height: "90px",
+  width: "auto",
+  filter: "drop-shadow(0px 8px 20px rgba(0, 0, 0, 0.12))",
+}));
+
+export const LoginFormContainer = styled(Box)(() => ({
+  width: "100%",
+  display: "flex",
+  flexDirection: "column",
+  gap: "24px",
+}));
+
+export const FormHeader = styled(Box)(() => ({
+  textAlign: "center",
+}));
+
+export const InputFieldsStack = styled(Box)(() => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: "20px",
+  width: "100%",
 }));

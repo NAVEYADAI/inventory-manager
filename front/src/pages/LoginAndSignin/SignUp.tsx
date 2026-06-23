@@ -1,5 +1,5 @@
 import { Typography, Box, Alert, CircularProgress, Grid } from "@mui/material";
-import { StyledForm, ActionButton } from "./LoginAndSignin.style";
+import { StyledForm, ActionButton, LoginFormContainer, FormHeader, LogoImage } from "./LoginAndSignin.style";
 import TextInput from "../../components/Inputs/TextInput";
 import { SignUpFields, SignUpFieldsHebNames, type Signup } from "./util";
 import { register } from "../../api/login";
@@ -69,19 +69,10 @@ const SignUp = ({ setIsLogin, signUp, setSignUp }: SignUpProps) => {
   );
 
   return (
-    <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 2 }}>
-      <Box sx={{ textAlign: "center" }}>
+    <LoginFormContainer>
+      <FormHeader>
         <Box sx={{ display: "flex", justifyContent: "center", mb: 1.5 }}>
-          <Box
-            component="img"
-            src="/logo.png"
-            alt="KitchenIQ Logo"
-            sx={{
-              height: 90,
-              width: "auto",
-              filter: "drop-shadow(0px 8px 20px rgba(0, 0, 0, 0.12))",
-            }}
-          />
+          <LogoImage src="/logo.png" alt="KitchenIQ Logo" />
         </Box>
         <Typography variant="h4" fontWeight={800} color="text.primary" gutterBottom>
           יצירת חשבון חדש
@@ -89,7 +80,7 @@ const SignUp = ({ setIsLogin, signUp, setSignUp }: SignUpProps) => {
         <Typography variant="body2" color="text.secondary">
           הצטרף אלינו והתחל לנהל את המלאי שלך בצורה חכמה
         </Typography>
-      </Box>
+      </FormHeader>
 
       <StyledForm onSubmit={handleSubmit}>
         <Grid container spacing={1.5} sx={{ width: "100%" }}>
@@ -131,7 +122,24 @@ const SignUp = ({ setIsLogin, signUp, setSignUp }: SignUpProps) => {
           {loading ? <CircularProgress size={24} color="inherit" /> : "הרשמה למערכת"}
         </ActionButton>
       </StyledForm>
-    </Box>
+
+      {/* Mobile-only login toggle */}
+      <Box sx={{ display: { xs: "block", md: "none" }, textAlign: "center", mt: 1 }}>
+        <Typography variant="body2" color="text.secondary">
+          כבר יש לך חשבון?{" "}
+          <Typography
+            component="span"
+            variant="body2"
+            color="primary"
+            fontWeight={700}
+            sx={{ cursor: "pointer", textDecoration: "underline" }}
+            onClick={() => setIsLogin(true)}
+          >
+            להתחברות לחץ כאן
+          </Typography>
+        </Typography>
+      </Box>
+    </LoginFormContainer>
   );
 };
 

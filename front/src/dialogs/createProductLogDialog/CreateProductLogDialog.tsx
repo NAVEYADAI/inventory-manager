@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   TextField,
   Button,
   Select,
@@ -17,6 +13,7 @@ import {
 } from '@mui/material';
 import { getRecipes } from '../../api/recipe';
 import { createProductExecution } from '../../api/createProduct';
+import BaseDialog from '../../components/BaseDialog/BaseDialog';
 
 interface RecipeOption {
   id: number;
@@ -123,17 +120,42 @@ const CreateProductLogDialog = ({ open, onClose, dateStr, subscriptionId, onSave
     }
   };
 
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth dir="rtl">
-      <DialogTitle sx={{ fontWeight: 800, textAlign: 'center', pb: 1 }}>
-        הכנת מתכון חדש
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, fontWeight: 500 }}>
-          {getFormattedDateHebrew()}
-        </Typography>
-      </DialogTitle>
+  const actions = (
+    <Box display="flex" justifyContent="space-between" width="100%">
+      <Button onClick={onClose} disabled={submitting} variant="outlined" color="inherit" sx={{ borderRadius: 2 }}>
+        ביטול
+      </Button>
+      <Button
+        type="submit"
+        disabled={submitting || loadingRecipes || !selectedRecipeId}
+        variant="contained"
+        color="primary"
+        sx={{
+          borderRadius: 2,
+          px: 3,
+          fontWeight: 700,
+          background: 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)',
+          '&:hover': {
+            background: 'linear-gradient(135deg, #4338ca 0%, #2e2685 100%)',
+          }
+        }}
+      >
+        {submitting ? <CircularProgress size={24} color="inherit" /> : 'הכן מתכון'}
+      </Button>
+    </Box>
+  );
 
-      <form onSubmit={handleSubmit}>
-        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, pt: 1 }}>
+  return (
+    <form onSubmit={handleSubmit}>
+      <BaseDialog
+        open={open}
+        onClose={onClose}
+        title="הכנת מתכון חדש"
+        subtitle={getFormattedDateHebrew()}
+        actions={actions}
+        maxWidth="xs"
+      >
+        <Box display="flex" flexDirection="column" gap={2.5}>
           {error && (
             <Typography color="error" variant="body2" sx={{ textAlign: 'center', fontWeight: 600 }}>
               {error}
@@ -190,32 +212,9 @@ const CreateProductLogDialog = ({ open, onClose, dateStr, subscriptionId, onSave
             inputProps={{ min: 0.01, step: 'any' }}
             helperText="פי כמה להכפיל את חומרי הגלם במתכון (לדוגמה: 0.5)"
           />
-        </DialogContent>
-
-        <DialogActions sx={{ px: 3, pb: 3, justifyContent: 'space-between' }}>
-          <Button onClick={onClose} disabled={submitting} variant="outlined" color="inherit" sx={{ borderRadius: 2 }}>
-            ביטול
-          </Button>
-          <Button
-            type="submit"
-            disabled={submitting || loadingRecipes || !selectedRecipeId}
-            variant="contained"
-            color="primary"
-            sx={{
-              borderRadius: 2,
-              px: 3,
-              fontWeight: 700,
-              background: 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)',
-              '&:hover': {
-                background: 'linear-gradient(135deg, #4338ca 0%, #2e2685 100%)',
-              }
-            }}
-          >
-            {submitting ? <CircularProgress size={24} color="inherit" /> : 'הכן מתכון'}
-          </Button>
-        </DialogActions>
-      </form>
-    </Dialog>
+        </Box>
+      </BaseDialog>
+    </form>
   );
 };
 

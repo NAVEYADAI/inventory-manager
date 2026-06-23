@@ -1,21 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   TextField,
   Button,
   Box,
   CircularProgress,
   Typography,
   Stack,
-  Divider,
 } from '@mui/material';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import { UOM, UOM_hebrew_names } from '../../enums';
 import { createProductExecution } from '../../api/createProduct';
 import { type RecipeDto } from '../../api/recipe';
+import BaseDialog from '../../components/BaseDialog/BaseDialog';
 
 interface Props {
   open: boolean;
@@ -96,23 +92,43 @@ const ExecuteRecipeDialog = ({ open, onClose, recipe, onSave }: Props) => {
     }
   };
 
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth dir="rtl">
-      <DialogTitle sx={{ fontWeight: 800, pb: 1, display: 'flex', alignItems: 'center', gap: 1.5 }}>
-        <RestaurantIcon color="primary" sx={{ fontSize: 32 }} />
-        <Box>
-          <Typography variant="h5" fontWeight={800} color="text.primary">
-            רשום הכנת מתכון: {recipe.name}
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            מזהה מתכון: #{recipe.id}
-          </Typography>
-        </Box>
-      </DialogTitle>
-      <Divider />
+  const actions = (
+    <Box display="flex" justifyContent="space-between" width="100%">
+      <Button onClick={onClose} disabled={submitting} variant="outlined" color="inherit" sx={{ borderRadius: 2 }}>
+        ביטול
+      </Button>
+      <Button
+        type="submit"
+        disabled={submitting || parsedMultiplier <= 0}
+        variant="contained"
+        color="primary"
+        sx={{
+          borderRadius: 2,
+          px: 4,
+          fontWeight: 700,
+          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+          '&:hover': {
+            background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+          }
+        }}
+      >
+        {submitting ? <CircularProgress size={24} color="inherit" /> : 'רשום הכנה'}
+      </Button>
+    </Box>
+  );
 
-      <form onSubmit={handleSubmit}>
-        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 3, py: 3 }}>
+  return (
+    <form onSubmit={handleSubmit}>
+      <BaseDialog
+        open={open}
+        onClose={onClose}
+        title={`רשום הכנת מתכון: ${recipe.name}`}
+        subtitle={`מזהה מתכון: #${recipe.id}`}
+        icon={<RestaurantIcon color="primary" sx={{ fontSize: 32 }} />}
+        actions={actions}
+        maxWidth="sm"
+      >
+        <Box display="flex" flexDirection="column" gap={3}>
           {error && (
             <Typography color="error" variant="body2" sx={{ textAlign: 'center', fontWeight: 600 }}>
               {error}
@@ -225,32 +241,9 @@ const ExecuteRecipeDialog = ({ open, onClose, recipe, onSave }: Props) => {
               </Stack>
             </Box>
           </Box>
-        </DialogContent>
-
-        <DialogActions sx={{ px: 3, pb: 3, justifyContent: 'space-between' }}>
-          <Button onClick={onClose} disabled={submitting} variant="outlined" color="inherit" sx={{ borderRadius: 2 }}>
-            ביטול
-          </Button>
-          <Button
-            type="submit"
-            disabled={submitting || parsedMultiplier <= 0}
-            variant="contained"
-            color="primary"
-            sx={{
-              borderRadius: 2,
-              px: 4,
-              fontWeight: 700,
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-              '&:hover': {
-                background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-              }
-            }}
-          >
-            {submitting ? <CircularProgress size={24} color="inherit" /> : 'רשום הכנה'}
-          </Button>
-        </DialogActions>
-      </form>
-    </Dialog>
+        </Box>
+      </BaseDialog>
+    </form>
   );
 };
 

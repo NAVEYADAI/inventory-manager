@@ -9,21 +9,13 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useHolidays } from "../../hooks/useHolidays";
 import CreateProductLogDialog from "../../dialogs/createProductLogDialog/CreateProductLogDialog";
 import RecipeExecutionDetailDialog from "../../dialogs/recipeExecutionDetailDialog/RecipeExecutionDetailDialog";
 import { getProductExecutions } from "../../api/createProduct";
-
-const gematriaDay = (dayNum: number): string => {
-  const map: Record<number, string> = {
-    1: "א׳", 2: "ב׳", 3: "ג׳", 4: "ד׳", 5: "ה׳", 6: "ו׳", 7: "ז׳", 8: "ח׳", 9: "ט׳",
-    10: "י׳", 11: "יא׳", 12: "יב׳", 13: "יג׳", 14: "יד׳", 15: "טו׳", 16: "טז׳", 17: "יז׳", 18: "יח׳", 19: "יט׳",
-    20: "כ׳", 21: "כא׳", 22: "כב׳", 23: "כג׳", 24: "כד׳", 25: "כה׳", 26: "כו׳", 27: "כז׳", 28: "כח׳", 29: "כט׳",
-    30: "ל׳"
-  };
-  return map[dayNum] || String(dayNum);
-};
+import CustomCalendarToolbar from "../../components/CalendarDisplay/CustomCalendarToolbar";
+import { getHebrewDateText } from "../../utils/dateUtils";
 
 const FullCalendarManeger = () => {
   const holidays = useHolidays();
@@ -32,6 +24,34 @@ const FullCalendarManeger = () => {
   const [clickedDate, setClickedDate] = useState('');
   const [selectedExecution, setSelectedExecution] = useState<any | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+
+  const calendarRef = useRef<any>(null);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [currentView, setCurrentView] = useState("dayGridMonth");
+
+  const handlePrev = () => calendarRef.current?.getApi().prev();
+  const handleNext = () => calendarRef.current?.getApi().next();
+  const handleToday = () => calendarRef.current?.getApi().today();
+  const handleViewChange = (viewName: string) => {
+    calendarRef.current?.getApi().changeView(viewName);
+    setCurrentView(viewName);
+  };
+  const handleDateSelect = (year: number, month: number) => {
+    setSelectedYear(year);
+    setSelectedMonth(month);
+    calendarRef.current?.getApi().gotoDate(new Date(year, month, 1));
+  };
+
+  const handleDatesSet = () => {
+    if (calendarRef.current) {
+      const calendarApi = calendarRef.current.getApi();
+      const currentDate = calendarApi.getDate();
+      setSelectedYear(currentDate.getFullYear());
+      setSelectedMonth(currentDate.getMonth());
+      setCurrentView(calendarApi.view.type);
+    }
+  };
 
   const handleEventClick = (info: any) => {
     if (info.event.extendedProps.isRecipeExecution) {
@@ -69,61 +89,34 @@ const FullCalendarManeger = () => {
     setIsDialogOpen(true);
   };
 
-  // Format Hebrew date text. Reduces clutter by showing full month name only on 1st of month.
-  const getHebrewDateText = (date: Date) => {
-    try {
-      const formatter = new Intl.DateTimeFormat('he-IL-u-ca-hebrew', {
-        day: 'numeric',
-        month: 'long',
-      });
-      const parts = formatter.formatToParts(date);
-      const dayPart = parts.find(p => p.type === 'day')?.value;
-      const monthPart = parts.find(p => p.type === 'month')?.value;
-
-      if (dayPart && monthPart) {
-        const dayNum = parseInt(dayPart, 10);
-        if (dayNum === 1) {
-          return `${gematriaDay(dayNum)} ${monthPart}`;
-        }
-        return gematriaDay(dayNum);
-      }
-      return formatter.format(date);
-    } catch (e) {
-      return '';
-    }
-  };
-
-  console.log(holidays);
-
   // Categorize holidays based primarily on Hebcal's subcat field
   const getEventStyle = (h: any) => {
     const subcat = h.subcat || '';
     const title = (h.title || '').toLowerCase();
     const hebrew = h.hebrew || '';
 
-    // 1. Fasts (צומות ותעניות)
+    // 1. Fasts
     if (subcat === 'fast') {
       return {
-        color: '#b45309', // Warm Amber (צום)
+        color: '#b45309',
         textColor: '#ffffff',
       };
     }
 
-    // 2. Memorial Days (ימי זיכרון ושואה)
-    // Note: Yom HaAtzma'ut and Yom Yerushalayim are also 'modern' subcat, so we filter by keywords
+    // 2. Memorial Days
     if (
       subcat === 'modern' &&
       (title.includes('zikaron') || title.includes('shoah') || hebrew.includes('זיכרון') || hebrew.includes('שואה'))
     ) {
       return {
-        color: '#475569', // Slate Grey (ימי זיכרון ושואה)
+        color: '#475569',
         textColor: '#ffffff',
       };
     }
 
-    // 3. Happy Holidays (חגים מועדים ושמחות - major, minor, modern celebrations)
+    // 3. Happy Holidays
     return {
-      color: '#e11d48', // Premium Rose
+      color: '#e11d48',
       textColor: '#ffffff',
     };
   };
@@ -145,7 +138,7 @@ const FullCalendarManeger = () => {
       title: `הכנה: ${exec.recipe?.name || 'מתכון לא ידוע'} (כפול ${exec.batche_count})`,
       start: exec.created_time,
       allDay: true,
-      color: '#059669', // Modern emerald green
+      color: '#059669',
       textColor: '#ffffff',
       display: 'block',
       extendedProps: {
@@ -159,9 +152,9 @@ const FullCalendarManeger = () => {
     <CalendarContainer dir="rtl">
       {/* Premium Header Card */}
       <CalendarHeader elevation={0}>
-        <Stack direction="row" spacing={2} alignItems="center">
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="center" sx={{ width: "100%", justifyContent: { xs: "center", sm: "flex-start" } }}>
           <CalendarMonthIcon sx={{ fontSize: 40 }} />
-          <Box>
+          <Box sx={{ textAlign: { xs: "center", sm: "right" } }}>
             <Typography variant="h4" fontWeight={800}>לוח שנה ומועדים</Typography>
             <Typography variant="body2" sx={{ opacity: 0.85, mt: 0.5 }}>
               ניהול אירועים עסקיים לצד תאריכים עבריים וחגי ישראל
@@ -172,16 +165,25 @@ const FullCalendarManeger = () => {
 
       {/* Main Calendar Card */}
       <CalendarCard>
+        <CustomCalendarToolbar
+          selectedMonth={selectedMonth}
+          selectedYear={selectedYear}
+          currentView={currentView}
+          onToday={handleToday}
+          onPrev={handlePrev}
+          onNext={handleNext}
+          onViewChange={handleViewChange}
+          onDateSelect={handleDateSelect}
+        />
+
         <FullCalendar
+          ref={calendarRef}
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
           height="auto"
           fixedWeekCount={false}
-          headerToolbar={{
-            start: "today prev,next",
-            center: "title",
-            end: "dayGridMonth,timeGridWeek,timeGridDay",
-          }}
+          headerToolbar={false}
+          datesSet={handleDatesSet}
           editable={true}
           selectable={true}
           direction="rtl"
@@ -212,7 +214,7 @@ const FullCalendarManeger = () => {
               <Box display="flex" flexDirection="column" alignItems="flex-start" width="100%" gap={0.5} sx={{ pr: 1.5, pt: 0.5 }}>
                 <Box
                   sx={isToday ? {
-                    backgroundColor: '#10b981', // Today highlight circle (green)
+                    backgroundColor: '#10b981',
                     color: '#ffffff',
                     borderRadius: '50%',
                     width: '26px',

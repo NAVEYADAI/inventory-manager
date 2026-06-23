@@ -1,14 +1,19 @@
 import { useEffect, useState } from 'react';
 import {
-  Box, Button, CardContent, Grid, Typography,
-  IconButton, Divider, CircularProgress, Paper, Stack, TextField
+  Box, Button, Grid, Typography,
+  IconButton, Divider, CircularProgress, Stack, TextField
 } from '@mui/material';
 import {
   RecipesContainer,
   RecipesHeader,
   RecipeCard,
   IngredientList,
-  IngredientItem
+  IngredientItem,
+  AddRecipeButton,
+  SearchWrapper,
+  EmptyStateWrapper,
+  RecipeCardContent,
+  RecipeCardTitle
 } from './RecipesPage.style';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -89,16 +94,16 @@ const RecipesPage = () => {
     <RecipesContainer dir="rtl">
       {/* Header section */}
       <RecipesHeader elevation={0}>
-        <Stack direction="row" spacing={2} alignItems="center">
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="center" sx={{ width: "100%", justifyContent: { xs: "center", sm: "flex-start" } }}>
           <MenuBookIcon sx={{ fontSize: 40 }} />
-          <Box>
+          <Box sx={{ textAlign: { xs: "center", sm: "right" } }}>
             <Typography variant="h4" fontWeight={700}>ספר המתכונים</Typography>
             <Typography variant="body2" sx={{ opacity: 0.8 }}>
               נהל את כל המתכונים והרכיבים של העסק שלך במקום אחד
             </Typography>
           </Box>
         </Stack>
-        <Button
+        <AddRecipeButton
           variant="contained"
           color="secondary"
           startIcon={<AddIcon />}
@@ -106,22 +111,14 @@ const RecipesPage = () => {
             setEditingRecipe(null);
             setIsCreateOpen(true);
           }}
-          sx={{
-            borderRadius: 2,
-            fontWeight: 700,
-            boxShadow: '0 4px 12px rgba(156, 39, 176, 0.3)',
-            '&:hover': {
-              boxShadow: '0 6px 16px rgba(156, 39, 176, 0.4)'
-            }
-          }}
         >
           מתכון חדש
-        </Button>
+        </AddRecipeButton>
       </RecipesHeader>
 
       {/* Search Bar */}
       {recipes.length > 0 && (
-        <Box mb={4}>
+        <SearchWrapper>
           <TextField
             fullWidth
             variant="outlined"
@@ -137,7 +134,7 @@ const RecipesPage = () => {
               }
             }}
           />
-        </Box>
+        </SearchWrapper>
       )}
 
       {/* Main Content List */}
@@ -146,7 +143,7 @@ const RecipesPage = () => {
           <CircularProgress />
         </Box>
       ) : recipes.length === 0 ? (
-        <Paper variant="outlined" sx={{ p: 6, textAlign: 'center', borderRadius: 3 }}>
+        <EmptyStateWrapper variant="outlined">
           <LocalFloristIcon sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
           <Typography variant="h6" color="text.secondary" gutterBottom>
             אין עדיין מתכונים רשומים במערכת
@@ -164,13 +161,13 @@ const RecipesPage = () => {
           >
             צור מתכון ראשון
           </Button>
-        </Paper>
+        </EmptyStateWrapper>
       ) : filteredRecipes.length === 0 ? (
-        <Paper variant="outlined" sx={{ p: 6, textAlign: 'center', borderRadius: 3 }}>
+        <EmptyStateWrapper variant="outlined">
           <Typography variant="h6" color="text.secondary">
             לא נמצאו מתכונים המתאימים לחיפוש "{searchQuery}"
           </Typography>
-        </Paper>
+        </EmptyStateWrapper>
       ) : (
         <Grid container spacing={3}>
           {filteredRecipes.map((recipe) => (
@@ -179,11 +176,11 @@ const RecipesPage = () => {
                 variant="outlined"
                 onClick={() => handleOpenPreview(recipe)}
               >
-                <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+                <RecipeCardContent>
                   <Box display="flex" justifyContent="space-between" alignItems="center" mb={1.5}>
-                    <Typography variant="h6" fontWeight={700} color="text.primary" noWrap sx={{ maxWidth: '70%' }}>
+                    <RecipeCardTitle variant="h6" color="text.primary">
                       {recipe.name}
-                    </Typography>
+                    </RecipeCardTitle>
                     <Box display="flex" gap={0.5}>
                       <IconButton
                         onClick={(e) => {
@@ -248,7 +245,7 @@ const RecipesPage = () => {
                       )}
                     </Stack>
                   </IngredientList>
-                </CardContent>
+                </RecipeCardContent>
               </RecipeCard>
             </Grid>
           ))}

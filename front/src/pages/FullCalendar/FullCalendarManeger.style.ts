@@ -1,13 +1,16 @@
 import { styled } from "@mui/material/styles";
 import { Box, Paper } from "@mui/material";
 
-export const CalendarContainer = styled(Box)(() => ({
+export const CalendarContainer = styled(Box)(({ theme }) => ({
   padding: "32px",
   maxWidth: "1200px",
   margin: "0 auto",
+  [theme.breakpoints.down("sm")]: {
+    padding: "16px",
+  },
 }));
 
-export const CalendarHeader = styled(Paper)(() => ({
+export const CalendarHeader = styled(Paper)(({ theme }) => ({
   padding: "24px",
   marginBottom: "32px",
   borderRadius: "24px",
@@ -19,14 +22,46 @@ export const CalendarHeader = styled(Paper)(() => ({
   background: "linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #673ab7 100%)",
   color: "#ffffff",
   boxShadow: "0 4px 20px rgba(79, 70, 229, 0.15)",
+  [theme.breakpoints.down("sm")]: {
+    padding: "16px",
+    flexDirection: "column",
+    alignItems: "stretch",
+    textAlign: "center",
+  },
 }));
 
-export const CalendarCard = styled(Paper)(() => ({
+export const CalendarCard = styled(Paper)(({ theme }) => ({
   padding: "24px",
   borderRadius: "24px",
   backgroundColor: "background.paper",
   boxShadow: "0 10px 30px rgba(0, 0, 0, 0.03)",
   border: "1px solid #e2e8f0",
+  [theme.breakpoints.down("sm")]: {
+    padding: "12px",
+    "& .fc-header-toolbar": {
+      flexDirection: "column",
+      alignItems: "stretch",
+      gap: "8px",
+    },
+    "& .fc-toolbar-title": {
+      fontSize: "1.1rem !important",
+      textAlign: "center",
+    },
+    "& .fc-button": {
+      padding: "4px 8px !important",
+      fontSize: "0.75rem !important",
+    },
+    "& .fc-col-header-cell-cushion": {
+      fontSize: "0.75rem !important",
+    },
+    "& .fc-daygrid-day-number": {
+      fontSize: "0.75rem !important",
+    },
+    "& .fc-event": {
+      fontSize: "0.7rem !important",
+      padding: "2px 4px !important",
+    }
+  },
   // Custom CSS Overrides for FullCalendar
   "& .fc": {
     fontFamily: '"Outfit", "Rubik", "Inter", sans-serif',

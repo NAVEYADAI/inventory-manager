@@ -1,7 +1,14 @@
 import axios from "axios";
 import { allEnv } from "../env";
 
-const baseURL = allEnv("back");
+let baseURL = allEnv("back") || "";
+if (typeof window !== "undefined" && baseURL.includes("localhost")) {
+  const currentHostname = window.location.hostname;
+  if (currentHostname && currentHostname !== "localhost") {
+    baseURL = baseURL.replace("localhost", currentHostname);
+  }
+}
+
 const axiosInstance = axios.create({
   baseURL,
   headers: {

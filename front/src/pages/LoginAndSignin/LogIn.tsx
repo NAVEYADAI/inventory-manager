@@ -1,5 +1,5 @@
 import { Typography, Box, Alert, CircularProgress } from "@mui/material";
-import { StyledForm, ActionButton } from "./LoginAndSignin.style";
+import { StyledForm, ActionButton, LoginFormContainer, FormHeader, LogoImage, InputFieldsStack } from "./LoginAndSignin.style";
 import { LoginFields, LogInFieldsHebNames, type Login } from "./util";
 import TextInput from "../../components/Inputs/TextInput";
 import { login } from "../../api/login";
@@ -14,7 +14,7 @@ type LogInProps = {
   setLogIn: React.Dispatch<React.SetStateAction<Login>>;
 };
 
-const LogIn = ({ logIn, setLogIn }: LogInProps) => {
+const LogIn = ({ setIsLogin, logIn, setLogIn }: LogInProps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -49,19 +49,10 @@ const LogIn = ({ logIn, setLogIn }: LogInProps) => {
   }
 
   return (
-    <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 3 }}>
-      <Box sx={{ textAlign: "center" }}>
+    <LoginFormContainer>
+      <FormHeader>
         <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
-          <Box
-            component="img"
-            src="/logo.png"
-            alt="KitchenIQ Logo"
-            sx={{
-              height: 90,
-              width: "auto",
-              filter: "drop-shadow(0px 8px 20px rgba(0, 0, 0, 0.12))",
-            }}
-          />
+          <LogoImage src="/logo.png" alt="KitchenIQ Logo" />
         </Box>
         <Typography variant="h4" fontWeight={800} color="text.primary" gutterBottom>
           התחברות למערכת
@@ -69,10 +60,10 @@ const LogIn = ({ logIn, setLogIn }: LogInProps) => {
         <Typography variant="body2" color="text.secondary">
           הזן את שם המשתמש והסיסמה שלך כדי להיכנס
         </Typography>
-      </Box>
+      </FormHeader>
 
       <StyledForm onSubmit={handleSubmit}>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5, width: "100%" }}>
+        <InputFieldsStack>
           {Object.values(LoginFields).map((value) => (
             <TextInput
               key={value}
@@ -93,7 +84,7 @@ const LogIn = ({ logIn, setLogIn }: LogInProps) => {
               }
             />
           ))}
-        </Box>
+        </InputFieldsStack>
 
         {error && (
           <Alert severity="error" sx={{ width: "100%", borderRadius: "12px", py: 0.5 }}>
@@ -115,7 +106,24 @@ const LogIn = ({ logIn, setLogIn }: LogInProps) => {
           {loading ? <CircularProgress size={24} color="inherit" /> : "התחבר למערכת"}
         </ActionButton>
       </StyledForm>
-    </Box>
+
+      {/* Mobile-only register toggle */}
+      <Box sx={{ display: { xs: "block", md: "none" }, textAlign: "center", mt: 1 }}>
+        <Typography variant="body2" color="text.secondary">
+          אין לך חשבון עדיין?{" "}
+          <Typography
+            component="span"
+            variant="body2"
+            color="primary"
+            fontWeight={700}
+            sx={{ cursor: "pointer", textDecoration: "underline" }}
+            onClick={() => setIsLogin(false)}
+          >
+            להרשמה לחץ כאן
+          </Typography>
+        </Typography>
+      </Box>
+      </LoginFormContainer>
   );
 };
 

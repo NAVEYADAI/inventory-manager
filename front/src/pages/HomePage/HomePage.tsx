@@ -33,7 +33,7 @@ const HomePage = () => {
     <HomeContainer dir="rtl">
       {/* Welcome Header Card */}
       <WelcomeCard elevation={0}>
-        <Stack direction="row" spacing={3} alignItems="center">
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={3} alignItems={{ xs: "flex-start", sm: "center" }}>
           <DashboardIcon sx={{ fontSize: 50, opacity: 0.95 }} />
           <Box>
             <Typography variant="h4" fontWeight={800} gutterBottom>
