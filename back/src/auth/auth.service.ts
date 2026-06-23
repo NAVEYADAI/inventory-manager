@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException, NotFoundException, Logger } from '@nestjs/common';
 import { RegisterDto } from './dto/register-auth.dto';
 import * as jwt from 'jsonwebtoken';
 import { LoginDto } from './dto/login-auth.dto';
@@ -10,6 +10,8 @@ const bcrypt = require('bcryptjs');
  
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly userService: UserService,
     @InjectRepository(Subscription)
@@ -22,6 +24,7 @@ export class AuthService {
       const subs = await this.userService.getUserCompanies(existing.id);
       if (subs.length === 0) {
         // User has no companies/subscriptions (stale registration). Delete and allow registration.
+        this.logger.warn(`Deleting stale user '${existing.name}' (ID: ${existing.id}) with no active subscriptions during re-registration.`);
         await this.userService.remove(existing.id);
       } else {
         throw new ConflictException('User already exists');
