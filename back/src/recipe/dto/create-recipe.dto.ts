@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber, IsArray, ValidateNested, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, IsArray, ValidateNested, IsEnum, IsOptional, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 import { UOM } from '../../enums';
 
@@ -11,6 +11,10 @@ export class RecipeIngredientDto {
 
   @IsEnum(UOM)
   uom: UOM;
+
+  @IsOptional()
+  @IsString()
+  customUom?: string;
 }
 
 export class CreateRecipeDto {
@@ -20,6 +24,14 @@ export class CreateRecipeDto {
 
   @IsNumber()
   subscriptionId: number;
+
+  @IsOptional()
+  @IsString()
+  yieldType?: 'UNITS' | 'WEIGHT';
+
+  @IsOptional()
+  @IsBoolean()
+  isIntermediate?: boolean;
 
   @IsArray()
   @ValidateNested({ each: true })

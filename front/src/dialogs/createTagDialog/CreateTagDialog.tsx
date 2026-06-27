@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import {
-  TextField,
   Button,
   Box,
   CircularProgress,
   Typography,
   Stack,
+  FormControlLabel,
+  Checkbox,
 } from '@mui/material';
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { createTag, updateTag, deleteTag, type TagDto } from '../../api/tag';
 import BaseDialog from '../../components/BaseDialog/BaseDialog';
+import TextInput from '../../components/Inputs/TextInput';
+import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog';
 
 interface Props {
   open: boolean;
@@ -26,9 +29,11 @@ const CreateTagDialog = ({ open, onClose, onSave, subscriptionId, tagToEdit, pre
   const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [isHidden, setIsHidden] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState('');
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -37,16 +42,19 @@ const CreateTagDialog = ({ open, onClose, onSave, subscriptionId, tagToEdit, pre
       setDescription(tagToEdit.description || '');
       setStartDate(tagToEdit.startDate ? tagToEdit.startDate.substring(0, 10) : '');
       setEndDate(tagToEdit.endDate ? tagToEdit.endDate.substring(0, 10) : '');
+      setIsHidden(tagToEdit.isHidden || false);
     } else if (prefilledData) {
       setName(prefilledData.name);
       setDescription('');
       setStartDate(prefilledData.startDate);
       setEndDate(prefilledData.endDate);
+      setIsHidden(false);
     } else {
       setName('');
       setDescription('');
       setStartDate('');
       setEndDate('');
+      setIsHidden(false);
     }
     setError('');
   }, [open, tagToEdit, prefilledData]);
@@ -77,6 +85,7 @@ const CreateTagDialog = ({ open, onClose, onSave, subscriptionId, tagToEdit, pre
           description,
           startDate,
           endDate,
+          isHidden,
         });
       } else {
         await createTag({
@@ -85,6 +94,7 @@ const CreateTagDialog = ({ open, onClose, onSave, subscriptionId, tagToEdit, pre
           startDate,
           endDate,
           subscriptionId,
+          isHidden,
         });
       }
       onSave();
@@ -99,8 +109,6 @@ const CreateTagDialog = ({ open, onClose, onSave, subscriptionId, tagToEdit, pre
 
   const handleDelete = async () => {
     if (!tagToEdit) return;
-    if (!window.confirm('האם אתה בטוח שברצונך למחוק תג זה?')) return;
-
     setDeleting(true);
     setError('');
 
@@ -113,6 +121,7 @@ const CreateTagDialog = ({ open, onClose, onSave, subscriptionId, tagToEdit, pre
       setError('שגיאה במחיקת התג');
     } finally {
       setDeleting(false);
+      setIsDeleteConfirmOpen(false);
     }
   };
 
@@ -121,7 +130,7 @@ const CreateTagDialog = ({ open, onClose, onSave, subscriptionId, tagToEdit, pre
       <Box>
         {tagToEdit && (
           <Button
-            onClick={handleDelete}
+            onClick={() => setIsDeleteConfirmOpen(true)}
             variant="outlined"
             color="error"
             disabled={submitting || deleting}
@@ -172,20 +181,20 @@ const CreateTagDialog = ({ open, onClose, onSave, subscriptionId, tagToEdit, pre
           </Typography>
         )}
 
-        <TextField
+        <TextInput
           label="שם התג"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          state={name}
+          setState={setName}
           disabled={submitting || deleting}
           fullWidth
           required
           placeholder="למשל: סבב פסח, שבוע ייצור יוני"
         />
 
-        <TextField
+        <TextInput
           label="תיאור (אופציונלי)"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          state={description}
+          setState={setDescription}
           disabled={submitting || deleting}
           fullWidth
           multiline
@@ -193,28 +202,53 @@ const CreateTagDialog = ({ open, onClose, onSave, subscriptionId, tagToEdit, pre
         />
 
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-          <TextField
+          <TextInput
             label="תאריך התחלה"
             type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
+            state={startDate}
+            setState={setStartDate}
             disabled={submitting || deleting}
             fullWidth
             required
             InputLabelProps={{ shrink: true }}
           />
-          <TextField
+          <TextInput
             label="תאריך סיום"
             type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
+            state={endDate}
+            setState={setEndDate}
             disabled={submitting || deleting}
             fullWidth
             required
             InputLabelProps={{ shrink: true }}
           />
         </Stack>
+
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={isHidden}
+              onChange={(e) => setIsHidden(e.target.checked)}
+              disabled={submitting || deleting}
+              color="secondary"
+            />
+          }
+          label="תג נסתר (לא יוצג כאירוע צבעוני על לוח השנה)"
+          sx={{ alignSelf: 'flex-start' }}
+        />
       </Box>
+      
+      <ConfirmDialog
+        open={isDeleteConfirmOpen}
+        onClose={() => setIsDeleteConfirmOpen(false)}
+        onConfirm={handleDelete}
+        isLoading={deleting}
+        title="מחיקת תג"
+        message="האם אתה בטוח שברצונך למחוק תג זה? פעולה זו תסיר את התג ואירועי לוח השנה המשויכים אליו לצמיתות."
+        confirmText="מחק"
+        cancelText="ביטול"
+        severity="error"
+      />
     </BaseDialog>
   );
 };

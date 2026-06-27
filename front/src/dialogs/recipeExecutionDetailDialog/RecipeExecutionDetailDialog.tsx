@@ -10,6 +10,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { UOM, UOM_hebrew_names } from '../../enums';
 import { deleteProductExecution } from '../../api/createProduct';
 import BaseDialog from '../../components/BaseDialog/BaseDialog';
+import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog';
 
 interface Props {
   open: boolean;
@@ -26,12 +27,11 @@ const fullDateFormatter = new Intl.DateTimeFormat('he-IL', {
 const RecipeExecutionDetailDialog = ({ open, onClose, execution, onDelete }: Props) => {
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState('');
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
   if (!execution) return null;
 
   const handleCreateProductDelete = async () => {
-    if (!window.confirm('האם אתה בטוח שברצונך למחוק רישום הכנה זה מהלוח?')) return;
-
     setDeleting(true);
     setError('');
     try {
@@ -43,6 +43,7 @@ const RecipeExecutionDetailDialog = ({ open, onClose, execution, onDelete }: Pro
       setError('שגיאה במחיקת רישום ההכנה');
     } finally {
       setDeleting(false);
+      setIsDeleteConfirmOpen(false);
     }
   };
 
@@ -61,7 +62,7 @@ const RecipeExecutionDetailDialog = ({ open, onClose, execution, onDelete }: Pro
   const actions = (
     <Box display="flex" justifyContent="space-between" width="100%">
       <Button
-        onClick={handleCreateProductDelete}
+        onClick={() => setIsDeleteConfirmOpen(true)}
         variant="outlined"
         color="error"
         disabled={deleting}
@@ -98,14 +99,27 @@ const RecipeExecutionDetailDialog = ({ open, onClose, execution, onDelete }: Pro
         </Typography>
       )}
 
-      <Box sx={{ mb: 3, p: 2, borderRadius: 2, color: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}>
-        <Typography variant="body1" fontWeight={700}>
-          מקדם הכפלה (כמות מנות):
-        </Typography>
-        <Typography variant="h5" fontWeight={800}>
-          כפול {parseFloat(Number(multiplier).toFixed(3))}
-        </Typography>
-      </Box>
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 3 }}>
+        <Box sx={{ flex: 1, p: 2, borderRadius: 2, color: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}>
+          <Typography variant="body2" fontWeight={700}>
+            מקדם הכפלה (כמות מנות):
+          </Typography>
+          <Typography variant="h6" fontWeight={800}>
+            כפול {parseFloat(Number(multiplier).toFixed(3))}
+          </Typography>
+        </Box>
+
+        {execution.actualYield !== undefined && execution.actualYield !== null && (
+          <Box sx={{ flex: 1, p: 2, borderRadius: 2, color: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(135deg, #3f51b5 0%, #303f9f 100%)' }}>
+            <Typography variant="body2" fontWeight={700}>
+              {recipe.yieldType === 'UNITS' ? "יחידות שיצאו בפועל:" : "משקל נטו שהתקבל:"}
+            </Typography>
+            <Typography variant="h6" fontWeight={800}>
+              {execution.actualYield} {recipe.yieldType === 'UNITS' ? "יחידות" : ""}
+            </Typography>
+          </Box>
+        )}
+      </Stack>
 
       <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 2 }} color="text.primary">
         חישוב כמויות רכיבים בפועל:
@@ -134,7 +148,7 @@ const RecipeExecutionDetailDialog = ({ open, onClose, execution, onDelete }: Pro
         <Stack spacing={1.5}>
           {recipe.recipe_product && recipe.recipe_product.length > 0 ? (
             recipe.recipe_product.map((item: any) => {
-              const uomHebrew = UOM_hebrew_names[item.uom as UOM] || item.uom;
+              const uomHebrew = item.uom === UOM.CUSTOM ? (item.customUom || 'יחידה מותאמת') : (UOM_hebrew_names[item.uom as UOM] || item.uom);
               const baseVolume = item.volume;
               const actualVolume = parseFloat((baseVolume * multiplier).toFixed(3));
 
@@ -176,6 +190,18 @@ const RecipeExecutionDetailDialog = ({ open, onClose, execution, onDelete }: Pro
           )}
         </Stack>
       </Box>
+      
+      <ConfirmDialog
+        open={isDeleteConfirmOpen}
+        onClose={() => setIsDeleteConfirmOpen(false)}
+        onConfirm={handleCreateProductDelete}
+        isLoading={deleting}
+        title="מחיקת רישום הכנה"
+        message="האם אתה בטוח שברצונך למחוק רישום הכנה זה מהלוח? פעולה זו תסיר את ההכנה מהלוח באופן קבוע."
+        confirmText="מחק"
+        cancelText="ביטול"
+        severity="error"
+      />
     </BaseDialog>
   );
 };

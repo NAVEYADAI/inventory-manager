@@ -1,6 +1,6 @@
 import { Button, Box, Typography, Stack } from '@mui/material';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
-import { UOM_hebrew_names } from '../../enums';
+import { UOM, UOM_hebrew_names } from '../../enums';
 import { type RecipeDto } from '../../api/recipe';
 import BaseDialog from '../../components/BaseDialog/BaseDialog';
 
@@ -102,7 +102,7 @@ const RecipePreviewDialog = ({ open, onClose, recipe, onExecute }: Props) => {
                   {item.raw_material?.name || 'חומר גלם לא ידוע'}
                 </Typography>
                 <Typography variant="body1" color="primary.main" fontWeight={700}>
-                  {item.volume} {UOM_hebrew_names[item.uom] || item.uom}
+                  {item.volume} {item.uom === UOM.CUSTOM ? (item.customUom || 'יחידה מותאמת') : (UOM_hebrew_names[item.uom] || item.uom)}
                 </Typography>
               </Box>
             ))

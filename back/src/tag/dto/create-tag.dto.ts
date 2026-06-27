@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsOptional, IsDateString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsDateString, IsNumber, IsBoolean } from 'class-validator';
 
 export class CreateTagDto {
   @IsNotEmpty()
@@ -20,4 +20,8 @@ export class CreateTagDto {
   @IsNotEmpty()
   @IsNumber()
   subscriptionId: number;
+
+  @IsOptional()
+  @IsBoolean()
+  isHidden?: boolean;
 }

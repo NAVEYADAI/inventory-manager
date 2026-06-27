@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { UOM, MeasurementType } from '../../enums';
 import {
-  Button, TextField, Box, Divider, Typography
+  Button, Box, Divider, Typography, FormControl, InputLabel, Select, MenuItem, Stack, Switch
 } from '@mui/material';
+import TextInput from '../../components/Inputs/TextInput';
 import AddIcon from '@mui/icons-material/Add';
 import LocalFloristIcon from '@mui/icons-material/LocalFlorist';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import LayersIcon from '@mui/icons-material/Layers';
 import { getRawMaterials, createRawMaterials, type RawMaterialDto } from '../../api/rawMaterial';
 import { createRecipe, updateRecipe, type RecipeDto } from '../../api/recipe';
 import IngredientRowItem from '../../components/Recipes/IngredientRowItem';
@@ -16,6 +18,7 @@ interface IngredientRow {
   rawMaterialId: number | '';
   volume: string;
   uom: UOM;
+  customUom?: string;
 }
 
 interface QuickAddState {
@@ -35,10 +38,13 @@ const emptyRow = (): IngredientRow => ({
   rawMaterialId: '',
   volume: '',
   uom: UOM.GRAM,
+  customUom: '',
 });
 
 const CreateRecipeDialog = ({ open, onClose, onSave, subscriptionId, recipeToEdit }: Props) => {
   const [name, setName] = useState('');
+  const [yieldType, setYieldType] = useState<'WEIGHT' | 'UNITS'>('WEIGHT');
+  const [isIntermediate, setIsIntermediate] = useState(false);
   const [rows, setRows] = useState<IngredientRow[]>([emptyRow()]);
   const [rawMaterials, setRawMaterials] = useState<RawMaterialDto[]>([]);
   const [isLoadingMaterials, setIsLoadingMaterials] = useState(false);
@@ -46,6 +52,7 @@ const CreateRecipeDialog = ({ open, onClose, onSave, subscriptionId, recipeToEdi
   const [searchTerms, setSearchTerms] = useState<Record<number, string>>({});
   const [quickAdd, setQuickAdd] = useState<QuickAddState | null>(null);
   const [isSavingQuickAdd, setIsSavingQuickAdd] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const loadRawMaterials = async () => {
     if (!subscriptionId) return;
@@ -65,13 +72,18 @@ const CreateRecipeDialog = ({ open, onClose, onSave, subscriptionId, recipeToEdi
       loadRawMaterials();
       if (recipeToEdit) {
         setName(recipeToEdit.name);
+        setYieldType(recipeToEdit.yieldType || 'WEIGHT');
+        setIsIntermediate(recipeToEdit.isIntermediate || false);
         setRows(recipeToEdit.recipe_product.map(p => ({
           rawMaterialId: p.raw_material.id,
           volume: String(p.volume),
           uom: p.uom,
+          customUom: p.customUom || '',
         })));
       } else {
         setName('');
+        setYieldType('WEIGHT');
+        setIsIntermediate(false);
         setRows([emptyRow()]);
       }
     }
@@ -91,6 +103,26 @@ const CreateRecipeDialog = ({ open, onClose, onSave, subscriptionId, recipeToEdi
 
   const removeRow = (index: number) => {
     setRows(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragEnter = (targetIndex: number) => {
+    if (draggedIndex === null || draggedIndex === targetIndex) return;
+    setRows(prev => {
+      const next = [...prev];
+      const temp = next[draggedIndex];
+      next.splice(draggedIndex, 1);
+      next.splice(targetIndex, 0, temp);
+      return next;
+    });
+    setDraggedIndex(targetIndex);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
   };
 
   const updateRow = (index: number, field: keyof IngredientRow, value: any) => {
@@ -118,6 +150,20 @@ const CreateRecipeDialog = ({ open, onClose, onSave, subscriptionId, recipeToEdi
     setRows(prev => prev.map((row, i) => {
       if (i !== index) return row;
       return { ...row, rawMaterialId: matId, uom: autoUom };
+    }));
+  };
+
+  const handleConversionAdded = (rawMaterialId: number, conversion: any) => {
+    setRawMaterials(prev => prev.map(mat => {
+      if (mat.id !== rawMaterialId) return mat;
+      const exists = mat.conversions?.some(c => c.id === conversion.id);
+      const updatedConversions = exists
+        ? mat.conversions?.map(c => c.id === conversion.id ? conversion : c)
+        : [...(mat.conversions || []), conversion];
+      return {
+        ...mat,
+        conversions: updatedConversions
+      };
     }));
   };
 
@@ -229,10 +275,13 @@ const CreateRecipeDialog = ({ open, onClose, onSave, subscriptionId, recipeToEdi
       const payload = {
         name: name.trim(),
         subscriptionId,
+        yieldType,
+        isIntermediate,
         ingredients: validRows.map(r => ({
           rawMaterialId: r.rawMaterialId as number,
           volume: parseFloat(r.volume.replace(',', '.')),
           uom: r.uom,
+          customUom: r.uom === UOM.CUSTOM ? r.customUom : undefined,
         })),
       };
 
@@ -284,15 +333,64 @@ const CreateRecipeDialog = ({ open, onClose, onSave, subscriptionId, recipeToEdi
       maxWidth="md"
     >
       <Box display="flex" flexDirection="column" gap={3} mt={2}>
-        <TextField
-          fullWidth
-          label="שם המתכון"
-          variant="outlined"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          sx={{ bgcolor: 'background.paper' }}
-        />
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+          <TextInput
+            fullWidth
+            label="שם המתכון"
+            variant="outlined"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            sx={{ bgcolor: 'background.paper', flex: 2 }}
+          />
+
+          <FormControl sx={{ minWidth: 220, flex: 1 }}>
+            <InputLabel id="yield-type-select-label">סוג תוצר המתכון</InputLabel>
+            <Select
+              labelId="yield-type-select-label"
+              value={yieldType}
+              label="סוג תוצר המתכון"
+              onChange={(e) => setYieldType(e.target.value as 'WEIGHT' | 'UNITS')}
+            >
+              <MenuItem value="WEIGHT">משקל (כמות משקל שקולה נטו)</MenuItem>
+              <MenuItem value="UNITS">יחידות (כמות יחידות ספורה)</MenuItem>
+            </Select>
+          </FormControl>
+        </Stack>
+
+        <Box
+          sx={{
+            p: 2,
+            borderRadius: 3,
+            bgcolor: isIntermediate ? 'rgba(156, 39, 176, 0.04)' : '#f8fafc',
+            border: '1px solid',
+            borderColor: isIntermediate ? 'rgba(156, 39, 176, 0.2)' : '#e2e8f0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            transition: 'all 0.2s ease-in-out',
+            mt: -1,
+            mb: 1,
+          }}
+        >
+          <Box display="flex" alignItems="center" gap={2} sx={{ width: '85%' }}>
+            <LayersIcon sx={{ color: isIntermediate ? 'secondary.main' : 'text.secondary', fontSize: 28, flexShrink: 0 }} />
+            <Box>
+              <Typography variant="subtitle2" fontWeight={700} color={isIntermediate ? 'secondary.main' : 'text.primary'}>
+                הפוך לתוצר ביניים (מתכון משנה)
+              </Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.25, lineHeight: 1.4 }}>
+                הפעל אפשרות זו כדי שתוכל להשתמש במתכון זה כרכיב (חומר גלם) בתוך מתכונים אחרים במערכת.
+              </Typography>
+            </Box>
+          </Box>
+          <Switch
+            checked={isIntermediate}
+            onChange={(e) => setIsIntermediate(e.target.checked)}
+            disabled={isSaving}
+            color="secondary"
+          />
+        </Box>
 
         <Divider>
           <Typography variant="subtitle2" color="text.secondary" fontWeight={600}>
@@ -313,6 +411,11 @@ const CreateRecipeDialog = ({ open, onClose, onSave, subscriptionId, recipeToEdi
               onUpdateRowWithUomAutoSelect={updateRowWithUomAutoSelect}
               onRemoveRow={removeRow}
               onOpenQuickAdd={handleOpenQuickAdd}
+              onConversionAdded={handleConversionAdded}
+              onDragStart={handleDragStart}
+              onDragEnter={handleDragEnter}
+              onDragEnd={handleDragEnd}
+              isDragging={draggedIndex === index}
               rowsCount={rows.length}
             />
           ))}

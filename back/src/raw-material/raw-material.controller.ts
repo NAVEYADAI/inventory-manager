@@ -28,6 +28,14 @@ export class RawMaterialController {
     return this.rawMaterialService.update(+id, updateRawMaterialDto);
   }
 
+  @Post(':id/conversion')
+  addConversion(
+    @Param('id') id: string,
+    @Body() body: { id?: number; uomName: string; conversionFactor: number; baseUom: string },
+  ) {
+    return this.rawMaterialService.addConversion(+id, body.uomName, body.conversionFactor, body.baseUom, body.id);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.rawMaterialService.remove(+id);

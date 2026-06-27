@@ -16,7 +16,7 @@ export class CreateProductService {
   ) {}
 
   async create(createCreateProductDto: CreateCreateProductDto) {
-    const { recipeId, batche_count, created_time } = createCreateProductDto;
+    const { recipeId, batche_count, created_time, actualYield } = createCreateProductDto;
     const recipe = await this.recipeRepo.findOne({ where: { id: recipeId } });
     if (!recipe) {
       throw new NotFoundException(`Recipe with ID ${recipeId} not found`);
@@ -27,6 +27,7 @@ export class CreateProductService {
     event.batche_count = batche_count;
     event.created_time = new Date(created_time);
     event.updated_time = new Date();
+    event.actualYield = actualYield;
 
     return this.createProductRepo.save(event);
   }
@@ -67,6 +68,9 @@ export class CreateProductService {
     }
     if (updateCreateProductDto.created_time !== undefined) {
       event.created_time = new Date(updateCreateProductDto.created_time);
+    }
+    if (updateCreateProductDto.actualYield !== undefined) {
+      event.actualYield = updateCreateProductDto.actualYield;
     }
     event.updated_time = new Date();
     return this.createProductRepo.save(event);

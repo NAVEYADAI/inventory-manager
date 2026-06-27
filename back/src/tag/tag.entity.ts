@@ -18,6 +18,9 @@ export class Tag {
   @Column()
   endDate: Date;
 
+  @Column({ default: false })
+  isHidden: boolean;
+
   @ManyToOne(() => Subscription)
   subscription: Subscription;
 }

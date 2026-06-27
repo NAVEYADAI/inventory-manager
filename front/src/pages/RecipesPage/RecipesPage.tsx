@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import {
   Box, Button, Grid, Typography,
-  IconButton, Divider, CircularProgress, Stack, TextField
+  IconButton, Divider, CircularProgress, Stack
 } from '@mui/material';
+import TextInput from '../../components/Inputs/TextInput';
 import {
   RecipesContainer,
   RecipesHeader,
@@ -21,12 +22,13 @@ import SearchIcon from '@mui/icons-material/Search';
 import LocalFloristIcon from '@mui/icons-material/LocalFlorist';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import AddIcon from '@mui/icons-material/Add';
-import { UOM_hebrew_names } from '../../enums';
+import { UOM, UOM_hebrew_names } from '../../enums';
 import { getRecipes, deleteRecipe, type RecipeDto } from '../../api/recipe';
 import CreateRecipeDialog from '../../dialogs/createRecipeDialog/CreateRecipeDialog';
 import RecipePreviewDialog from '../../dialogs/recipePreviewDialog/RecipePreviewDialog';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import ExecuteRecipeDialog from '../../dialogs/executeRecipeDialog/ExecuteRecipeDialog';
+import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog';
 
 const RecipesPage = () => {
   const [recipes, setRecipes] = useState<RecipeDto[]>([]);
@@ -38,6 +40,8 @@ const RecipesPage = () => {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [executeRecipe, setExecuteRecipe] = useState<RecipeDto | null>(null);
   const [isExecuteOpen, setIsExecuteOpen] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleOpenExecute = (recipe: RecipeDto) => {
     setExecuteRecipe(recipe);
@@ -76,13 +80,21 @@ const RecipesPage = () => {
     loadRecipes();
   }, [subscriptionId]);
 
-  const handleDelete = async (id: number) => {
-    if (!window.confirm('האם אתה בטוח שברצונך למחוק מתכון זה?')) return;
+  const handleDelete = (id: number) => {
+    setDeleteConfirmId(id);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (deleteConfirmId === null) return;
+    setIsDeleting(true);
     try {
-      await deleteRecipe(id);
-      setRecipes(prev => prev.filter(r => r.id !== id));
+      await deleteRecipe(deleteConfirmId);
+      setRecipes(prev => prev.filter(r => r.id !== deleteConfirmId));
     } catch (e) {
       console.error('Failed to delete recipe', e);
+    } finally {
+      setIsDeleting(false);
+      setDeleteConfirmId(null);
     }
   };
 
@@ -119,7 +131,7 @@ const RecipesPage = () => {
       {/* Search Bar */}
       {recipes.length > 0 && (
         <SearchWrapper>
-          <TextField
+          <TextInput
             fullWidth
             variant="outlined"
             placeholder="חפש מתכון לפי שם..."
@@ -234,7 +246,7 @@ const RecipesPage = () => {
                               {item.raw_material?.name || 'חומר גלם לא ידוע'}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" fontWeight={600}>
-                              {item.volume} {UOM_hebrew_names[item.uom] || item.uom}
+                              {item.volume} {item.uom === UOM.CUSTOM ? (item.customUom || 'יחידה מותאמת') : (UOM_hebrew_names[item.uom as UOM] || item.uom)}
                             </Typography>
                           </IngredientItem>
                         ))
@@ -291,6 +303,19 @@ const RecipesPage = () => {
           // Reload recipes list if needed, or simply let the event log run
           loadRecipes();
         }}
+      />
+
+      {/* Reusable Confirm Dialog */}
+      <ConfirmDialog
+        open={deleteConfirmId !== null}
+        onClose={() => setDeleteConfirmId(null)}
+        onConfirm={handleConfirmDelete}
+        isLoading={isDeleting}
+        title="מחיקת מתכון"
+        message="האם אתה בטוח שברצונך למחוק מתכון זה? פעולה זו תסיר את המתכון מספר המתכונים באופן קבוע."
+        confirmText="מחק"
+        cancelText="ביטול"
+        severity="error"
       />
     </RecipesContainer>
   );

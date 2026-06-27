@@ -5,18 +5,22 @@ export interface RecipeIngredientPayload {
   rawMaterialId: number;
   volume: number;
   uom: UOM;
+  customUom?: string;
 }
 
 export interface CreateRecipePayload {
   name: string;
   subscriptionId: number;
   ingredients: RecipeIngredientPayload[];
+  yieldType?: 'UNITS' | 'WEIGHT';
+  isIntermediate?: boolean;
 }
 
 export interface RecipeIngredientDto {
   id: number;
   volume: number;
   uom: UOM;
+  customUom?: string;
   raw_material: {
     id: number;
     name: string;
@@ -30,6 +34,8 @@ export interface RecipeDto {
   name: string;
   is_deleted: boolean;
   recipe_product: RecipeIngredientDto[];
+  yieldType: 'UNITS' | 'WEIGHT';
+  isIntermediate: boolean;
 }
 
 export async function createRecipe(payload: CreateRecipePayload) {

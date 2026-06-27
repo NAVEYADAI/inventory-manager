@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
-  TextField,
   Button,
   Box,
   CircularProgress,
   Typography,
   Stack,
 } from '@mui/material';
+import TextInput from '../../components/Inputs/TextInput';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import { UOM, UOM_hebrew_names } from '../../enums';
 import { createProductExecution } from '../../api/createProduct';
@@ -24,6 +24,7 @@ const ExecuteRecipeDialog = ({ open, onClose, recipe, onSave }: Props) => {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [multiplier, setMultiplier] = useState('1');
+  const [actualYield, setActualYield] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -40,6 +41,7 @@ const ExecuteRecipeDialog = ({ open, onClose, recipe, onSave }: Props) => {
     setDate(localDate);
     setTime(localTime);
     setMultiplier('1');
+    setActualYield('');
     setError('');
   }, [open, recipe]);
 
@@ -76,11 +78,20 @@ const ExecuteRecipeDialog = ({ open, onClose, recipe, onSave }: Props) => {
       const [hours, minutes] = time.split(':').map(Number);
       const executionDate = new Date(year, month - 1, day, hours, minutes, 0, 0);
 
-      await createProductExecution({
+      const payload: any = {
         recipeId: recipe.id,
         batche_count: finalMultiplier,
         created_time: executionDate.toISOString(),
-      });
+      };
+
+      if (actualYield.trim()) {
+        const parsedYield = parseFloat(actualYield.replace(',', '.'));
+        if (!isNaN(parsedYield) && parsedYield > 0) {
+          payload.actualYield = parsedYield;
+        }
+      }
+
+      await createProductExecution(payload);
 
       onSave();
       onClose();
@@ -118,16 +129,16 @@ const ExecuteRecipeDialog = ({ open, onClose, recipe, onSave }: Props) => {
   );
 
   return (
-    <form onSubmit={handleSubmit}>
-      <BaseDialog
-        open={open}
-        onClose={onClose}
-        title={`רשום הכנת מתכון: ${recipe.name}`}
-        subtitle={`מזהה מתכון: #${recipe.id}`}
-        icon={<RestaurantIcon color="primary" sx={{ fontSize: 32 }} />}
-        actions={actions}
-        maxWidth="sm"
-      >
+    <BaseDialog
+      open={open}
+      onClose={onClose}
+      title={`רשום הכנת מתכון: ${recipe.name}`}
+      subtitle={`מזהה מתכון: #${recipe.id}`}
+      icon={<RestaurantIcon color="primary" sx={{ fontSize: 32 }} />}
+      actions={actions}
+      maxWidth="sm"
+      onSubmit={handleSubmit}
+    >
         <Box display="flex" flexDirection="column" gap={3}>
           {error && (
             <Typography color="error" variant="body2" sx={{ textAlign: 'center', fontWeight: 600 }}>
@@ -136,7 +147,7 @@ const ExecuteRecipeDialog = ({ open, onClose, recipe, onSave }: Props) => {
           )}
 
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-            <TextField
+            <TextInput
               label="תאריך הכנה"
               type="date"
               value={date}
@@ -145,7 +156,7 @@ const ExecuteRecipeDialog = ({ open, onClose, recipe, onSave }: Props) => {
               fullWidth
               InputLabelProps={{ shrink: true }}
             />
-            <TextField
+            <TextInput
               label="שעת הכנה"
               type="time"
               value={time}
@@ -156,7 +167,7 @@ const ExecuteRecipeDialog = ({ open, onClose, recipe, onSave }: Props) => {
             />
           </Stack>
 
-          <TextField
+          <TextInput
             label="כמות להכפלה"
             type="number"
             value={multiplier}
@@ -165,6 +176,21 @@ const ExecuteRecipeDialog = ({ open, onClose, recipe, onSave }: Props) => {
             fullWidth
             inputProps={{ min: 0.01, step: 'any' }}
             helperText="פי כמה להכפיל את חומרי הגלם במתכון (לדוגמה: 0.5)"
+          />
+
+          <TextInput
+            label={recipe.yieldType === 'UNITS' ? "כמות יחידות שיצאו בפועל" : "משקל נטו שהתקבל"}
+            type="text"
+            inputMode="decimal"
+            value={actualYield}
+            onChange={(e) => {
+              const val = e.target.value.replace("ץ", ".").replace(/[^0-9.,]/g, "");
+              setActualYield(val);
+            }}
+            disabled={submitting}
+            fullWidth
+            placeholder={recipe.yieldType === 'UNITS' ? "למשל: 50" : "למשל: 2.5 (ק״ג או גרם)"}
+            helperText={recipe.yieldType === 'UNITS' ? "הזן את מספר היחידות המדויק שיצא מההכנה" : "הזן את המשקל הנטו המדויק של התוצר לאחר הכנה"}
           />
 
           <Box>
@@ -198,7 +224,7 @@ const ExecuteRecipeDialog = ({ open, onClose, recipe, onSave }: Props) => {
               <Stack spacing={1.5}>
                 {recipe.recipe_product && recipe.recipe_product.length > 0 ? (
                   recipe.recipe_product.map((item) => {
-                    const uomHebrew = UOM_hebrew_names[item.uom as UOM] || item.uom;
+                    const uomHebrew = item.uom === UOM.CUSTOM ? (item.customUom || 'יחידה מותאמת') : (UOM_hebrew_names[item.uom as UOM] || item.uom);
                     const baseVolume = item.volume;
                     const actualVolume = parseFloat((baseVolume * parsedMultiplier).toFixed(3));
 
@@ -243,7 +269,6 @@ const ExecuteRecipeDialog = ({ open, onClose, recipe, onSave }: Props) => {
           </Box>
         </Box>
       </BaseDialog>
-    </form>
   );
 };
 

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { MeasurementType, MeasurementType_hebrew_names } from "../../enums";
-import { Box, Paper, Typography, Chip, TextField, FormControl, InputLabel, Select, MenuItem, IconButton, Button } from "@mui/material";
+import { Box, Paper, Typography, Chip, FormControl, InputLabel, Select, MenuItem, IconButton, Button } from "@mui/material";
+import TextInput from "../Inputs/TextInput";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { type RawMaterialDto, updateRawMaterial } from "../../api/rawMaterial";
 import { measurementTypeHints } from "./RawMaterialInputRow";
@@ -123,7 +124,7 @@ const ExistingMaterialsEditor: React.FC<ExistingMaterialsEditorProps> = ({
           <Box display="flex" flexDirection="column" gap={1}>
             {selectedMaterials.map((material) => (
               <Box key={material.id} display="flex" gap={1} alignItems="center" flexWrap="wrap">
-                <TextField
+                <TextInput
                   label="שם חומר גלם"
                   size="small"
                   value={material.name}
@@ -147,7 +148,7 @@ const ExistingMaterialsEditor: React.FC<ExistingMaterialsEditorProps> = ({
                     ))}
                   </Select>
                 </FormControl>
-                <TextField
+                <TextInput
                   label="קטגוריה"
                   size="small"
                   value={material.category ?? ""}

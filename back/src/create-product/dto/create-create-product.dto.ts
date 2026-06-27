@@ -1,4 +1,4 @@
-import { IsNumber, IsNotEmpty, IsDateString } from 'class-validator';
+import { IsNumber, IsNotEmpty, IsDateString, IsOptional } from 'class-validator';
 
 export class CreateCreateProductDto {
   @IsNotEmpty()
@@ -12,4 +12,8 @@ export class CreateCreateProductDto {
   @IsNotEmpty()
   @IsDateString()
   created_time: string;
+
+  @IsOptional()
+  @IsNumber()
+  actualYield?: number;
 }

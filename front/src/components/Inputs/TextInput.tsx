@@ -1,26 +1,30 @@
 import { useState } from "react";
 import {
   TextField,
-  type SxProps,
-  type TextFieldVariants,
-  type Theme,
   InputAdornment,
-  IconButton
+  IconButton,
+  type TextFieldProps
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-type TextInputProps = {
-  label?: string;
-  variant?: TextFieldVariants;
-  sx?: SxProps<Theme>;
-  state: any;
-  setState: (str: string) => void;
-  type?: string;
-  className?: string;
+export type TextInputProps = Omit<TextFieldProps, 'onChange'> & {
+  state?: any;
+  setState?: (str: string) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-const TextInput = ({ label, variant, sx, state, setState, type, className }: TextInputProps) => {
+const TextInput = ({
+  state,
+  setState,
+  value,
+  onChange,
+  type,
+  inputProps,
+  InputProps,
+  variant = "outlined",
+  ...rest
+}: TextInputProps) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleClickShowPassword = () => {
@@ -34,30 +38,44 @@ const TextInput = ({ label, variant, sx, state, setState, type, className }: Tex
   const isPassword = type === "password";
   const inputType = isPassword ? (showPassword ? "text" : "password") : (type ?? "text");
 
+  const val = state !== undefined ? state : value;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (setState) {
+      setState(e.target.value);
+    }
+    if (onChange) {
+      onChange(e);
+    }
+  };
+
   return (
     <TextField
-      className={className}
-      value={state}
-      onChange={(e) => setState(e.target.value)}
-      label={label}
+      value={val}
+      onChange={handleChange}
       type={inputType}
-      variant={variant ?? "outlined"}
-      inputProps={{ style: { textAlign: "left" } }}
-      InputProps={isPassword ? {
-        endAdornment: (
-          <InputAdornment position="end">
-            <IconButton
-              aria-label="toggle password visibility"
-              onClick={handleClickShowPassword}
-              onMouseDown={handleMouseDownPassword}
-              edge="end"
-            >
-              {showPassword ? <VisibilityOff /> : <Visibility />}
-            </IconButton>
-          </InputAdornment>
-        )
-      } : undefined}
-      sx={sx}
+      variant={variant}
+      inputProps={{
+        style: { textAlign: "left" },
+        ...inputProps
+      }}
+      InputProps={{
+        ...(isPassword ? {
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                aria-label="toggle password visibility"
+                onClick={handleClickShowPassword}
+                onMouseDown={handleMouseDownPassword}
+                edge="end"
+              >
+                {showPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          )
+        } : {}),
+        ...InputProps
+      }}
+      {...rest}
     />
   );
 };

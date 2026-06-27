@@ -1,6 +1,7 @@
 import React, { type ReactElement } from "react";
 import { MeasurementType, MeasurementType_hebrew_names } from "../../enums";
-import { Box, Paper, Tooltip, Chip, FormControl, InputLabel, Select, MenuItem, TextField, IconButton } from "@mui/material";
+import { Box, Paper, Tooltip, Chip, FormControl, InputLabel, Select, MenuItem, IconButton } from "@mui/material";
+import TextInput from "../Inputs/TextInput";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ScaleIcon from "@mui/icons-material/Scale";
 import OpacityIcon from "@mui/icons-material/Opacity";
@@ -81,7 +82,7 @@ const RawMaterialInputRow: React.FC<RawMaterialInputRowProps> = ({
             </Select>
           </FormControl>
 
-          <TextField
+          <TextInput
             sx={{ flex: 2, width: "100%" }}
             size="small"
             fullWidth
@@ -90,7 +91,7 @@ const RawMaterialInputRow: React.FC<RawMaterialInputRowProps> = ({
             onChange={(e) => onUpdateRow(index, "name", e.target.value)}
           />
 
-          <TextField
+          <TextInput
             sx={{ flex: 1.4, width: "100%" }}
             size="small"
             fullWidth

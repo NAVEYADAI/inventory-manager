@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RawMaterial } from './raw-material.entity';
 import { Subscription } from '../subscription/subscription.entity';
+import { RawMaterialConversion } from './raw-material-conversion.entity';
 
 @Injectable()
 export class RawMaterialService {
@@ -26,6 +27,8 @@ export class RawMaterialService {
     private readonly rawMaterialRepo: Repository<RawMaterial>,
     @InjectRepository(Subscription)
     private readonly subscriptionRepo: Repository<Subscription>,
+    @InjectRepository(RawMaterialConversion)
+    private readonly conversionRepo: Repository<RawMaterialConversion>,
   ) {}
 
   async createBulk(createRawMaterialDto: CreateRawMaterialDto) {
@@ -51,15 +54,21 @@ export class RawMaterialService {
   }
 
   async findAllForSubscription(subscriptionId: number) {
-    return this.rawMaterialRepo.find({ where: { subscription: { id: subscriptionId } } });
+    return this.rawMaterialRepo.find({
+      where: { subscription: { id: subscriptionId } },
+      relations: ['conversions'],
+    });
   }
 
   async findOne(id: number) {
-    return this.rawMaterialRepo.findOne({ where: { id } });
+    return this.rawMaterialRepo.findOne({
+      where: { id },
+      relations: ['conversions'],
+    });
   }
 
   async update(id: number, updateRawMaterialDto: UpdateRawMaterialDto) {
-    const raw = await this.rawMaterialRepo.findOne({ where: { id } });
+    const raw = await this.rawMaterialRepo.findOne({ where: { id }, relations: ['conversions'] });
     if (!raw) throw new NotFoundException('Raw material not found');
     if (!updateRawMaterialDto.measurementType && updateRawMaterialDto.byWeight !== undefined) {
       updateRawMaterialDto.measurementType = updateRawMaterialDto.byWeight
@@ -75,5 +84,30 @@ export class RawMaterialService {
     if (!raw) throw new NotFoundException('Raw material not found');
     await this.rawMaterialRepo.remove(raw);
     return { success: true };
+  }
+
+  async addConversion(rawMaterialId: number, uomName: string, conversionFactor: number, baseUom: string, id?: number) {
+    const raw = await this.rawMaterialRepo.findOne({ where: { id: rawMaterialId }, relations: ['conversions'] });
+    if (!raw) throw new NotFoundException('Raw material not found');
+
+    let conv = id ? raw.conversions?.find((c) => c.id === id) : raw.conversions?.find((c) => c.uomName === uomName);
+    if (conv) {
+      conv.uomName = uomName;
+      conv.conversionFactor = conversionFactor;
+      conv.baseUom = baseUom;
+    } else {
+      conv = this.conversionRepo.create({
+        uomName,
+        conversionFactor,
+        baseUom,
+        rawMaterial: raw,
+      });
+      if (!raw.conversions) {
+        raw.conversions = [];
+      }
+      raw.conversions.push(conv);
+    }
+    await this.rawMaterialRepo.save(raw);
+    return conv;
   }
 }

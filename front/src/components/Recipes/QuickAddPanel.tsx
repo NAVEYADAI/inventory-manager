@@ -1,6 +1,7 @@
 import React from "react";
 import { MeasurementType, MeasurementType_hebrew_names } from "../../enums";
-import { Box, Typography, TextField, FormControl, InputLabel, Select, MenuItem, IconButton, Paper, Button } from "@mui/material";
+import { Box, Typography, FormControl, InputLabel, Select, MenuItem, IconButton, Paper, Button } from "@mui/material";
+import TextInput from "../Inputs/TextInput";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
@@ -53,7 +54,7 @@ const QuickAddPanel: React.FC<QuickAddPanelProps> = ({
       <Box display="flex" flexDirection="column" gap={1.5}>
         {rows.map((qRow, qIndex) => (
           <Box key={qIndex} display="flex" gap={2} alignItems="center" flexWrap="wrap">
-            <TextField
+            <TextInput
               autoFocus={qIndex === 0 && qRow.name === ""}
               label="שם חומר הגלם"
               value={qRow.name}
@@ -88,7 +89,7 @@ const QuickAddPanel: React.FC<QuickAddPanelProps> = ({
               </Select>
             </FormControl>
 
-            <TextField
+            <TextInput
               label="קטגוריה (אופציונלי)"
               value={qRow.category}
               onChange={(e) => onUpdateQuickAddRow(qIndex, "category", e.target.value)}

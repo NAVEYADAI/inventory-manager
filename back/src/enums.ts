@@ -9,6 +9,7 @@ export enum UOM {
     PIECE = 'piece',
     TABLESPOON = 'tablespoon',
     TEASPOON = 'teaspoon',
+    CUSTOM = 'custom',
 }
 
 export enum MeasurementType {
@@ -27,7 +28,8 @@ export const UOM_hebrew_names: Record<UOM, string> = {
     [UOM.TEASPOON]: "כפית",
     [UOM.TON]: "טון",
     [UOM.KOBE]: "קוב",
-    [UOM.CUP]: "כוס"
+    [UOM.CUP]: "כוס",
+    [UOM.CUSTOM]: "מותאם אישית"
 };
 
 export const MeasurementType_hebrew_names: Record<MeasurementType, string> = {

@@ -7,11 +7,20 @@ export type RawMaterialRowPayload = {
   category?: string;
 };
 
+export type RawMaterialConversionDto = {
+  id: number;
+  uomName: string;
+  conversionFactor: number;
+  baseUom: string;
+};
+
 export type RawMaterialDto = {
   id: number;
   name: string;
   measurementType: MeasurementType;
   category?: string | null;
+  uom?: string;
+  conversions?: RawMaterialConversionDto[];
 };
 
 export async function createRawMaterials(subscriptionId: number, items: RawMaterialRowPayload[]) {
@@ -31,4 +40,15 @@ export async function deleteRawMaterial(id: number) {
 
 export async function updateRawMaterial(id: number, payload: Partial<RawMaterialRowPayload>) {
   return axiosInstance.patch(`/raw-material/${id}`, payload);
+}
+
+export async function addRawMaterialConversion(
+  rawMaterialId: number,
+  payload: { id?: number; uomName: string; conversionFactor: number; baseUom: string }
+) {
+  const response = await axiosInstance.post<RawMaterialConversionDto>(
+    `/raw-material/${rawMaterialId}/conversion`,
+    payload
+  );
+  return response.data;
 }

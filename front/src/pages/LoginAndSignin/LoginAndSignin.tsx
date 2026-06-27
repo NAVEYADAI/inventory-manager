@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageBackground, GlassCard, BannerSide, FormSide } from "./LoginAndSignin.style";
 import { motion, AnimatePresence } from "framer-motion";
 import { Typography, Stack } from "@mui/material";
@@ -6,8 +6,23 @@ import LogIn from "./LogIn";
 import SignUp from "./SignUp";
 import type { Login, Signup } from "./util";
 import { GhostButton } from "./LoginAndSignin.style";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../providers/AuthProvider";
 
 const LoginAndSignin = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      if (user.selectedCompany) {
+        navigate("/home");
+      } else {
+        navigate("/company-picker");
+      }
+    }
+  }, [user, navigate]);
+
   const [isLogin, setIsLogin] = useState(true); // Default to login screen
   const [logIn, setLogIn] = useState<Login>({ userName: "", password: "" });
   const [signUp, setSignUp] = useState<Signup>({

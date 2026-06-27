@@ -6,6 +6,7 @@ export interface TagDto {
   description: string;
   startDate: string;
   endDate: string;
+  isHidden: boolean;
 }
 
 export interface CreateTagPayload {
@@ -14,6 +15,7 @@ export interface CreateTagPayload {
   startDate: string;
   endDate: string;
   subscriptionId: number;
+  isHidden?: boolean;
 }
 
 export interface UpdateTagPayload {
@@ -21,6 +23,7 @@ export interface UpdateTagPayload {
   description?: string;
   startDate?: string;
   endDate?: string;
+  isHidden?: boolean;
 }
 
 export interface RecipeSummaryItem {

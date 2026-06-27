@@ -1,4 +1,4 @@
-import { Box, Typography, Stack } from "@mui/material";
+import { Box, Typography, Stack, Fab, Tooltip } from "@mui/material";
 import {
   CalendarContainer,
   CalendarHeader,
@@ -9,6 +9,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useHolidays } from "../../hooks/useHolidays";
 import CreateProductLogDialog from "../../dialogs/createProductLogDialog/CreateProductLogDialog";
@@ -190,24 +191,26 @@ const FullCalendarManeger = () => {
         execution: exec
       }
     })),
-    ...tags.map((tag: TagDto) => {
-      const end = new Date(tag.endDate);
-      end.setDate(end.getDate() + 1);
-      const endStr = end.toISOString().substring(0, 10);
-      return {
-        title: `📌 תג: ${tag.name}`,
-        start: tag.startDate.substring(0, 10),
-        end: endStr,
-        allDay: true,
-        color: '#9c27b0', // Purple tag color
-        textColor: '#ffffff',
-        display: 'block',
-        extendedProps: {
-          isTag: true,
-          tag: tag,
-        }
-      };
-    }),
+    ...tags
+      .filter((tag: TagDto) => !tag.isHidden)
+      .map((tag: TagDto) => {
+        const end = new Date(tag.endDate);
+        end.setDate(end.getDate() + 1);
+        const endStr = end.toISOString().substring(0, 10);
+        return {
+          title: `📌 תג: ${tag.name}`,
+          start: tag.startDate.substring(0, 10),
+          end: endStr,
+          allDay: true,
+          color: '#9c27b0', // Purple tag color
+          textColor: '#ffffff',
+          display: 'block',
+          extendedProps: {
+            isTag: true,
+            tag: tag,
+          }
+        };
+      }),
   ];
 
   return (
@@ -236,10 +239,6 @@ const FullCalendarManeger = () => {
           onNext={handleNext}
           onViewChange={handleViewChange}
           onDateSelect={handleDateSelect}
-          onCreateTag={() => {
-            setSelectedTag(null);
-            setIsTagDialogOpen(true);
-          }}
         />
 
         <FullCalendar
@@ -367,6 +366,33 @@ const FullCalendarManeger = () => {
           setIsTagDialogOpen(true);
         }}
       />
+      <Tooltip title="יצירת תקופת ייצור (תג) חדשה" placement="top" arrow>
+        <Fab
+          color="secondary"
+          aria-label="add-tag"
+          onClick={() => {
+            setSelectedTag(null);
+            setIsTagDialogOpen(true);
+          }}
+          sx={{
+            position: "fixed",
+            bottom: 32,
+            left: 32,
+            background: 'linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%)',
+            boxShadow: '0 4px 16px rgba(156, 39, 176, 0.4)',
+            color: "#ffffff",
+            transition: "all 0.2s ease-in-out",
+            zIndex: 1000,
+            '&:hover': {
+              background: 'linear-gradient(135deg, #7b1fa2 0%, #6a1b9a 100%)',
+              transform: 'scale(1.08)',
+              boxShadow: '0 6px 20px rgba(156, 39, 176, 0.5)',
+            }
+          }}
+        >
+          <LocalOfferIcon />
+        </Fab>
+      </Tooltip>
     </CalendarContainer>
   );
 };

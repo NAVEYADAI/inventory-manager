@@ -65,7 +65,7 @@ export class AuthService {
     }
 
     const secret = process.env.JWT_SECRET || 'dev-secret';
-    const token = jwt.sign({ sub: (user as any).id, email: (user as any).email, company: selectedCompany }, secret, { expiresIn: '7d' });
+    const token = jwt.sign({ sub: (user as any).id, email: (user as any).email, company: selectedCompany }, secret, { expiresIn: '12h' });
     return {
       accessToken: token,
       user: {
@@ -136,6 +136,6 @@ export class AuthService {
     if (company) {
       payload.company = company;
     }
-    return jwt.sign(payload, secret, { expiresIn: '7d' });
+    return jwt.sign(payload, secret, { expiresIn: '12h' });
   }
 }

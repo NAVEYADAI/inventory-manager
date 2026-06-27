@@ -12,6 +12,9 @@ export class CreateProduct {
   @Column({ type: 'float', nullable: true })
   batche_count: number;
 
+  @Column({ type: 'float', nullable: true })
+  actualYield: number;
+
   @Column()
   created_time: Date;
 

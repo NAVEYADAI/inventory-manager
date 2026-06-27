@@ -2,6 +2,7 @@ import { Invetory } from '../invetory/invetory.entity';
 import { RecipeProduct } from '../recipe-product/recipe-product.entity';
 import { Subscription } from '../subscription/subscription.entity';
 import { MeasurementType } from '../enums';
+import { RawMaterialConversion } from './raw-material-conversion.entity';
 import {
   Column,
   Entity,
@@ -42,4 +43,11 @@ export class RawMaterial {
     (recipe_product) => recipe_product.raw_material,
   )
   recipe_product: RecipeProduct[];
+
+  @OneToMany(
+    () => RawMaterialConversion,
+    (conversion) => conversion.rawMaterial,
+    { cascade: true }
+  )
+  conversions: RawMaterialConversion[];
 }

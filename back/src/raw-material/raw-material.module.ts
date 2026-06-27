@@ -4,10 +4,12 @@ import { RawMaterialService } from './raw-material.service';
 import { RawMaterialController } from './raw-material.controller';
 import { RawMaterial } from './raw-material.entity';
 import { Subscription } from '../subscription/subscription.entity';
+import { RawMaterialConversion } from './raw-material-conversion.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([RawMaterial, Subscription])],
+  imports: [TypeOrmModule.forFeature([RawMaterial, Subscription, RawMaterialConversion])],
   controllers: [RawMaterialController],
   providers: [RawMaterialService],
+  exports: [TypeOrmModule, RawMaterialService],
 })
 export class RawMaterialModule {}

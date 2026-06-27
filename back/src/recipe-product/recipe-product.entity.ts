@@ -15,6 +15,9 @@ export class RecipeProduct {
   @Column({ nullable: false, type: 'enum', enum: UOM })
   uom: UOM;
 
+  @Column({ nullable: true })
+  customUom?: string;
+
   @ManyToOne(() => Recipe, (recipe) => recipe.recipe_product, { onDelete: 'CASCADE' })
   recipe: Recipe;
 

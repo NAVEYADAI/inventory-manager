@@ -21,6 +21,12 @@ export class Recipe {
   @Column()
   is_deleted: boolean;
 
+  @Column({ default: 'WEIGHT' })
+  yieldType: 'UNITS' | 'WEIGHT';
+
+  @Column({ default: false })
+  isIntermediate: boolean;
+
   @ManyToOne(() => Subscription, (subscription) => subscription.recipes)
   subscription: Subscription;
 

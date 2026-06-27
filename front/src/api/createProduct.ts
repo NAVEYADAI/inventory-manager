@@ -5,8 +5,10 @@ export interface CreateProductDto {
   recipe: {
     id: number;
     name: string;
+    yieldType: 'UNITS' | 'WEIGHT';
   };
   batche_count: number;
+  actualYield?: number | null;
   created_time: string;
   updated_time: string;
 }
@@ -15,6 +17,7 @@ export interface CreateProductPayload {
   recipeId: number;
   batche_count: number;
   created_time: string;
+  actualYield?: number;
 }
 
 export async function createProductExecution(payload: CreateProductPayload): Promise<CreateProductDto> {

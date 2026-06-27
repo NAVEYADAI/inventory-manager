@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  TextField,
   Button,
   Select,
   MenuItem,
@@ -11,14 +10,10 @@ import {
   CircularProgress,
   Typography,
 } from '@mui/material';
-import { getRecipes } from '../../api/recipe';
+import TextInput from '../../components/Inputs/TextInput';
+import { getRecipes, type RecipeDto } from '../../api/recipe';
 import { createProductExecution } from '../../api/createProduct';
 import BaseDialog from '../../components/BaseDialog/BaseDialog';
-
-interface RecipeOption {
-  id: number;
-  name: string;
-}
 
 interface Props {
   open: boolean;
@@ -31,10 +26,11 @@ interface Props {
 const fullDateFormatter = new Intl.DateTimeFormat('he-IL', { dateStyle: 'full' });
 
 const CreateProductLogDialog = ({ open, onClose, dateStr, subscriptionId, onSave }: Props) => {
-  const [recipes, setRecipes] = useState<RecipeOption[]>([]);
+  const [recipes, setRecipes] = useState<RecipeDto[]>([]);
   const [selectedRecipeId, setSelectedRecipeId] = useState<number | ''>('');
   const [time, setTime] = useState('');
   const [multiplier, setMultiplier] = useState<string>('1');
+  const [actualYield, setActualYield] = useState('');
   const [loadingRecipes, setLoadingRecipes] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -94,11 +90,20 @@ const CreateProductLogDialog = ({ open, onClose, dateStr, subscriptionId, onSave
       executionDate.setSeconds(0);
       executionDate.setMilliseconds(0);
 
-      await createProductExecution({
+      const payload: any = {
         recipeId: selectedRecipeId,
         batche_count: parsedMultiplier,
         created_time: executionDate.toISOString(),
-      });
+      };
+
+      if (actualYield.trim()) {
+        const parsedYield = parseFloat(actualYield.replace(',', '.'));
+        if (!isNaN(parsedYield) && parsedYield > 0) {
+          payload.actualYield = parsedYield;
+        }
+      }
+
+      await createProductExecution(payload);
 
       onSave();
       onClose();
@@ -145,16 +150,18 @@ const CreateProductLogDialog = ({ open, onClose, dateStr, subscriptionId, onSave
     </Box>
   );
 
+  const selectedRecipe = recipes.find(r => r.id === selectedRecipeId);
+
   return (
-    <form onSubmit={handleSubmit}>
-      <BaseDialog
-        open={open}
-        onClose={onClose}
-        title="הכנת מתכון חדש"
-        subtitle={getFormattedDateHebrew()}
-        actions={actions}
-        maxWidth="xs"
-      >
+    <BaseDialog
+      open={open}
+      onClose={onClose}
+      title="הכנת מתכון חדש"
+      subtitle={getFormattedDateHebrew()}
+      actions={actions}
+      maxWidth="xs"
+      onSubmit={handleSubmit}
+    >
         <Box display="flex" flexDirection="column" gap={2.5}>
           {error && (
             <Typography color="error" variant="body2" sx={{ textAlign: 'center', fontWeight: 600 }}>
@@ -192,7 +199,7 @@ const CreateProductLogDialog = ({ open, onClose, dateStr, subscriptionId, onSave
             <FormHelperText>בחר את המתכון שברצונך להכין בתאריך זה</FormHelperText>
           </FormControl>
 
-          <TextField
+          <TextInput
             label="שעת הכנה"
             type="time"
             value={time}
@@ -202,7 +209,7 @@ const CreateProductLogDialog = ({ open, onClose, dateStr, subscriptionId, onSave
             InputLabelProps={{ shrink: true }}
           />
 
-          <TextField
+          <TextInput
             label="כמות להכפלה"
             type="number"
             value={multiplier}
@@ -212,9 +219,25 @@ const CreateProductLogDialog = ({ open, onClose, dateStr, subscriptionId, onSave
             inputProps={{ min: 0.01, step: 'any' }}
             helperText="פי כמה להכפיל את חומרי הגלם במתכון (לדוגמה: 0.5)"
           />
+
+          {selectedRecipe && (
+            <TextInput
+              label={selectedRecipe.yieldType === 'UNITS' ? "כמות יחידות שיצאו בפועל" : "משקל נטו שהתקבל"}
+              type="text"
+              inputMode="decimal"
+              value={actualYield}
+              onChange={(e) => {
+                const val = e.target.value.replace("ץ", ".").replace(/[^0-9.,]/g, "");
+                setActualYield(val);
+              }}
+              disabled={submitting}
+              fullWidth
+              placeholder={selectedRecipe.yieldType === 'UNITS' ? "למשל: 50" : "למשל: 2.5 (ק״ג או גרם)"}
+              helperText={selectedRecipe.yieldType === 'UNITS' ? "הזן את מספר היחידות המדויק שיצא מההכנה" : "הזן את המשקל הנטו המדויק של התוצר לאחר הכנה"}
+            />
+          )}
         </Box>
       </BaseDialog>
-    </form>
   );
 };
 

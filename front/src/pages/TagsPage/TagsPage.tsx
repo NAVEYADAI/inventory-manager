@@ -8,6 +8,7 @@ import {
   CircularProgress,
   Stack,
   CardContent,
+  Chip,
 } from '@mui/material';
 import {
   TagsContainer,
@@ -141,9 +142,14 @@ const TagsPage = () => {
               <TagCard onClick={() => handleOpenSummary(tag)} variant="outlined" sx={{ cursor: 'pointer' }}>
                 <CardContent sx={{ p: 0, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
                   <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={1}>
-                    <Typography variant="h6" fontWeight={800} color="text.primary" noWrap sx={{ maxWidth: '80%' }}>
-                      {tag.name}
-                    </Typography>
+                    <Box display="flex" alignItems="center" gap={1} sx={{ maxWidth: '80%', overflow: 'hidden' }}>
+                      <Typography variant="h6" fontWeight={800} color="text.primary" noWrap>
+                        {tag.name}
+                      </Typography>
+                      {tag.isHidden && (
+                        <Chip label="נסתר" size="small" variant="outlined" color="default" sx={{ height: 20, fontSize: '0.75rem' }} />
+                      )}
+                    </Box>
                     <IconButton
                       size="small"
                       onClick={(e) => handleOpenEdit(tag, e)}
