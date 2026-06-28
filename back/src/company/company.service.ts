@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -53,7 +53,7 @@ async create(createCompanyDto: CreateCompanyDto): Promise<{ company: Company; su
         const permission = txPermissionRepo.create({
           user,
           company: savedCompany,
-          role: PermissionRole.ADMIN,
+          role: PermissionRole.OWNER,
         });
         await txPermissionRepo.save(permission);
       }
@@ -61,6 +61,7 @@ async create(createCompanyDto: CreateCompanyDto): Promise<{ company: Company; su
       return { company: savedCompany, subscription: subscriptionResult };
     });
   }
+
   findAll() {
     return `This action returns all company`;
   }
@@ -163,6 +164,118 @@ async create(createCompanyDto: CreateCompanyDto): Promise<{ company: Company; su
       }
 
       return { user, isNewUser };
+    });
+  }
+
+  async updateEmployeeRole(companyId: number, targetUserId: number, newRole: string, callerId: number) {
+    return this.dataSource.transaction(async (manager: EntityManager) => {
+      const txPermissionRepo = manager.withRepository(this.permissionRepo);
+
+      // 1. Get all employees in company to find caller and target
+      const permissions = await txPermissionRepo.find({
+        where: { company: { id: companyId } },
+        relations: ['user'],
+      });
+
+      const callerPermission = permissions.find(p => p.user.id === callerId);
+      if (!callerPermission) {
+        throw new ForbiddenException('Caller is not a member of this company');
+      }
+
+      const targetPermission = permissions.find(p => p.user.id === targetUserId);
+      if (!targetPermission) {
+        throw new NotFoundException('Target employee not found in this company');
+      }
+
+      // 2. Validate role hierarchy
+      const callerRole = callerPermission.role;
+      const currentTargetRole = targetPermission.role;
+
+      if (callerRole !== PermissionRole.OWNER && callerRole !== PermissionRole.ADMIN) {
+        throw new ForbiddenException('Only owners and managers can modify roles');
+      }
+
+      if (callerId === targetUserId) {
+        throw new ForbiddenException('You cannot modify your own role');
+      }
+
+      if (currentTargetRole === PermissionRole.OWNER) {
+        throw new ForbiddenException('Cannot modify the role of the owner');
+      }
+
+      if (callerRole === PermissionRole.ADMIN) {
+        // Admin cannot modify roles of other admins, and can only set roles to editor/viewer
+        if (currentTargetRole === PermissionRole.ADMIN) {
+          throw new ForbiddenException('Managers cannot modify other managers');
+        }
+        if (newRole !== PermissionRole.EDITOR && newRole !== PermissionRole.VIEWER) {
+          throw new ForbiddenException('Managers can only assign editor or viewer roles');
+        }
+      }
+
+      if (newRole === PermissionRole.OWNER) {
+        throw new ForbiddenException('Cannot assign the owner role');
+      }
+
+      // 3. Update the role
+      targetPermission.role = newRole as PermissionRole;
+      return await txPermissionRepo.save(targetPermission);
+    });
+  }
+
+  async removeEmployee(companyId: number, targetUserId: number, callerId: number) {
+    return this.dataSource.transaction(async (manager: EntityManager) => {
+      const txPermissionRepo = manager.withRepository(this.permissionRepo);
+      const txSubscriptionRepo = manager.withRepository(this.subscriptionRepo);
+
+      // 1. Validate caller and target
+      const permissions = await txPermissionRepo.find({
+        where: { company: { id: companyId } },
+        relations: ['user'],
+      });
+
+      const callerPermission = permissions.find(p => p.user.id === callerId);
+      if (!callerPermission) {
+        throw new ForbiddenException('Caller is not a member of this company');
+      }
+
+      const targetPermission = permissions.find(p => p.user.id === targetUserId);
+      if (!targetPermission) {
+        throw new NotFoundException('Target employee not found in this company');
+      }
+
+      const callerRole = callerPermission.role;
+      const targetRole = targetPermission.role;
+
+      if (callerRole !== PermissionRole.OWNER && callerRole !== PermissionRole.ADMIN) {
+        throw new ForbiddenException('Only owners and managers can remove employees');
+      }
+
+      if (callerId === targetUserId) {
+        throw new ForbiddenException('You cannot remove yourself');
+      }
+
+      if (targetRole === PermissionRole.OWNER) {
+        throw new ForbiddenException('Cannot remove the owner of the company');
+      }
+
+      if (callerRole === PermissionRole.ADMIN && targetRole === PermissionRole.ADMIN) {
+        throw new ForbiddenException('Managers cannot remove other managers');
+      }
+
+      // 2. Remove from subscription
+      const subscription = await txSubscriptionRepo.findOne({
+        where: { company: { id: companyId } },
+        relations: ['users'],
+      });
+      if (subscription) {
+        subscription.users = subscription.users.filter(u => u.id !== targetUserId);
+        await txSubscriptionRepo.save(subscription);
+      }
+
+      // 3. Delete the UserPermission record
+      await txPermissionRepo.remove(targetPermission);
+      return { success: true };
     });
   }
 }
