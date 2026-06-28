@@ -64,3 +64,33 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Global MUI Autocomplete RTL adjustments */
+.MuiAutocomplete-paper {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+.MuiAutocomplete-option {
+  direction: rtl !important;
+  text-align: right !important;
+  justify-content: flex-start !important;
+}
+
+.MuiAutocomplete-noOptions,
+.MuiAutocomplete-loading {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+/* Global MUI Menu RTL adjustments */
+.MuiMenu-paper {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+.MuiMenuItem-root {
+  direction: rtl !important;
+  text-align: right !important;
+  justify-content: flex-start !important;
+}

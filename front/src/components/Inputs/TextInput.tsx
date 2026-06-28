@@ -55,7 +55,7 @@ const TextInput = ({
       type={inputType}
       variant={variant}
       inputProps={{
-        style: { textAlign: "left" },
+        style: { textAlign: "right" },
         ...inputProps
       }}
       InputProps={{

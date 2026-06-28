@@ -50,6 +50,42 @@ function App() {
           },
         },
       },
+      MuiAutocomplete: {
+        defaultProps: {
+          slotProps: {
+            paper: {
+              sx: {
+                direction: 'rtl',
+                textAlign: 'right',
+              }
+            }
+          }
+        },
+        styleOverrides: {
+          option: {
+            textAlign: "right",
+            justifyContent: "flex-start",
+            direction: "rtl",
+          },
+          noOptions: {
+            textAlign: "right",
+            direction: "rtl",
+          },
+          loading: {
+            textAlign: "right",
+            direction: "rtl",
+          },
+        },
+      },
+      MuiMenuItem: {
+        styleOverrides: {
+          root: {
+            textAlign: "right",
+            justifyContent: "flex-start",
+            direction: "rtl",
+          },
+        },
+      },
     },
   });
 
