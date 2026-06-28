@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Box, Tooltip, IconButton, Drawer, List, ListItem, ListItemButton, ListItemText, Divider, useTheme, useMediaQuery, Typography, Button } from "@mui/material";
+import { Box, Tooltip, IconButton, Drawer, List, ListItem, ListItemButton, ListItemText, Divider, useTheme, useMediaQuery, Typography, Button, Chip } from "@mui/material";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../providers/AuthProvider";
 import { logout as apiLogout } from "../../api/login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MenuIcon from "@mui/icons-material/Menu";
+import BusinessIcon from "@mui/icons-material/Business";
 import {
   StyledAppBar,
   StyledToolbar,
@@ -36,11 +37,14 @@ const Navbar: React.FC = () => {
 
     const isActive = (path: string) => location.pathname === path;
 
+    const isAdmin = user?.selectedCompany?.role === 'admin';
+
     const navItems = [
         { label: "ראשי", path: "/home" },
         { label: "מתכונים", path: "/recipes" },
         { label: "לוח שנה", path: "/calendar2" },
         { label: "דוחות ייצור", path: "/tags" },
+        ...(isAdmin ? [{ label: "ניהול עובדים", path: "/employees" }] : []),
     ];
 
     return (
@@ -61,6 +65,22 @@ const Navbar: React.FC = () => {
                         מנהל המלאי
                     </BrandTitle>
                 </Box>
+
+                {/* Centered Navigation Links on Desktop */}
+                {!isMobile && (
+                    <Box display="flex" gap={1}>
+                        {navItems.map((item) => (
+                            <NavButton
+                                key={item.path}
+                                component={Link}
+                                to={item.path}
+                                active={isActive(item.path)}
+                            >
+                                {item.label}
+                            </NavButton>
+                        ))}
+                    </Box>
+                )}
 
                 {isMobile ? (
                     <>
@@ -88,9 +108,25 @@ const Navbar: React.FC = () => {
                             }}
                         >
                             <Box display="flex" flexDirection="column" height="100%">
-                                <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 2, color: "#1e3c72" }}>
-                                    שלום, {user.name || user.email}
-                                </Typography>
+                                <Box display="flex" alignItems="center" gap={1} sx={{ mb: 2 }}>
+                                    <Typography variant="subtitle1" fontWeight={700} sx={{ color: "#1e3c72" }}>
+                                        שלום, {user.name || user.email}
+                                    </Typography>
+                                    {user.selectedCompany?.role && (
+                                        <Chip
+                                            label={user.selectedCompany.role === 'admin' ? 'מנהל' : 'עובד'}
+                                            size="small"
+                                            sx={{
+                                                fontWeight: 700,
+                                                borderRadius: '8px',
+                                                color: '#ffffff',
+                                                background: user.selectedCompany.role === 'admin'
+                                                    ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)'
+                                                    : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                            }}
+                                        />
+                                    )}
+                                </Box>
                                 <Divider sx={{ mb: 2 }} />
                                 <List sx={{ flexGrow: 1 }}>
                                     {navItems.map((item) => (
@@ -112,6 +148,20 @@ const Navbar: React.FC = () => {
                                             </ListItemButton>
                                         </ListItem>
                                     ))}
+                                    <ListItem disablePadding sx={{ mb: 1 }}>
+                                        <ListItemButton
+                                            component={Link}
+                                            to="/company-picker"
+                                            onClick={() => setDrawerOpen(false)}
+                                            sx={{
+                                                borderRadius: "10px",
+                                                color: "#64748b",
+                                                textAlign: "right",
+                                            }}
+                                        >
+                                            <ListItemText primary="החלף חברה / חברות שלי" />
+                                        </ListItemButton>
+                                    </ListItem>
                                 </List>
                                 <Divider sx={{ my: 2 }} />
                                 <Button
@@ -128,40 +178,59 @@ const Navbar: React.FC = () => {
                         </Drawer>
                     </>
                 ) : (
-                    /* Navigation Links and User Info */
-                    <Box display="flex" alignItems="center" gap={3}>
-                        {/* Navigation Buttons */}
-                        <Box display="flex" gap={1}>
-                            {navItems.map((item) => (
-                                <NavButton
-                                    key={item.path}
-                                    component={Link}
-                                    to={item.path}
-                                    active={isActive(item.path)}
-                                >
-                                    {item.label}
-                                </NavButton>
-                            ))}
-                        </Box>
+                    /* User Section (Name & Logout) on Desktop */
+                    <UserSection>
+                        <UsernameText
+                            variant="body2"
+                        >
+                            שלום, {user.name || user.email}
+                        </UsernameText>
 
-                        {/* User Section (Name & Logout) */}
-                        <UserSection>
-                            <UsernameText
-                                variant="body2"
+                        {user.selectedCompany?.role && (
+                            <Chip
+                                label={user.selectedCompany.role === 'admin' ? 'מנהל' : 'עובד'}
+                                size="small"
+                                sx={{
+                                    fontWeight: 700,
+                                    borderRadius: '8px',
+                                    color: '#ffffff',
+                                    background: user.selectedCompany.role === 'admin'
+                                        ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)'
+                                        : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                                }}
+                            />
+                        )}
+
+                        <Tooltip title="החלף חברה / חברות שלי">
+                            <IconButton
+                                onClick={() => navigate("/company-picker")}
+                                size="small"
+                                sx={{
+                                    backgroundColor: "rgba(30, 60, 114, 0.08)",
+                                    color: "#1e3c72",
+                                    borderRadius: "10px",
+                                    padding: 1,
+                                    transition: "all 0.2s ease-in-out",
+                                    "&:hover": {
+                                        backgroundColor: "rgba(30, 60, 114, 0.15)",
+                                        transform: "scale(1.05)",
+                                    },
+                                }}
                             >
-                                שלום, {user.name || user.email}
-                            </UsernameText>
+                                <BusinessIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
 
-                            <Tooltip title="התנתק מהמערכת">
-                                <LogoutButton
-                                    onClick={handleLogout}
-                                    size="small"
-                                >
-                                    <LogoutIcon fontSize="small" />
-                                </LogoutButton>
-                            </Tooltip>
-                        </UserSection>
-                    </Box>
+                        <Tooltip title="התנתק מהמערכת">
+                            <LogoutButton
+                                onClick={handleLogout}
+                                size="small"
+                            >
+                                <LogoutIcon fontSize="small" />
+                            </LogoutButton>
+                        </Tooltip>
+                    </UserSection>
                 )}
             </StyledToolbar>
         </StyledAppBar>

@@ -80,3 +80,23 @@ export const PickerButton = styled(Button)(({ theme }) => ({
   paddingLeft: theme.spacing(2),
   paddingRight: theme.spacing(2),
 }));
+
+export const CreateCompanyButton = styled(Button)(() => ({
+  borderRadius: '12px',
+  paddingTop: '10px',
+  paddingBottom: '10px',
+  fontWeight: 700,
+  borderWidth: '2px',
+  borderColor: '#1e3c72',
+  color: '#1e3c72',
+  '&:hover': {
+    borderWidth: '2px',
+    borderColor: '#2a5298',
+    backgroundColor: 'rgba(30, 60, 114, 0.04)',
+  }
+}));
+
+export const CancelButton = styled(Button)(() => ({
+  fontWeight: 600,
+  color: '#64748b',
+}));

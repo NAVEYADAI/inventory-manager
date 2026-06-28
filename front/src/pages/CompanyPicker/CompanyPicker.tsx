@@ -16,9 +16,8 @@ import {
   ErrorAlert,
   ScrollableStack,
   SectionSubtitle,
-  ActiveCompanyPaper,
-  InactiveCompanyPaper,
-  PickerButton,
+  CreateCompanyButton,
+  CancelButton,
 } from "./CompanyPicker.style";
 import {
   activateSubscription,
@@ -26,13 +25,15 @@ import {
   selectSubscription,
 } from "../../api/subscription";
 import type { CompanyInfo } from "../../api/login";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
+import { useAuth } from "../../providers/AuthProvider";
+import ActiveCompanyItem from "./components/ActiveCompanyItem";
+import InactiveCompanyItem from "./components/InactiveCompanyItem";
 
 const CompanyPicker = () => {
+  const { setUser } = useAuth();
   const [active, setActive] = useState<CompanyInfo[]>([]);
   const [inactive, setInactive] = useState<CompanyInfo[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -68,20 +69,28 @@ const CompanyPicker = () => {
           "user",
           JSON.stringify({ ...user, activeCompanies: act, inactiveCompanies: inact })
         );
+        setLoading(false);
       })
       .catch((e) => {
         console.error(e);
+        setLoading(false);
       });
   }, []);
 
   useEffect(() => {
-    if (active.length === 1) {
+    if (loading) return;
+
+    const userStr = localStorage.getItem("user");
+    const user = userStr ? JSON.parse(userStr) : null;
+    const hasSelectedCompany = !!user?.selectedCompany;
+
+    if (active.length === 1 && !hasSelectedCompany) {
       handlePick(active[0].subscriptionId);
     }
     if (active.length === 0 && inactive.length === 0) {
       navigate("/company-setup");
     }
-  }, [active, inactive]);
+  }, [active, inactive, loading]);
 
   const handleActivate = async (subId: number) => {
     setLoading(true);
@@ -99,6 +108,7 @@ const CompanyPicker = () => {
       if (res.data.accessToken) {
         localStorage.setItem("token", res.data.accessToken);
       }
+      setUser(user);
       navigate("/home");
     } catch (e: any) {
       setError(e?.response?.data?.message || "הפעלת המנוי נכשלה. אנא נסה שוב.");
@@ -118,6 +128,7 @@ const CompanyPicker = () => {
       if (res.data.accessToken) {
         localStorage.setItem("token", res.data.accessToken);
       }
+      setUser(user);
       navigate("/home");
     } catch (e: any) {
       setError(e?.response?.data?.message || "בחירת החברה נכשלה. אנא נסה שוב.");
@@ -167,29 +178,18 @@ const CompanyPicker = () => {
             ) : (
               <ScrollableStack spacing={3}>
                 {/* Active Companies List */}
-                {active.length > 1 && (
+                {active.length > 0 && (
                   <Box>
                     <SectionSubtitle variant="subtitle2" fontWeight={700} color="text.secondary">
                       חברות פעילות
                     </SectionSubtitle>
                     <List disablePadding>
                       {active.map((c) => (
-                        <ActiveCompanyPaper
+                        <ActiveCompanyItem
                           key={c.subscriptionId}
-                          variant="outlined"
-                        >
-                          <Typography variant="body1" fontWeight={600}>
-                            {c.name}
-                          </Typography>
-                          <PickerButton
-                            variant="contained"
-                            size="small"
-                            onClick={() => handlePick(c.subscriptionId)}
-                            startIcon={<CheckCircleOutlineIcon fontSize="small" />}
-                          >
-                            כניסה
-                          </PickerButton>
-                        </ActiveCompanyPaper>
+                          company={c}
+                          onPick={handlePick}
+                        />
                       ))}
                     </List>
                   </Box>
@@ -203,29 +203,41 @@ const CompanyPicker = () => {
                     </SectionSubtitle>
                     <List disablePadding>
                       {inactive.map((c) => (
-                        <InactiveCompanyPaper
+                        <InactiveCompanyItem
                           key={c.subscriptionId}
-                          variant="outlined"
-                        >
-                          <Typography variant="body1" fontWeight={600} color="text.secondary">
-                            {c.name}
-                          </Typography>
-                          <PickerButton
-                            variant="outlined"
-                            color="warning"
-                            size="small"
-                            onClick={() => handleActivate(c.subscriptionId)}
-                            startIcon={<PlayCircleOutlineIcon fontSize="small" />}
-                          >
-                            הפעלה
-                          </PickerButton>
-                        </InactiveCompanyPaper>
+                          company={c}
+                          onActivate={handleActivate}
+                        />
                       ))}
                     </List>
                   </Box>
                 )}
               </ScrollableStack>
             )}
+
+            {/* Create Company & Back Buttons */}
+            <Stack spacing={2} sx={{ mt: 4 }}>
+              <CreateCompanyButton
+                variant="outlined"
+                onClick={() => navigate("/company-setup")}
+              >
+                + הקם חברה חדשה
+              </CreateCompanyButton>
+
+              {(() => {
+                const userStr = localStorage.getItem("user");
+                const user = userStr ? JSON.parse(userStr) : null;
+                return user?.selectedCompany ? (
+                  <CancelButton
+                    variant="text"
+                    color="inherit"
+                    onClick={() => navigate("/home")}
+                  >
+                    ביטול וחזרה לדף הבית
+                  </CancelButton>
+                ) : null;
+              })()}
+            </Stack>
           </FormContainer>
         </FormSide>
       </GlassCard>

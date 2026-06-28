@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react';
 import { UOM, MeasurementType } from '../../enums';
 import {
-  Button, Box, Divider, Typography, FormControl, InputLabel, Select, MenuItem, Stack, Switch
+  Button, Box, Divider, Typography, Stack
 } from '@mui/material';
 import TextInput from '../../components/Inputs/TextInput';
 import AddIcon from '@mui/icons-material/Add';
 import LocalFloristIcon from '@mui/icons-material/LocalFlorist';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import LayersIcon from '@mui/icons-material/Layers';
 import { getRawMaterials, createRawMaterials, type RawMaterialDto } from '../../api/rawMaterial';
 import { createRecipe, updateRecipe, type RecipeDto } from '../../api/recipe';
 import IngredientRowItem from '../../components/Recipes/IngredientRowItem';
 import QuickAddPanel, { type QuickAddRow } from '../../components/Recipes/QuickAddPanel';
 import BaseDialog from '../../components/BaseDialog/BaseDialog';
+import YieldTypeSelector from './components/YieldTypeSelector';
+import IntermediateRecipeSwitch from './components/IntermediateRecipeSwitch';
 
 interface IngredientRow {
   rawMaterialId: number | '';
@@ -75,7 +76,7 @@ const CreateRecipeDialog = ({ open, onClose, onSave, subscriptionId, recipeToEdi
         setYieldType(recipeToEdit.yieldType || 'WEIGHT');
         setIsIntermediate(recipeToEdit.isIntermediate || false);
         setRows(recipeToEdit.recipe_product.map(p => ({
-          rawMaterialId: p.raw_material.id,
+          rawMaterialId: p.raw_material?.id || '',
           volume: String(p.volume),
           uom: p.uom,
           customUom: p.customUom || '',
@@ -344,53 +345,17 @@ const CreateRecipeDialog = ({ open, onClose, onSave, subscriptionId, recipeToEdi
             sx={{ bgcolor: 'background.paper', flex: 2 }}
           />
 
-          <FormControl sx={{ minWidth: 220, flex: 1 }}>
-            <InputLabel id="yield-type-select-label">סוג תוצר המתכון</InputLabel>
-            <Select
-              labelId="yield-type-select-label"
-              value={yieldType}
-              label="סוג תוצר המתכון"
-              onChange={(e) => setYieldType(e.target.value as 'WEIGHT' | 'UNITS')}
-            >
-              <MenuItem value="WEIGHT">משקל (כמות משקל שקולה נטו)</MenuItem>
-              <MenuItem value="UNITS">יחידות (כמות יחידות ספורה)</MenuItem>
-            </Select>
-          </FormControl>
-        </Stack>
-
-        <Box
-          sx={{
-            p: 2,
-            borderRadius: 3,
-            bgcolor: isIntermediate ? 'rgba(156, 39, 176, 0.04)' : '#f8fafc',
-            border: '1px solid',
-            borderColor: isIntermediate ? 'rgba(156, 39, 176, 0.2)' : '#e2e8f0',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            transition: 'all 0.2s ease-in-out',
-            mt: -1,
-            mb: 1,
-          }}
-        >
-          <Box display="flex" alignItems="center" gap={2} sx={{ width: '85%' }}>
-            <LayersIcon sx={{ color: isIntermediate ? 'secondary.main' : 'text.secondary', fontSize: 28, flexShrink: 0 }} />
-            <Box>
-              <Typography variant="subtitle2" fontWeight={700} color={isIntermediate ? 'secondary.main' : 'text.primary'}>
-                הפוך לתוצר ביניים (מתכון משנה)
-              </Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.25, lineHeight: 1.4 }}>
-                הפעל אפשרות זו כדי שתוכל להשתמש במתכון זה כרכיב (חומר גלם) בתוך מתכונים אחרים במערכת.
-              </Typography>
-            </Box>
-          </Box>
-          <Switch
-            checked={isIntermediate}
-            onChange={(e) => setIsIntermediate(e.target.checked)}
-            disabled={isSaving}
-            color="secondary"
+          <YieldTypeSelector
+            value={yieldType}
+            onChange={setYieldType}
           />
-        </Box>
+        </Stack>
+ 
+        <IntermediateRecipeSwitch
+          checked={isIntermediate}
+          onChange={setIsIntermediate}
+          disabled={isSaving}
+        />
 
         <Divider>
           <Typography variant="subtitle2" color="text.secondary" fontWeight={600}>

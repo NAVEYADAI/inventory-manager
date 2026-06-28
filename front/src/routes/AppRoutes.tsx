@@ -7,6 +7,7 @@ import CompanySetup from "../pages/CompanySetup/CompanySetup";
 import CompanyPicker from "../pages/CompanyPicker/CompanyPicker";
 import RecipesPage from "../pages/RecipesPage/RecipesPage";
 import TagsPage from "../pages/TagsPage/TagsPage";
+import EmployeesPage from "../pages/EmployeesPage/EmployeesPage";
 
 export const Router = () => {
   return (
@@ -20,6 +21,7 @@ export const Router = () => {
       <Route path="/calendar2" element={<FullCalendarManeger />} />
       <Route path="/recipes" element={<RecipesPage />} />
       <Route path="/tags" element={<TagsPage />} />
+      <Route path="/employees" element={<EmployeesPage />} />
     </Routes>
   );
 };

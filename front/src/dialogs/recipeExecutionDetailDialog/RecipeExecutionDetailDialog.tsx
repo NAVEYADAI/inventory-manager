@@ -121,6 +121,17 @@ const RecipeExecutionDetailDialog = ({ open, onClose, execution, onDelete }: Pro
         )}
       </Stack>
 
+      {execution.createdBy && (
+        <Box sx={{ mb: 3, p: 2, borderRadius: 2, bgcolor: 'action.hover', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="body2" fontWeight={600} color="text.secondary">
+            מבצע הפעולה (עובד):
+          </Typography>
+          <Typography variant="body2" fontWeight={700} color="primary.main">
+            {execution.createdBy.firstName} {execution.createdBy.lastName} ({execution.createdBy.name})
+          </Typography>
+        </Box>
+      )}
+
       <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 2 }} color="text.primary">
         חישוב כמויות רכיבים בפועל:
       </Typography>

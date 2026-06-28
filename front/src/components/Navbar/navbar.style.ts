@@ -65,8 +65,6 @@ export const NavButton = styled(Button, {
 export const UserSection = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
-  borderRight: "1px solid rgba(0, 0, 0, 0.08)",
-  paddingRight: theme.spacing(3),
   gap: theme.spacing(2),
 }));
 

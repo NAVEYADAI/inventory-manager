@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { UOM, UOM_hebrew_names, MeasurementType } from "../../enums";
-import { Autocomplete, FormControl, InputLabel, Select, MenuItem, IconButton, Paper, Box, Typography, Button, Grid } from "@mui/material";
+import { Autocomplete, FormControl, InputLabel, Select, MenuItem, IconButton, Paper, Box, Typography, Button } from "@mui/material";
 import TextInput from "../Inputs/TextInput";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import ReorderIcon from "@mui/icons-material/Reorder";
 import { addRawMaterialConversion, type RawMaterialDto, type RawMaterialConversionDto } from "../../api/rawMaterial";
+import CustomUomForm from "./CustomUomForm";
 
 interface IngredientRow {
   rawMaterialId: number | "";
@@ -59,6 +60,17 @@ const IngredientRowItem: React.FC<IngredientRowItemProps> = ({
   const [dragAllowed, setDragAllowed] = useState(false);
 
   const selectedMaterial = rawMaterials.find((m) => m.id === row.rawMaterialId);
+
+  const existingCustomUomNames = React.useMemo(() => {
+    return Array.from(
+      new Set(
+        rawMaterials
+          .flatMap((m) => m.conversions || [])
+          .map((c) => c.uomName.trim())
+          .filter(Boolean)
+      )
+    ).sort();
+  }, [rawMaterials]);
 
   useEffect(() => {
     if (selectedMaterial) {
@@ -310,88 +322,24 @@ const IngredientRowItem: React.FC<IngredientRowItemProps> = ({
 
       {/* Elegant Responsive Grid Inline Custom UOM Form */}
       {isCreatingCustomUom && selectedMaterial && (
-        <Grid container spacing={2} alignItems="center" sx={{ mt: 1.5, p: 1.5, borderRadius: 2, bgcolor: "#f8fafc", border: "1px dashed #cbd5e1", width: "100%", boxSizing: "border-box" }}>
-          <Grid size={{ xs: 12, sm: 3 }}>
-            <TextInput
-              fullWidth
-              size="small"
-              label={isEditingCustomUom ? "עריכת שם היחידה" : "שם היחידה"}
-              placeholder="כף, כוס..."
-              value={customUomName}
-              onChange={(e) => setCustomUomName(e.target.value)}
-            />
-          </Grid>
-          
-          <Grid size={{ xs: 12, sm: 1 }} sx={{ display: "flex", justifyContent: "center" }}>
-            <Typography variant="body2" color="text.secondary">=</Typography>
-          </Grid>
-          
-          <Grid size={{ xs: 4, sm: 2 }}>
-            <TextInput
-              fullWidth
-              size="small"
-              label="כמות"
-              type="text"
-              inputMode="decimal"
-              value={customUomFactor}
-              onChange={(e) => setCustomUomFactor(e.target.value.replace("ץ", ".").replace(/[^0-9.]/g, ""))}
-            />
-          </Grid>
-          
-          <Grid size={{ xs: 8, sm: 3 }}>
-            <FormControl fullWidth size="small">
-              <InputLabel id={`custom-base-uom-label-${index}`}>יחידת בסיס</InputLabel>
-              <Select
-                labelId={`custom-base-uom-label-${index}`}
-                id={`custom-base-uom-select-${index}`}
-                value={customBaseUom}
-                label="יחידת בסיס"
-                onChange={(e) => setCustomBaseUom(e.target.value as string)}
-                MenuProps={{ disablePortal: true }}
-              >
-                {selectedMaterial.measurementType === MeasurementType.VOLUME && (
-                  <MenuItem value="milliliter">מיליליטר (מ״ל)</MenuItem>
-                )}
-                {selectedMaterial.measurementType === MeasurementType.VOLUME && (
-                  <MenuItem value="liter">ליטר</MenuItem>
-                )}
-                {selectedMaterial.measurementType === MeasurementType.COUNT && (
-                  <MenuItem value="piece">יחידה</MenuItem>
-                )}
-                {selectedMaterial.measurementType !== MeasurementType.VOLUME && selectedMaterial.measurementType !== MeasurementType.COUNT && (
-                  <MenuItem value="gram">גרם (ג׳)</MenuItem>
-                )}
-                {selectedMaterial.measurementType !== MeasurementType.VOLUME && selectedMaterial.measurementType !== MeasurementType.COUNT && (
-                  <MenuItem value="kilogram">קילוגרם (ק״ג)</MenuItem>
-                )}
-              </Select>
-            </FormControl>
-          </Grid>
-          
-          <Grid size={{ xs: 12, sm: 3 }} sx={{ display: "flex", justifyContent: { xs: "flex-start", sm: "flex-end" }, gap: 1 }}>
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={() => {
-                setIsCreatingCustomUom(false);
-                setIsEditingCustomUom(false);
-                setEditingConversionId(null);
-              }}
-              sx={{ borderRadius: 1.5, borderColor: 'grey.300', color: 'text.secondary', py: 0.5 }}
-            >
-              ביטול
-            </Button>
-            <Button
-              variant="contained"
-              size="small"
-              onClick={handleSaveCustomUom}
-              disabled={!customUomName.trim() || !customUomFactor || parseFloat(customUomFactor) <= 0}
-              sx={{ borderRadius: 1.5, py: 0.5 }}
-            >
-              אישור
-            </Button>
-          </Grid>
-        </Grid>
+        <CustomUomForm
+          index={index}
+          selectedMaterial={selectedMaterial}
+          isEditingCustomUom={isEditingCustomUom}
+          existingCustomUomNames={existingCustomUomNames}
+          customUomName={customUomName}
+          setCustomUomName={setCustomUomName}
+          customUomFactor={customUomFactor}
+          setCustomUomFactor={setCustomUomFactor}
+          customBaseUom={customBaseUom}
+          setCustomBaseUom={setCustomBaseUom}
+          onCancel={() => {
+            setIsCreatingCustomUom(false);
+            setIsEditingCustomUom(false);
+            setEditingConversionId(null);
+          }}
+          onSave={handleSaveCustomUom}
+        />
       )}
     </Paper>
   );

@@ -10,26 +10,22 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-import { useState, useEffect, useCallback, useRef } from "react";
-import { useHolidays } from "../../hooks/useHolidays";
+import { useState, useRef } from "react";
 import CreateProductLogDialog from "../../dialogs/createProductLogDialog/CreateProductLogDialog";
 import RecipeExecutionDetailDialog from "../../dialogs/recipeExecutionDetailDialog/RecipeExecutionDetailDialog";
-import { getProductExecutions } from "../../api/createProduct";
 import CustomCalendarToolbar from "../../components/CalendarDisplay/CustomCalendarToolbar";
 import { getHebrewDateText } from "../../utils/dateUtils";
-import { getTags, type TagDto } from "../../api/tag";
+import type { TagDto } from "../../api/tag";
 import CreateTagDialog from "../../dialogs/createTagDialog/CreateTagDialog";
 import TagSummaryDialog from "../../dialogs/tagSummaryDialog/TagSummaryDialog";
+import { useCalendarEvents } from "./hooks/useCalendarEvents";
 
 const FullCalendarManeger = () => {
-  const holidays = useHolidays();
-  const [executions, setExecutions] = useState<any[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [clickedDate, setClickedDate] = useState('');
   const [selectedExecution, setSelectedExecution] = useState<any | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
-  const [tags, setTags] = useState<TagDto[]>([]);
   const [selectedTag, setSelectedTag] = useState<TagDto | null>(null);
   const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
   const [isTagSummaryOpen, setIsTagSummaryOpen] = useState(false);
@@ -99,119 +95,12 @@ const FullCalendarManeger = () => {
     } catch { }
   }
 
-  const loadExecutions = useCallback(async () => {
-    if (!subscriptionId) return;
-    try {
-      const data = await getProductExecutions(subscriptionId);
-      setExecutions(data);
-    } catch (e) {
-      console.error("Failed to load product executions", e);
-    }
-  }, [subscriptionId]);
-
-  const loadTags = useCallback(async () => {
-    if (!subscriptionId) return;
-    try {
-      const data = await getTags(subscriptionId);
-      setTags(data);
-    } catch (e) {
-      console.error("Failed to load tags", e);
-    }
-  }, [subscriptionId]);
-
-  useEffect(() => {
-    loadExecutions();
-    loadTags();
-  }, [loadExecutions, loadTags]);
+  const { allEvents, refreshExecutions: loadExecutions, refreshTags: loadTags } = useCalendarEvents(subscriptionId);
 
   const handleDateClick = (arg: any) => {
     setClickedDate(arg.dateStr);
     setIsDialogOpen(true);
   };
-
-  // Categorize holidays based primarily on Hebcal's subcat field
-  const getEventStyle = (h: any) => {
-    const subcat = h.subcat || '';
-    const title = (h.title || '').toLowerCase();
-    const hebrew = h.hebrew || '';
-
-    // 1. Fasts
-    if (subcat === 'fast') {
-      return {
-        color: '#b45309',
-        textColor: '#ffffff',
-      };
-    }
-
-    // 2. Memorial Days
-    if (
-      subcat === 'modern' &&
-      (title.includes('zikaron') || title.includes('shoah') || hebrew.includes('זיכרון') || hebrew.includes('שואה'))
-    ) {
-      return {
-        color: '#475569',
-        textColor: '#ffffff',
-      };
-    }
-
-    // 3. Happy Holidays
-    return {
-      color: '#e11d48',
-      textColor: '#ffffff',
-    };
-  };
-
-  // Merge custom events with holidays fetched from Hebcal API
-  const allEvents = [
-    ...holidays.map((h: any) => {
-      const style = getEventStyle(h);
-      return {
-        title: h.hebrew || h.title,
-        date: h.date,
-        allDay: true,
-        color: style.color,
-        textColor: style.textColor,
-        display: 'block',
-        extendedProps: {
-          isHoliday: true,
-          holidayName: h.hebrew || h.title,
-          holidayDate: h.date,
-        }
-      };
-    }),
-    ...executions.map((exec: any) => ({
-      title: `הכנה: ${exec.recipe?.name || 'מתכון לא ידוע'} (כפול ${exec.batche_count})`,
-      start: exec.created_time,
-      allDay: true,
-      color: '#059669',
-      textColor: '#ffffff',
-      display: 'block',
-      extendedProps: {
-        isRecipeExecution: true,
-        execution: exec
-      }
-    })),
-    ...tags
-      .filter((tag: TagDto) => !tag.isHidden)
-      .map((tag: TagDto) => {
-        const end = new Date(tag.endDate);
-        end.setDate(end.getDate() + 1);
-        const endStr = end.toISOString().substring(0, 10);
-        return {
-          title: `📌 תג: ${tag.name}`,
-          start: tag.startDate.substring(0, 10),
-          end: endStr,
-          allDay: true,
-          color: '#9c27b0', // Purple tag color
-          textColor: '#ffffff',
-          display: 'block',
-          extendedProps: {
-            isTag: true,
-            tag: tag,
-          }
-        };
-      }),
-  ];
 
   return (
     <CalendarContainer dir="rtl">

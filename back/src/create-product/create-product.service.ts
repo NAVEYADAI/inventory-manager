@@ -15,7 +15,7 @@ export class CreateProductService {
     private readonly recipeRepo: Repository<Recipe>,
   ) {}
 
-  async create(createCreateProductDto: CreateCreateProductDto) {
+  async create(createCreateProductDto: CreateCreateProductDto, userId?: number) {
     const { recipeId, batche_count, created_time, actualYield } = createCreateProductDto;
     const recipe = await this.recipeRepo.findOne({ where: { id: recipeId } });
     if (!recipe) {
@@ -28,6 +28,9 @@ export class CreateProductService {
     event.created_time = new Date(created_time);
     event.updated_time = new Date();
     event.actualYield = actualYield;
+    if (userId) {
+      event.createdBy = { id: userId } as any;
+    }
 
     return this.createProductRepo.save(event);
   }
@@ -39,7 +42,7 @@ export class CreateProductService {
           subscription: { id: subscriptionId },
         },
       },
-      relations: ['recipe', 'recipe.recipe_product', 'recipe.recipe_product.raw_material'],
+      relations: ['recipe', 'recipe.recipe_product', 'recipe.recipe_product.raw_material', 'createdBy'],
       order: {
         created_time: 'DESC',
       },
@@ -53,7 +56,7 @@ export class CreateProductService {
   async findOne(id: number) {
     const event = await this.createProductRepo.findOne({
       where: { id },
-      relations: ['recipe', 'recipe.recipe_product', 'recipe.recipe_product.raw_material'],
+      relations: ['recipe', 'recipe.recipe_product', 'recipe.recipe_product.raw_material', 'createdBy'],
     });
     if (!event) {
       throw new NotFoundException(`CreateProduct event with ID ${id} not found`);

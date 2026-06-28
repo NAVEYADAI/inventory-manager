@@ -194,7 +194,15 @@ const TagSummaryDialog = ({ open, onClose, tagId, onEditClick }: Props) => {
                 <Stack spacing={1.5}>
                   {summary.rawMaterials.length > 0 ? (
                     summary.rawMaterials.map((item) => {
-                      const uomHebrew = UOM_hebrew_names[item.uom as UOM] || item.uom;
+                      let displayVolume = item.volume;
+                      let displayUom = item.uom;
+
+                      if (item.uom === UOM.GRAM) {
+                        displayVolume = parseFloat((item.volume / 1000).toFixed(3));
+                        displayUom = UOM.KILOGRAM;
+                      }
+
+                      const uomHebrew = UOM_hebrew_names[displayUom as UOM] || displayUom;
                       return (
                         <Box
                           key={item.id}
@@ -213,7 +221,7 @@ const TagSummaryDialog = ({ open, onClose, tagId, onEditClick }: Props) => {
                             {item.name}
                           </Typography>
                           <Typography variant="body2" color="success.main" fontWeight={800}>
-                            {item.volume} {uomHebrew}
+                            {displayVolume} {uomHebrew}
                           </Typography>
                         </Box>
                       );

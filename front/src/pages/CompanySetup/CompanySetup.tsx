@@ -19,6 +19,7 @@ import {
   SubmitButton,
 } from "./CompanySetup.style";
 import { createCompany } from "../../api/company";
+import { selectSubscription } from "../../api/subscription";
 import { useAuth } from "../../providers/AuthProvider";
 
 interface CompanyFields {
@@ -37,7 +38,7 @@ const CompanySetup = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -56,8 +57,19 @@ const CompanySetup = () => {
       }
       const res = await createCompany(payload);
       if (res.data?.subscription) {
+        const subId = res.data.subscription.id;
+        const selectRes = await selectSubscription(subId);
         const existingUser = user || {};
+        existingUser.selectedCompany = selectRes.data.selectedCompany;
+        existingUser.activeCompanies = [
+          ...(existingUser.activeCompanies || []),
+          selectRes.data.selectedCompany
+        ];
         localStorage.setItem("user", JSON.stringify(existingUser));
+        if (selectRes.data.accessToken) {
+          localStorage.setItem("token", selectRes.data.accessToken);
+        }
+        setUser(existingUser);
       }
       navigate("/home");
     } catch (err: any) {

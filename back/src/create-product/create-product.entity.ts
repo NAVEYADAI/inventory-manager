@@ -1,4 +1,5 @@
 import { Recipe } from 'src/recipe/recipe.entity';
+import { User } from 'src/user/user.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -20,4 +21,7 @@ export class CreateProduct {
 
   @Column()
   updated_time: Date;
+
+  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+  createdBy: User;
 }

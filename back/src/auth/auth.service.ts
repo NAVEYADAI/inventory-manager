@@ -6,6 +6,7 @@ import { UserService } from 'src/user/user.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Subscription } from 'src/subscription/subscription.entity';
+import { UserPermission, PermissionRole } from 'src/use-permissions/use-permission.entity';
 const bcrypt = require('bcryptjs');
  
 @Injectable()
@@ -16,6 +17,8 @@ export class AuthService {
     private readonly userService: UserService,
     @InjectRepository(Subscription)
     private readonly subscriptionRepo: Repository<Subscription>,
+    @InjectRepository(UserPermission)
+    private readonly permissionRepo: Repository<UserPermission>,
   ) { }
 
   async register(dto: RegisterDto) {
@@ -54,16 +57,44 @@ export class AuthService {
     const subs = await this.userService.getUserCompanies((user).id);
     const activeSubs = subs.filter((s: any) => s.is_active);
     const inactiveSubs = subs.filter((s: any) => !s.is_active);
-
-    let selectedCompany = null;
-    if (activeSubs.length === 1) {
-      selectedCompany = {
-        id: activeSubs[0].company.id,
-        name: activeSubs[0].company.name,
-        subscriptionId: activeSubs[0].id,
-      };
+ 
+    const activeCompanies = [];
+    for (const sub of activeSubs) {
+      let permission = await this.permissionRepo.findOne({
+        where: { user: { id: user.id }, company: { id: sub.company.id } },
+      });
+      if (!permission) {
+        permission = this.permissionRepo.create({
+          user: { id: user.id } as any,
+          company: { id: sub.company.id } as any,
+          role: PermissionRole.ADMIN,
+        });
+        await this.permissionRepo.save(permission);
+      }
+      activeCompanies.push({ id: sub.company.id, name: sub.company.name, subscriptionId: sub.id, role: permission.role });
     }
 
+    const inactiveCompanies = [];
+    for (const sub of inactiveSubs) {
+      let permission = await this.permissionRepo.findOne({
+        where: { user: { id: user.id }, company: { id: sub.company.id } },
+      });
+      if (!permission) {
+        permission = this.permissionRepo.create({
+          user: { id: user.id } as any,
+          company: { id: sub.company.id } as any,
+          role: PermissionRole.ADMIN,
+        });
+        await this.permissionRepo.save(permission);
+      }
+      inactiveCompanies.push({ id: sub.company.id, name: sub.company.name, subscriptionId: sub.id, role: permission.role });
+    }
+
+    let selectedCompany = null;
+    if (activeCompanies.length === 1) {
+      selectedCompany = activeCompanies[0];
+    }
+ 
     const secret = process.env.JWT_SECRET || 'dev-secret';
     const token = jwt.sign({ sub: (user as any).id, email: (user as any).email, company: selectedCompany }, secret, { expiresIn: '12h' });
     return {
@@ -72,8 +103,8 @@ export class AuthService {
         id: (user as any).id,
         email: (user as any).email,
         name: (user as any).name,
-        activeCompanies: activeSubs.map((sub: any) => ({ id: sub.company.id, name: sub.company.name, subscriptionId: sub.id })),
-        inactiveCompanies: inactiveSubs.map((sub: any) => ({ id: sub.company.id, name: sub.company.name, subscriptionId: sub.id })),
+        activeCompanies,
+        inactiveCompanies,
         selectedCompany,
       },
     };
@@ -113,9 +144,23 @@ export class AuthService {
       throw new UnauthorizedException('This subscription is not active');
     }
 
+    let permission = await this.permissionRepo.findOne({
+      where: { user: { id: userId }, company: { id: subscription.company.id } },
+    });
+    if (!permission) {
+      permission = this.permissionRepo.create({
+        user: { id: userId } as any,
+        company: { id: subscription.company.id } as any,
+        role: PermissionRole.ADMIN,
+      });
+      await this.permissionRepo.save(permission);
+    }
+
     const selectedCompany = {
       id: subscription.company.id,
       name: subscription.company.name,
+      subscriptionId: subscription.id,
+      role: permission.role,
     };
     const user = await this.userService.findOne(userId);
     const newToken = this.createTokenWithCompany(user, selectedCompany);

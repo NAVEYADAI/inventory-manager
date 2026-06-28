@@ -1,6 +1,6 @@
 import { Company } from 'src/company/company.entity';
 import { User } from 'src/user/user.entity';
-import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum PermissionRole {
   ADMIN = 'admin',
@@ -18,5 +18,10 @@ export class UserPermission {
   @ManyToOne(() => Company, (company) => company.id)
   company: Company;
 
-  
+  @Column({
+    type: 'enum',
+    enum: PermissionRole,
+    default: PermissionRole.EDITOR,
+  })
+  role: PermissionRole;
 }
