@@ -2,6 +2,12 @@
 # Exit immediately if any command fails
 set -e
 
+echo "🧪 Running backend tests..."
+npm run test --prefix back
+
+echo "🧪 Running frontend tests..."
+npm run test --prefix front
+
 echo "🚀 Starting deployment of all services to Fly.io..."
 
 echo "================================"

@@ -32,15 +32,6 @@ const LogIn = ({ setIsLogin, logIn, setLogIn }: LogInProps) => {
       const selected = user?.selectedCompany;
 
       setUser(res.data.user as User);
-      if (selected) {
-        navigate("/home");
-      } else if (active.length > 1) {
-        navigate("/company-picker");
-      } else if (active.length === 0 && (user?.inactiveCompanies || []).length > 0) {
-        navigate("/company-picker");
-      } else {
-        navigate("/company-setup");
-      }
     } catch (err: any) {
       setError(err?.response?.data?.message || "ההתחברות נכשלה. אנא בדוק את פרטי החיבור.");
     } finally {

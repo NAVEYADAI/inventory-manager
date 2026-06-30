@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, ConflictException } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -34,6 +34,17 @@ async create(createCompanyDto: CreateCompanyDto): Promise<{ company: Company; su
       const txSubscriptionRepo = manager.withRepository(this.subscriptionRepo);
       const txUserRepo = manager.withRepository(this.userRepo);
       const { ownerId, ...companyData } = createCompanyDto;
+
+      const existingCompany = await txCompanyRepo.findOne({
+        where: {
+          name: companyData.name,
+          identifier: companyData.identifier || '',
+        },
+      });
+      if (existingCompany) {
+        throw new ConflictException('חברה עם שם ומזהה אלו כבר קיימת במערכת');
+      }
+
       const company = txCompanyRepo.create(companyData);
       const savedCompany = await txCompanyRepo.save(company);
       let subscriptionResult = null;
