@@ -50,7 +50,7 @@ const EmployeesPage = () => {
   const selectedCompany = user?.selectedCompany;
   const companyId = selectedCompany?.id;
   const userRole = selectedCompany?.role;
-  const isAdmin = userRole === 'admin';
+  const hasAccess = userRole === 'admin' || userRole === 'owner';
 
   const loadEmployees = async () => {
     if (!companyId) return;
@@ -66,14 +66,14 @@ const EmployeesPage = () => {
   };
 
   useEffect(() => {
-    if (isAdmin && companyId) {
+    if (hasAccess && companyId) {
       loadEmployees();
     } else {
       setIsLoading(false);
     }
   }, [companyId, userRole]);
 
-  if (!user || !isAdmin) {
+  if (!user || !hasAccess) {
     return (
       <Container maxWidth="lg" dir="rtl">
         <AccessDeniedWrapper variant="outlined">
@@ -148,7 +148,7 @@ const EmployeesPage = () => {
         <Grid container spacing={3}>
           {employees.map((emp) => (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={emp.id}>
-              <EmployeeCardItem employeePermission={emp} />
+              <EmployeeCardItem employeePermission={emp} onRoleUpdated={loadEmployees} />
             </Grid>
           ))}
         </Grid>

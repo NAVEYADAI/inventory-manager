@@ -57,10 +57,39 @@ export class CompanyController {
     const employees = await this.companyService.findCompanyEmployees(+companyId);
     const callerPermission = employees.find(e => e.user.id === caller.id);
 
-    if (!callerPermission || callerPermission.role !== 'admin') {
-      throw new ForbiddenException('Only managers can add employees to the company');
+    if (!callerPermission || (callerPermission.role !== 'owner' && callerPermission.role !== 'admin')) {
+      throw new ForbiddenException('Only owners and managers can add employees to the company');
+    }
+
+    if (callerPermission.role === 'admin' && (body.role === 'admin' || body.role === 'owner')) {
+      throw new ForbiddenException('Managers can only register editors and viewers');
+    }
+
+    if (body.role === 'owner') {
+      throw new ForbiddenException('Cannot register another owner');
     }
 
     return this.companyService.registerEmployee(+companyId, body);
+  }
+
+  @Patch(':companyId/employees/:userId/role')
+  async updateEmployeeRole(
+    @Param('companyId') companyId: string,
+    @Param('userId') userId: string,
+    @Headers('authorization') authHeader: string,
+    @Body('role') role: string,
+  ) {
+    const caller = await this.authService.validateToken(authHeader);
+    return this.companyService.updateEmployeeRole(+companyId, +userId, role, caller.id);
+  }
+
+  @Delete(':companyId/employees/:userId')
+  async removeEmployee(
+    @Param('companyId') companyId: string,
+    @Param('userId') userId: string,
+    @Headers('authorization') authHeader: string,
+  ) {
+    const caller = await this.authService.validateToken(authHeader);
+    return this.companyService.removeEmployee(+companyId, +userId, caller.id);
   }
 }

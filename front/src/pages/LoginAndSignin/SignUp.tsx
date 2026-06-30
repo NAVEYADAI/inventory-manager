@@ -2,7 +2,7 @@ import { Typography, Box, Alert, CircularProgress, Grid } from "@mui/material";
 import { StyledForm, ActionButton, LoginFormContainer, FormHeader, LogoImage } from "./LoginAndSignin.style";
 import TextInput from "../../components/Inputs/TextInput";
 import { SignUpFields, SignUpFieldsHebNames, type Signup } from "./util";
-import { register } from "../../api/login";
+import { register, login } from "../../api/login";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../providers/AuthProvider";
@@ -35,9 +35,10 @@ const SignUp = ({ setIsLogin, signUp, setSignUp }: SignUpProps) => {
       };
       const res = await register(payload);
       if (res.status === 201 || res.status === 200) {
+        // Automatically log in to set the JWT token in localStorage
+        const loginRes = await login({ userName: signUp.userName, password: String(signUp.password) });
         setIsLogin(true);
-        navigate("/company-setup");
-        setUser(res.data);
+        setUser(loginRes.data.user);
       }
     } catch (err: any) {
       setError(err?.response?.data?.message || "ההרשמה נכשלה. אנא מלא את כל השדות בצורה תקינה.");

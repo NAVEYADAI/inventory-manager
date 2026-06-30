@@ -37,7 +37,7 @@ const Navbar: React.FC = () => {
 
     const isActive = (path: string) => location.pathname === path;
 
-    const isAdmin = user?.selectedCompany?.role === 'admin';
+    const isAdmin = user?.selectedCompany?.role === 'admin' || user?.selectedCompany?.role === 'owner';
 
     const navItems = [
         { label: "ראשי", path: "/home" },
@@ -114,13 +114,21 @@ const Navbar: React.FC = () => {
                                     </Typography>
                                     {user.selectedCompany?.role && (
                                         <Chip
-                                            label={user.selectedCompany.role === 'admin' ? 'מנהל' : 'עובד'}
+                                            label={
+                                                user.selectedCompany.role === 'owner'
+                                                    ? 'בעלים'
+                                                    : user.selectedCompany.role === 'admin'
+                                                    ? 'מנהל'
+                                                    : 'עובד'
+                                            }
                                             size="small"
                                             sx={{
                                                 fontWeight: 700,
                                                 borderRadius: '8px',
                                                 color: '#ffffff',
-                                                background: user.selectedCompany.role === 'admin'
+                                                background: user.selectedCompany.role === 'owner'
+                                                    ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                                                    : user.selectedCompany.role === 'admin'
                                                     ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)'
                                                     : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                                             }}
@@ -188,13 +196,21 @@ const Navbar: React.FC = () => {
 
                         {user.selectedCompany?.role && (
                             <Chip
-                                label={user.selectedCompany.role === 'admin' ? 'מנהל' : 'עובד'}
+                                label={
+                                    user.selectedCompany.role === 'owner'
+                                        ? 'בעלים'
+                                        : user.selectedCompany.role === 'admin'
+                                        ? 'מנהל'
+                                        : 'עובד'
+                                }
                                 size="small"
                                 sx={{
                                     fontWeight: 700,
                                     borderRadius: '8px',
                                     color: '#ffffff',
-                                    background: user.selectedCompany.role === 'admin'
+                                    background: user.selectedCompany.role === 'owner'
+                                        ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                                        : user.selectedCompany.role === 'admin'
                                         ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)'
                                         : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                                     boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',

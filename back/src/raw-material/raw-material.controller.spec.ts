@@ -8,7 +8,12 @@ describe('RawMaterialController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [RawMaterialController],
-      providers: [RawMaterialService],
+      providers: [
+        {
+          provide: RawMaterialService,
+          useValue: {},
+        },
+      ],
     }).compile();
 
     controller = module.get<RawMaterialController>(RawMaterialController);

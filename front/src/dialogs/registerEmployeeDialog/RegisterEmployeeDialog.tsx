@@ -23,6 +23,10 @@ interface Props {
 }
 
 const RegisterEmployeeDialog = ({ open, onClose, companyId, onSave }: Props) => {
+  const userStr = localStorage.getItem('user');
+  const userObj = userStr ? JSON.parse(userStr) : null;
+  const userRole = userObj?.selectedCompany?.role;
+
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -187,8 +191,11 @@ const RegisterEmployeeDialog = ({ open, onClose, companyId, onSave }: Props) => 
               onChange={(e) => setRole(e.target.value)}
               sx={{ borderRadius: 2 }}
             >
+              {userRole === 'owner' && (
+                <MenuItem value="admin">מנהל חברה (Admin)</MenuItem>
+              )}
               <MenuItem value="editor">עובד (Editor)</MenuItem>
-              <MenuItem value="admin">מנהל חברה (Admin)</MenuItem>
+              <MenuItem value="viewer">צופה (Viewer)</MenuItem>
             </Select>
           </FormControl>
         </Box>

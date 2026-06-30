@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Typography, CircularProgress, Grid, Stack } from "@mui/material";
 import {
@@ -41,8 +41,15 @@ const CompanySetup = () => {
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      navigate("/login");
+    }
+  }, [navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     if (!company.name.trim()) {
       setError("שם החברה הוא שדה חובה");
       return;
@@ -59,7 +66,7 @@ const CompanySetup = () => {
       if (res.data?.subscription) {
         const subId = res.data.subscription.id;
         const selectRes = await selectSubscription(subId);
-        const existingUser = user || {};
+        const existingUser = user ? { ...user } : {};
         existingUser.selectedCompany = selectRes.data.selectedCompany;
         existingUser.activeCompanies = [
           ...(existingUser.activeCompanies || []),

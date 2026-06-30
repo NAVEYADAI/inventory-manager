@@ -3,6 +3,7 @@ import { User } from 'src/user/user.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum PermissionRole {
+  OWNER = 'owner',
   ADMIN = 'admin',
   EDITOR = 'editor',
   VIEWER = 'viewer',

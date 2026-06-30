@@ -6,9 +6,14 @@
     "back"
   ],
   "scripts": {
-    "deploy:back": "cd back && fly deploy",
-    "deploy:front": "cd front && fly deploy",
-    "deploy": "./deploy.sh"
+    "deploy:back": "npm run test --prefix back && cd back && fly deploy",
+    "deploy:front": "npm run test --prefix front && cd front && fly deploy",
+    "deploy": "./deploy.sh",
+    "test": "npm run test --prefix back && npm run test --prefix front",
+    "test:back": "npm run test --prefix back",
+    "test:front": "npm run test --prefix front",
+    "test:e2e": "npm run test:e2e --prefix front",
+    "test:e2e:ui": "npm run test:e2e:ui --prefix front"
   },
   "dependencies": {
     "class-transformer": "^0.5.1",
