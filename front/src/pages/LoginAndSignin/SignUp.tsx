@@ -4,8 +4,9 @@ import TextInput from "../../components/Inputs/TextInput";
 import { SignUpFields, SignUpFieldsHebNames, type Signup } from "./util";
 import { register, login } from "../../api/login";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../providers/AuthProvider";
+
+import { useNotification } from "../../providers/NotificationProvider/NotificationProvider";
 
 type SignUpProps = {
   setIsLogin: React.Dispatch<React.SetStateAction<boolean>>;
@@ -17,7 +18,7 @@ const SignUp = ({ setIsLogin, signUp, setSignUp }: SignUpProps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { setUser } = useAuth();
-  const navigate = useNavigate();
+  const { showSuccess, showError } = useNotification();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -39,9 +40,12 @@ const SignUp = ({ setIsLogin, signUp, setSignUp }: SignUpProps) => {
         const loginRes = await login({ userName: signUp.userName, password: String(signUp.password) });
         setIsLogin(true);
         setUser(loginRes.data.user);
+        showSuccess(`המשתמש ${signUp.firstName || signUp.userName} נרשם והתחבר בהצלחה!`);
       }
     } catch (err: any) {
-      setError(err?.response?.data?.message || "ההרשמה נכשלה. אנא מלא את כל השדות בצורה תקינה.");
+      const errMsg = err?.response?.data?.message || "ההרשמה נכשלה. אנא מלא את כל השדות בצורה תקינה.";
+      setError(errMsg);
+      showError(errMsg);
     } finally {
       setLoading(false);
     }

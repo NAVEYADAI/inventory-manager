@@ -21,6 +21,7 @@ import {
 import { createCompany } from "../../api/company";
 import { selectSubscription } from "../../api/subscription";
 import { useAuth } from "../../providers/AuthProvider";
+import { useNotification } from "../../providers/NotificationProvider/NotificationProvider";
 
 interface CompanyFields {
   name: string;
@@ -40,6 +41,7 @@ const CompanySetup = () => {
   const [error, setError] = useState<string | null>(null);
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
+  const { showSuccess, showError } = useNotification();
 
   useEffect(() => {
     if (!localStorage.getItem("token")) {
@@ -77,10 +79,13 @@ const CompanySetup = () => {
           localStorage.setItem("token", selectRes.data.accessToken);
         }
         setUser(existingUser);
+        showSuccess(`חברת ${res.data.company.name} נוצרה בהצלחה!`);
       }
       navigate("/home");
     } catch (err: any) {
-      setError(err?.response?.data?.message || "יצירת החברה נכשלה. אנא נסה שוב.");
+      const errMsg = err?.response?.data?.message || "יצירת החברה נכשלה. אנא נסה שוב.";
+      setError(errMsg);
+      showError(errMsg);
     } finally {
       setLoading(false);
     }

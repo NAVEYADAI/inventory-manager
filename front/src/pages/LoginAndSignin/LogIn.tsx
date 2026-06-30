@@ -4,9 +4,10 @@ import { LoginFields, LogInFieldsHebNames, type Login } from "./util";
 import TextInput from "../../components/Inputs/TextInput";
 import { login } from "../../api/login";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../providers/AuthProvider";
 import type { User } from "../../types";
+
+import { useNotification } from "../../providers/NotificationProvider/NotificationProvider";
 
 type LogInProps = {
   setIsLogin: React.Dispatch<React.SetStateAction<boolean>>;
@@ -17,8 +18,8 @@ type LogInProps = {
 const LogIn = ({ setIsLogin, logIn, setLogIn }: LogInProps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
   const { setUser } = useAuth();
+  const { showSuccess, showError } = useNotification();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -28,12 +29,13 @@ const LogIn = ({ setIsLogin, logIn, setLogIn }: LogInProps) => {
       const payload = { userName: logIn.userName, password: logIn.password };
       const res = await login(payload);
       const user = res?.data?.user;
-      const active = user?.activeCompanies || [];
-      const selected = user?.selectedCompany;
 
       setUser(res.data.user as User);
+      showSuccess(`משתמש ${user?.name || ''} התחבר בהצלחה!`);
     } catch (err: any) {
-      setError(err?.response?.data?.message || "ההתחברות נכשלה. אנא בדוק את פרטי החיבור.");
+      const errMsg = err?.response?.data?.message || "ההתחברות נכשלה. אנא בדוק את פרטי החיבור.";
+      setError(errMsg);
+      showError(errMsg);
     } finally {
       setLoading(false);
     }
