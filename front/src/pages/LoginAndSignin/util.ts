@@ -1,3 +1,5 @@
+import { UI_STRINGS } from "../../constants/uiStrings";
+
 export type Login = {
   userName: string;
   password: string;
@@ -9,8 +11,8 @@ export enum LoginFields {
 }
 
 export const LogInFieldsHebNames: Record<LoginFields, string> = {
-  [LoginFields.USER_NAME]: "שם משתמש",
-  [LoginFields.PASSWORD]: "סיסמא",
+  [LoginFields.USER_NAME]: UI_STRINGS.auth.userName,
+  [LoginFields.PASSWORD]: UI_STRINGS.auth.password,
 };
 
 export enum SignUpFields {
@@ -24,13 +26,13 @@ export enum SignUpFields {
 }
 
 export const SignUpFieldsHebNames: Record<SignUpFields, string> = {
-  [SignUpFields.USER_NAME]: "שם משתמש",
-  [SignUpFields.FIRST_NAME]: "שם פרטי",
-  [SignUpFields.LAST_NAME]: "שם משפחה",
-  [SignUpFields.ADDRESS]: "כתובת",
-  [SignUpFields.PHONE]: "טלפון",
-  [SignUpFields.EMAIL]: "כתובת מייל",
-  [SignUpFields.PASSWORD]: "סיסמא",
+  [SignUpFields.USER_NAME]: UI_STRINGS.auth.userName,
+  [SignUpFields.FIRST_NAME]: UI_STRINGS.auth.firstName,
+  [SignUpFields.LAST_NAME]: UI_STRINGS.auth.lastName,
+  [SignUpFields.ADDRESS]: UI_STRINGS.auth.address,
+  [SignUpFields.PHONE]: UI_STRINGS.auth.phone,
+  [SignUpFields.EMAIL]: UI_STRINGS.auth.email,
+  [SignUpFields.PASSWORD]: UI_STRINGS.auth.password,
 };
 
 export type Signup = {

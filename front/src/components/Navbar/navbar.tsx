@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../providers/AuthProvider";
 import { logout as apiLogout } from "../../api/login";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { UI_STRINGS } from "../../constants/uiStrings";
 import MenuIcon from "@mui/icons-material/Menu";
 import BusinessIcon from "@mui/icons-material/Business";
 import {
@@ -44,7 +45,7 @@ const Navbar: React.FC = () => {
         { label: "מתכונים", path: "/recipes" },
         { label: "לוח שנה", path: "/calendar2" },
         { label: "דוחות ייצור", path: "/tags" },
-        ...(isAdmin ? [{ label: "ניהול עובדים", path: "/employees" }] : []),
+        ...(isAdmin ? [{ label: UI_STRINGS.navbar.employeeManagement, path: "/employees" }] : []),
     ];
 
     return (
@@ -110,7 +111,7 @@ const Navbar: React.FC = () => {
                             <Box display="flex" flexDirection="column" height="100%">
                                 <Box display="flex" alignItems="center" gap={1} sx={{ mb: 2 }}>
                                     <Typography variant="subtitle1" fontWeight={700} sx={{ color: "#1e3c72" }}>
-                                        שלום, {user.name || user.email}
+                                        {UI_STRINGS.navbar.hello} {user.name || user.email}
                                     </Typography>
                                     {user.selectedCompany?.role && (
                                         <Chip
@@ -191,7 +192,7 @@ const Navbar: React.FC = () => {
                         <UsernameText
                             variant="body2"
                         >
-                            שלום, {user.name || user.email}
+                            {UI_STRINGS.navbar.hello} {user.name || user.email}
                         </UsernameText>
 
                         {user.selectedCompany?.role && (
@@ -238,7 +239,7 @@ const Navbar: React.FC = () => {
                             </IconButton>
                         </Tooltip>
 
-                        <Tooltip title="התנתק מהמערכת">
+                        <Tooltip title={UI_STRINGS.navbar.logout}>
                             <LogoutButton
                                 onClick={handleLogout}
                                 size="small"

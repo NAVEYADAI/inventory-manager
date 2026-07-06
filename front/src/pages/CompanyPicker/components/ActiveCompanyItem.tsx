@@ -3,6 +3,7 @@ import { Typography } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import type { CompanyInfo } from '../../../api/login';
 import { ActiveCompanyPaper, PickerButton } from '../CompanyPicker.style';
+import { UI_STRINGS } from '../../../constants/uiStrings';
 
 interface ActiveCompanyItemProps {
   company: CompanyInfo;
@@ -21,7 +22,7 @@ const ActiveCompanyItem: React.FC<ActiveCompanyItemProps> = ({ company, onPick }
         onClick={() => onPick(company.subscriptionId)}
         startIcon={<CheckCircleOutlineIcon fontSize="small" />}
       >
-        כניסה
+        {UI_STRINGS.companyPicker.enterCompany}
       </PickerButton>
     </ActiveCompanyPaper>
   );

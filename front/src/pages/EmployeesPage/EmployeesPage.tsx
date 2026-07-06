@@ -15,6 +15,7 @@ import axiosInstance from '../../api/axiosInstance';
 import RegisterEmployeeDialog from '../../dialogs/registerEmployeeDialog/RegisterEmployeeDialog';
 import { useNavigate } from 'react-router-dom';
 import EmployeeCardItem from './components/EmployeeCardItem';
+import { UI_STRINGS } from '../../constants/uiStrings';
 import {
   PageHeader,
   AccessDeniedWrapper,
@@ -116,10 +117,10 @@ const EmployeesPage = () => {
         <Box>
           <Typography variant="h4" fontWeight={800} color="text.primary" display="flex" alignItems="center" gap={1.5}>
             <BadgeIcon sx={{ fontSize: 38, color: '#4f46e5' }} />
-            ניהול עובדי חברה
+            {UI_STRINGS.employees.pageTitle}
           </Typography>
           <Typography variant="subtitle1" color="text.secondary" sx={{ mt: 0.5, fontWeight: 500 }}>
-            חברה פעילה: <span style={{ fontWeight: 700, color: '#1e3c72' }}>{selectedCompany?.name}</span>
+            {UI_STRINGS.employees.activeCompanyPrefix} <span style={{ fontWeight: 700, color: '#1e3c72' }}>{selectedCompany?.name}</span>
           </Typography>
         </Box>
 
@@ -128,7 +129,7 @@ const EmployeesPage = () => {
           startIcon={<AddIcon sx={{ ml: 1, mr: 0 }} />}
           onClick={() => setIsRegisterOpen(true)}
         >
-          רישום עובד חדש
+          {UI_STRINGS.employees.registerNewEmployee}
         </AddEmployeeButton>
       </PageHeader>
 
@@ -160,6 +161,7 @@ const EmployeesPage = () => {
           onClose={() => setIsRegisterOpen(false)}
           companyId={companyId}
           onSave={loadEmployees}
+          currentEmployees={employees}
         />
       )}
     </Container>

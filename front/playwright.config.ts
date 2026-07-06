@@ -17,10 +17,18 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: true,
-    timeout: 120000,
-  },
+  webServer: [
+    {
+      command: 'npm run dev',
+      url: 'http://localhost:3000',
+      reuseExistingServer: true,
+      timeout: 120000,
+    },
+    {
+      command: 'npm run start --prefix ../back',
+      port: 4000,
+      reuseExistingServer: true,
+      timeout: 120000,
+    }
+  ],
 });

@@ -8,6 +8,9 @@ npm run test --prefix back
 echo "🧪 Running frontend tests..."
 npm run test --prefix front
 
+echo "🧪 Running frontend E2E tests..."
+npm run test:e2e --prefix front
+
 echo "🚀 Starting deployment of all services to Fly.io..."
 
 echo "================================"

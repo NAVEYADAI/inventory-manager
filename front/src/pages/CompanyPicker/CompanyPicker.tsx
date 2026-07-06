@@ -28,6 +28,7 @@ import type { CompanyInfo } from "../../api/login";
 import { useAuth } from "../../providers/AuthProvider";
 import ActiveCompanyItem from "./components/ActiveCompanyItem";
 import InactiveCompanyItem from "./components/InactiveCompanyItem";
+import { UI_STRINGS } from "../../constants/uiStrings";
 
 const CompanyPicker = () => {
   const { setUser } = useAuth();
@@ -145,10 +146,10 @@ const CompanyPicker = () => {
           <Stack spacing={3} alignItems="center">
             <HeaderIcon />
             <BannerTitle variant="h3" fontWeight={800}>
-              החברות שלך
+              {UI_STRINGS.companyPicker.bannerTitle}
             </BannerTitle>
             <BannerDescription variant="body1">
-              מקום אחד לנהל את כל העסקים שלך. בחר את החברה שברצונך לעבוד איתה כעת, או הפעל מנוי ממתין.
+              {UI_STRINGS.companyPicker.bannerDescription}
             </BannerDescription>
           </Stack>
         </BannerSide>
@@ -158,10 +159,10 @@ const CompanyPicker = () => {
           <FormContainer>
             <FormHeader>
               <Typography variant="h4" fontWeight={800} color="text.primary" gutterBottom>
-                בחירת חברה פעילה
+                {UI_STRINGS.companyPicker.formTitle}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                בחר חברה כדי להמשיך למערכת הניהול
+                {UI_STRINGS.companyPicker.formSubtitle}
               </Typography>
             </FormHeader>
 
@@ -181,7 +182,7 @@ const CompanyPicker = () => {
                 {active.length > 0 && (
                   <Box>
                     <SectionSubtitle variant="subtitle2" fontWeight={700} color="text.secondary">
-                      חברות פעילות
+                      {UI_STRINGS.companyPicker.activeCompaniesHeader}
                     </SectionSubtitle>
                     <List disablePadding>
                       {active.map((c) => (
@@ -199,7 +200,7 @@ const CompanyPicker = () => {
                 {inactive.length > 0 && (
                   <Box>
                     <SectionSubtitle variant="subtitle2" fontWeight={700} color="text.secondary">
-                      חברות ממתינות להפעלה
+                      {UI_STRINGS.companyPicker.pendingCompaniesHeader}
                     </SectionSubtitle>
                     <List disablePadding>
                       {inactive.map((c) => (
@@ -221,7 +222,7 @@ const CompanyPicker = () => {
                 variant="outlined"
                 onClick={() => navigate("/company-setup")}
               >
-                + הקם חברה חדשה
+                {UI_STRINGS.companyPicker.createNewCompany}
               </CreateCompanyButton>
 
               {(() => {
@@ -233,7 +234,7 @@ const CompanyPicker = () => {
                     color="inherit"
                     onClick={() => navigate("/home")}
                   >
-                    ביטול וחזרה לדף הבית
+                    {UI_STRINGS.companyPicker.backToHome}
                   </CancelButton>
                 ) : null;
               })()}

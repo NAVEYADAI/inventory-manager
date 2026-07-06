@@ -4,6 +4,7 @@ import { LoginFields, LogInFieldsHebNames, type Login } from "./util";
 import TextInput from "../../components/Inputs/TextInput";
 import { login } from "../../api/login";
 import { useState } from "react";
+import { UI_STRINGS } from "../../constants/uiStrings";
 import { useAuth } from "../../providers/AuthProvider";
 import type { User } from "../../types";
 
@@ -48,10 +49,10 @@ const LogIn = ({ setIsLogin, logIn, setLogIn }: LogInProps) => {
           <LogoImage src="/logo.png" alt="KitchenIQ Logo" />
         </Box>
         <Typography variant="h4" fontWeight={800} color="text.primary" gutterBottom>
-          התחברות למערכת
+          {UI_STRINGS.auth.loginHeader}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          הזן את שם המשתמש והסיסמה שלך כדי להיכנס
+          {UI_STRINGS.auth.loginDescription}
         </Typography>
       </FormHeader>
 
@@ -96,14 +97,14 @@ const LogIn = ({ setIsLogin, logIn, setLogIn }: LogInProps) => {
             color: "#ffffff",
           }}
         >
-          {loading ? <CircularProgress size={24} color="inherit" /> : "התחבר למערכת"}
+          {loading ? <CircularProgress size={24} color="inherit" /> : UI_STRINGS.auth.loginSubmit}
         </ActionButton>
       </StyledForm>
 
       {/* Mobile-only register toggle */}
       <Box sx={{ display: { xs: "block", md: "none" }, textAlign: "center", mt: 1 }}>
         <Typography variant="body2" color="text.secondary">
-          אין לך חשבון עדיין?{" "}
+          {UI_STRINGS.auth.noAccountYet}{" "}
           <Typography
             component="span"
             variant="body2"
@@ -112,7 +113,7 @@ const LogIn = ({ setIsLogin, logIn, setLogIn }: LogInProps) => {
             sx={{ cursor: "pointer", textDecoration: "underline" }}
             onClick={() => setIsLogin(false)}
           >
-            להרשמה לחץ כאן
+            {UI_STRINGS.auth.registerHere}
           </Typography>
         </Typography>
       </Box>

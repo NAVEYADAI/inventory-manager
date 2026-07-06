@@ -14,6 +14,7 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import LocalFloristIcon from '@mui/icons-material/LocalFlorist';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import { UI_STRINGS } from '../../constants/uiStrings';
 
 const HomePage = () => {
   const [createRawMaterialOpen, setCreateRawMaterialOpen] = useState(false);
@@ -37,15 +38,15 @@ const HomePage = () => {
           <DashboardIcon sx={{ fontSize: 50, opacity: 0.95 }} />
           <Box>
             <Typography variant="h4" fontWeight={800} gutterBottom>
-              שלום, {userName || "אורח"}!
+              {UI_STRINGS.home.welcomePrefix} {userName || "אורח"}!
             </Typography>
             <Typography variant="body1" sx={{ opacity: 0.9, fontSize: "1.1rem" }}>
-              ברוך הבא למערכת ניהול המלאי החכמה של העסק שלך.
+              {UI_STRINGS.home.welcomeDescription}
             </Typography>
             {currentCompany && (
               <CompanyBadge>
                 <Typography variant="subtitle2" fontWeight={700}>
-                  חברה פעילה כעת: {currentCompany.name}
+                  {UI_STRINGS.home.activeCompanyPrefix} {currentCompany.name}
                 </Typography>
               </CompanyBadge>
             )}

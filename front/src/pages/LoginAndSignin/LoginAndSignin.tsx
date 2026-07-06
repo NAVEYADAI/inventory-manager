@@ -3,6 +3,7 @@ import { PageBackground, GlassCard, BannerSide, FormSide } from "./LoginAndSigni
 import { motion, AnimatePresence } from "framer-motion";
 import { Typography, Stack } from "@mui/material";
 import LogIn from "./LogIn";
+import { UI_STRINGS } from "../../constants/uiStrings";
 import SignUp from "./SignUp";
 import type { Login, Signup } from "./util";
 import { GhostButton } from "./LoginAndSignin.style";
@@ -73,25 +74,25 @@ const LoginAndSignin = () => {
               {isLogin ? (
                 <Stack spacing={3} alignItems="center">
                   <Typography variant="h3" fontWeight={800} sx={{ letterSpacing: 0.5 }}>
-                    ברוכים הבאים!
+                    {UI_STRINGS.auth.welcomeTitle}
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9, maxWidth: "340px", lineHeight: 1.7, fontSize: "1.05rem" }}>
-                    הצטרף אלינו היום והתחל לנהל את המלאי והמתכונים של העסק שלך בצורה חכמה, מהירה ומקצועית.
+                    {UI_STRINGS.auth.welcomeDescription}
                   </Typography>
                   <GhostButton variant="outlined" onClick={() => setIsLogin(false)}>
-                    הרשמה למערכת
+                    {UI_STRINGS.auth.signupSubmit}
                   </GhostButton>
                 </Stack>
               ) : (
                 <Stack spacing={3} alignItems="center">
                   <Typography variant="h3" fontWeight={800} sx={{ letterSpacing: 0.5 }}>
-                    שמחים שחזרת!
+                    {UI_STRINGS.auth.backTitle}
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9, maxWidth: "340px", lineHeight: 1.7, fontSize: "1.05rem" }}>
-                    התחבר למשתמש שלך כדי להמשיך לנהל את המלאי, המתכונים, ההזמנות ולוח השנה.
+                    {UI_STRINGS.auth.backDescription}
                   </Typography>
                   <GhostButton variant="outlined" onClick={() => setIsLogin(true)}>
-                    התחברות למערכת
+                    {UI_STRINGS.auth.loginHeader}
                   </GhostButton>
                 </Stack>
               )}

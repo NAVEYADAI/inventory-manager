@@ -22,6 +22,7 @@ import { createCompany } from "../../api/company";
 import { selectSubscription } from "../../api/subscription";
 import { useAuth } from "../../providers/AuthProvider";
 import { useNotification } from "../../providers/NotificationProvider/NotificationProvider";
+import { UI_STRINGS } from "../../constants/uiStrings";
 
 interface CompanyFields {
   name: string;
@@ -98,10 +99,10 @@ const CompanySetup = () => {
         <BannerSide>
           <Stack spacing={3} alignItems="center">
             <BannerTitle variant="h3" fontWeight={800}>
-              הגדרת העסק שלך
+              {UI_STRINGS.companySetup.bannerTitle}
             </BannerTitle>
             <BannerDescription variant="body1">
-              הזן את פרטי החברה כדי להקים את העסק שלך במערכת ולהתחיל לנהל מלאי, מתכונים ויומן עבודה בצורה חכמה.
+              {UI_STRINGS.companySetup.bannerDescription}
             </BannerDescription>
           </Stack>
         </BannerSide>
@@ -111,10 +112,10 @@ const CompanySetup = () => {
           <FormContainer>
             <FormHeader>
               <Typography variant="h4" fontWeight={800} color="text.primary" gutterBottom>
-                יצירת חברה חדשה
+                {UI_STRINGS.companySetup.formTitle}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                מלא את הפרטים הבאים כדי להשלים את ההגדרה
+                {UI_STRINGS.companySetup.formSubtitle}
               </Typography>
             </FormHeader>
 
@@ -123,14 +124,14 @@ const CompanySetup = () => {
                 {/* Row 1: Company Name & Identifier */}
                 <Grid size={{ xs: 6 }}>
                   <StyledTextInput
-                    label="שם החברה"
+                    label={UI_STRINGS.companySetup.companyName}
                     state={company.name}
                     setState={(str) => setCompany((c) => ({ ...c, name: str }))}
                   />
                 </Grid>
                 <Grid size={{ xs: 6 }}>
                   <StyledTextInput
-                    label="ח.פ. / מזהה חברה"
+                    label={UI_STRINGS.companySetup.companyIdentifier}
                     state={company.identifier}
                     setState={(str) => setCompany((c) => ({ ...c, identifier: str }))}
                   />
@@ -139,7 +140,7 @@ const CompanySetup = () => {
                 {/* Row 2: Address (Full Width) */}
                 <Grid size={{ xs: 12 }}>
                   <StyledTextInput
-                    label="כתובת החברה"
+                    label={UI_STRINGS.companySetup.companyAddress}
                     state={company.address}
                     setState={(str) => setCompany((c) => ({ ...c, address: str }))}
                   />
@@ -148,7 +149,7 @@ const CompanySetup = () => {
                 {/* Row 3: Phone (Full Width) */}
                 <Grid size={{ xs: 12 }}>
                   <StyledTextInput
-                    label="טלפון ליצירת קשר"
+                    label={UI_STRINGS.companySetup.companyPhone}
                     state={company.phone}
                     setState={(str) => setCompany((c) => ({ ...c, phone: str }))}
                   />
@@ -167,7 +168,7 @@ const CompanySetup = () => {
                 disabled={loading}
                 fullWidth
               >
-                {loading ? <CircularProgress size={24} color="inherit" /> : "צור חברה והמשך"}
+                {loading ? <CircularProgress size={24} color="inherit" /> : UI_STRINGS.companySetup.submit}
               </SubmitButton>
             </StyledForm>
           </FormContainer>

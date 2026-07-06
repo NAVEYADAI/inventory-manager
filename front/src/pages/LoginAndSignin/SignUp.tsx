@@ -4,6 +4,7 @@ import TextInput from "../../components/Inputs/TextInput";
 import { SignUpFields, SignUpFieldsHebNames, type Signup } from "./util";
 import { register, login } from "../../api/login";
 import { useState } from "react";
+import { UI_STRINGS } from "../../constants/uiStrings";
 import { useAuth } from "../../providers/AuthProvider";
 
 import { useNotification } from "../../providers/NotificationProvider/NotificationProvider";
@@ -80,10 +81,10 @@ const SignUp = ({ setIsLogin, signUp, setSignUp }: SignUpProps) => {
           <LogoImage src="/logo.png" alt="KitchenIQ Logo" />
         </Box>
         <Typography variant="h4" fontWeight={800} color="text.primary" gutterBottom>
-          יצירת חשבון חדש
+          {UI_STRINGS.auth.signupHeader}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          הצטרף אלינו והתחל לנהל את המלאי שלך בצורה חכמה
+          {UI_STRINGS.auth.signupDescription}
         </Typography>
       </FormHeader>
 
@@ -124,14 +125,14 @@ const SignUp = ({ setIsLogin, signUp, setSignUp }: SignUpProps) => {
             color: "#ffffff",
           }}
         >
-          {loading ? <CircularProgress size={24} color="inherit" /> : "הרשמה למערכת"}
+          {loading ? <CircularProgress size={24} color="inherit" /> : UI_STRINGS.auth.signupSubmit}
         </ActionButton>
       </StyledForm>
 
       {/* Mobile-only login toggle */}
       <Box sx={{ display: { xs: "block", md: "none" }, textAlign: "center", mt: 1 }}>
         <Typography variant="body2" color="text.secondary">
-          כבר יש לך חשבון?{" "}
+          {UI_STRINGS.auth.hasAccountAlready}{" "}
           <Typography
             component="span"
             variant="body2"
@@ -140,7 +141,7 @@ const SignUp = ({ setIsLogin, signUp, setSignUp }: SignUpProps) => {
             sx={{ cursor: "pointer", textDecoration: "underline" }}
             onClick={() => setIsLogin(true)}
           >
-            להתחברות לחץ כאן
+            {UI_STRINGS.auth.loginHere}
           </Typography>
         </Typography>
       </Box>
