@@ -84,6 +84,7 @@ describe('AuthService', () => {
       phone: '123',
       email: 'test@example.com',
       password: 'password123',
+      tz: '123456789',
     };
 
     it('should register a new user successfully if they do not exist yet', async () => {
@@ -101,6 +102,7 @@ describe('AuthService', () => {
         phone: dto.phone,
         email: dto.email,
         password: dto.password,
+        tz: dto.tz,
       });
       expect(result).toEqual({ id: 1, name: 'testuser' });
     });

@@ -24,6 +24,7 @@ export class UserService {
       address: createUserDto.address ?? '',
       phone: createUserDto.phone ?? '',
       email: createUserDto.email,
+      tz: createUserDto.tz ?? '',
     });
     const saved = await this.userRepo.save(user);
 

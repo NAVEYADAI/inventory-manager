@@ -41,6 +41,7 @@ export class AuthService {
       phone: dto.phone,
       email: dto.email,
       password: dto.password,
+      tz: dto.tz,
     });
   }
 

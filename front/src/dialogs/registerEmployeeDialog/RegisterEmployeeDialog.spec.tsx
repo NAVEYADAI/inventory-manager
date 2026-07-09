@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import RegisterEmployeeDialog from './RegisterEmployeeDialog';
 import axiosInstance from '../../api/axiosInstance';
@@ -61,68 +61,48 @@ describe('RegisterEmployeeDialog', () => {
     }));
   });
 
-  it('fetches all users and filters out existing employees', async () => {
-    const mockUsers = [
-      { id: 100, name: 'ownerUser', email: 'owner@test.com', firstName: 'Owner', lastName: 'User' },
-      { id: 200, name: 'otherUser', email: 'other@test.com', firstName: 'Other', lastName: 'User', phone: '123' },
-    ];
-    (axiosInstance.get as any).mockResolvedValue({ data: mockUsers });
-
+  it('renders a text field for entering existing employee identifier', async () => {
     render(<RegisterEmployeeDialog {...defaultProps} />);
 
-    // Expect fetch API to be called
-    expect(axiosInstance.get).toHaveBeenCalledWith('/user');
-
-    // Autocomplete input should render
-    await waitFor(() => {
-      expect(screen.getByLabelText(/חפש משתמש קיים/)).toBeInTheDocument();
-    });
+    // Check that the text field for identifier is visible
+    expect(screen.getByLabelText(/שם משתמש או תעודת זהות/)).toBeInTheDocument();
   });
 
   it('supports switching tabs between add existing user and registering a new user', async () => {
-    (axiosInstance.get as any).mockResolvedValue({ data: [] });
-
     render(<RegisterEmployeeDialog {...defaultProps} />);
 
-    // "הוספת משתמש קיים" tab is active by default, check autocomplete is present
-    await waitFor(() => {
-      expect(screen.getByLabelText(/חפש משתמש קיים/)).toBeInTheDocument();
-    });
-    expect(screen.queryByLabelText(/שם משתמש/)).not.toBeInTheDocument();
+    // "הוספת משתמש קיים" tab is active by default, check identifier field is present
+    expect(screen.getByLabelText(/שם משתמש או תעודת זהות/)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/^שם משתמש( \*|$)/)).not.toBeInTheDocument();
 
     // Click on "רישום משתמש חדש" tab
     const registerTab = screen.getByText('רישום משתמש חדש');
     fireEvent.click(registerTab);
 
     // Expect signup fields to render now
-    expect(screen.getByLabelText(/שם משתמש/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^שם משתמש( \*|$)/)).toBeInTheDocument();
     expect(screen.getByLabelText(/סיסמה/)).toBeInTheDocument();
     expect(screen.getByLabelText(/כתובת אימייל/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^תעודת זהות( \*|$)/)).toBeInTheDocument();
   });
 
   it('submits correctly for existing user', async () => {
-    const mockUsers = [
-      { id: 200, name: 'otherUser', email: 'other@test.com', firstName: 'Other', lastName: 'User' },
-    ];
-    (axiosInstance.get as any).mockResolvedValue({ data: mockUsers });
     (axiosInstance.post as any).mockResolvedValue({ data: { success: true } });
 
     render(<RegisterEmployeeDialog {...defaultProps} />);
 
-    // Wait for the autocomplete options load
-    const autocomplete = await screen.findByLabelText(/חפש משתמש קיים/);
-    
-    // Simulate autocomplete selection using our mock implementation
-    // Directly trigger onChange on autocomplete by simulating selection
-    fireEvent.focus(autocomplete);
-    fireEvent.change(autocomplete, { target: { value: 'other' } });
-    
-    // Since testing autocomplete in jsdom can be flaky, we can test state submission:
-    // We can click the add user button which will trigger handleSubmit.
-    // If no user is selected, it shows error:
+    const idInput = screen.getByLabelText(/שם משתמש או תעודת זהות/);
+    fireEvent.change(idInput, { target: { value: 'existingUser' } });
+
     const submitBtn = screen.getByRole('button', { name: 'הוסף עובד' });
     fireEvent.click(submitBtn);
 
-    expect(screen.getByText('נא לבחור משתמש מהרשימה')).toBeInTheDocument();
+    expect(axiosInstance.post).toHaveBeenCalledWith(
+      '/company/1/employees',
+      expect.objectContaining({
+        identifier: 'existingUser',
+        role: 'editor',
+      })
+    );
   });
 });

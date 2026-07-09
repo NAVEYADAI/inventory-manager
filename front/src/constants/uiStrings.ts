@@ -13,6 +13,7 @@ export const UI_STRINGS = {
     email: "כתובת מייל",
     address: "כתובת",
     password: "סיסמא",
+    tz: "תעודת זהות",
     welcomeTitle: "ברוכים הבאים!",
     welcomeDescription: "הצטרף אלינו היום והתחל לנהל את המלאי והמתכונים של העסק שלך בצורה חכמה, מהירה ומקצועית.",
     backTitle: "שמחים שחזרת!",
@@ -62,6 +63,7 @@ export const UI_STRINGS = {
     roleLabel: "תפקיד במערכת",
     addEmployee: "הוסף עובד",
     searchPlaceholder: "הקלד שם משתמש, שם פרטי או אימייל...",
+    searchTzOrUsername: "שם משתמש או תעודת זהות",
     roleEditor: "עובד (Editor)",
   }
 };

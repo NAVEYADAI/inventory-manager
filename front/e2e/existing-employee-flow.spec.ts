@@ -6,11 +6,13 @@ test.describe('Add Existing Employee E2E Flow', () => {
     const timestamp = Date.now();
     const userA = `usera_${timestamp}`;
     const emailA = `usera_${timestamp}@test.com`;
+    const tzA = `11111111${timestamp % 10}`;
     const companyAName = `חברה א_${timestamp}`;
     const companyAId = `hpa_${timestamp}`;
 
     const userB = `userb_${timestamp}`;
     const emailB = `userb_${timestamp}@test.com`;
+    const tzB = `22222222${timestamp % 10}`;
     const companyBName = `חברה ב_${timestamp}`;
     const companyBId = `hpb_${timestamp}`;
 
@@ -22,6 +24,7 @@ test.describe('Add Existing Employee E2E Flow', () => {
     await page.getByLabel(UI_STRINGS.auth.userName).fill(userA);
     await page.getByLabel(UI_STRINGS.auth.phone).fill('0501111111');
     await page.getByLabel(UI_STRINGS.auth.email).fill(emailA);
+    await page.getByLabel(UI_STRINGS.auth.tz).fill(tzA);
     await page.getByLabel(UI_STRINGS.auth.address, { exact: true }).fill('רחוב א');
     await page.getByLabel(UI_STRINGS.auth.password).fill('password123');
     await page.getByRole('button', { name: UI_STRINGS.auth.signupSubmit }).click();
@@ -45,6 +48,7 @@ test.describe('Add Existing Employee E2E Flow', () => {
     await page.getByLabel(UI_STRINGS.auth.userName).fill(userB);
     await page.getByLabel(UI_STRINGS.auth.phone).fill('0502222222');
     await page.getByLabel(UI_STRINGS.auth.email).fill(emailB);
+    await page.getByLabel(UI_STRINGS.auth.tz).fill(tzB);
     await page.getByLabel(UI_STRINGS.auth.address, { exact: true }).fill('רחוב ב');
     await page.getByLabel(UI_STRINGS.auth.password).fill('password123');
     await page.getByRole('button', { name: UI_STRINGS.auth.signupSubmit }).click();
@@ -74,14 +78,10 @@ test.describe('Add Existing Employee E2E Flow', () => {
     // Open employee registration dialog
     await page.getByRole('button', { name: UI_STRINGS.employees.registerNewEmployee }).click();
 
-    // Verify autocomplete search is visible
-    const autocompleteInput = page.locator(`input[placeholder="${UI_STRINGS.employees.searchPlaceholder}"]`);
-    await expect(autocompleteInput).toBeVisible();
-
-    // Search for User B and select B
-    await autocompleteInput.fill(userB);
-    await page.keyboard.press('ArrowDown');
-    await page.keyboard.press('Enter');
+    // Verify search input is visible and enter username
+    const searchInput = page.getByLabel(/שם משתמש או תעודת זהות/);
+    await expect(searchInput).toBeVisible();
+    await searchInput.fill(userB);
 
     // Select the Role field and make it Editor
     await page.getByLabel(UI_STRINGS.employees.roleLabel).click();

@@ -23,6 +23,7 @@ export enum SignUpFields {
   PHONE = "phone",
   EMAIL = "email",
   PASSWORD = "password",
+  TZ = "tz",
 }
 
 export const SignUpFieldsHebNames: Record<SignUpFields, string> = {
@@ -33,6 +34,7 @@ export const SignUpFieldsHebNames: Record<SignUpFields, string> = {
   [SignUpFields.PHONE]: UI_STRINGS.auth.phone,
   [SignUpFields.EMAIL]: UI_STRINGS.auth.email,
   [SignUpFields.PASSWORD]: UI_STRINGS.auth.password,
+  [SignUpFields.TZ]: UI_STRINGS.auth.tz,
 };
 
 export type Signup = {
@@ -43,4 +45,5 @@ export type Signup = {
   phone: string;
   email: string;
   password: String;
+  tz: string;
 };

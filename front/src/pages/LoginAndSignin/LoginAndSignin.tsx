@@ -34,6 +34,7 @@ const LoginAndSignin = () => {
     phone: "",
     email: "",
     password: "",
+    tz: "",
   });
 
   const formAnimationVariants = {

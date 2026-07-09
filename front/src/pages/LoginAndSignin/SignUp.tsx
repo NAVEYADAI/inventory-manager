@@ -34,6 +34,7 @@ const SignUp = ({ setIsLogin, signUp, setSignUp }: SignUpProps) => {
         phone: signUp.phone,
         email: signUp.email,
         password: String(signUp.password),
+        tz: signUp.tz,
       };
       const res = await register(payload);
       if (res.status === 201 || res.status === 200) {
@@ -98,8 +99,9 @@ const SignUp = ({ setIsLogin, signUp, setSignUp }: SignUpProps) => {
           {renderField(SignUpFields.USER_NAME, 6)}
           {renderField(SignUpFields.PHONE, 6)}
 
-          {/* Row 3: Email (Full Width) */}
-          {renderField(SignUpFields.EMAIL, 12)}
+          {/* Row 3: TZ & Email */}
+          {renderField(SignUpFields.TZ, 6)}
+          {renderField(SignUpFields.EMAIL, 6)}
 
           {/* Row 4: Address (Full Width) */}
           {renderField(SignUpFields.ADDRESS, 12)}

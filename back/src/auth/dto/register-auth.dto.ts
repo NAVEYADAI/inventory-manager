@@ -6,4 +6,5 @@ export class RegisterDto {
   lastName?: string;
   address?: string;
   phone?: string;
+  tz: string;
 }

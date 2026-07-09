@@ -8,12 +8,23 @@ import CompanyPicker from "../pages/CompanyPicker/CompanyPicker";
 import RecipesPage from "../pages/RecipesPage/RecipesPage";
 import TagsPage from "../pages/TagsPage/TagsPage";
 import EmployeesPage from "../pages/EmployeesPage/EmployeesPage";
+import { useAuth } from "../providers/AuthProvider";
 
 export const Router = () => {
+  const { user } = useAuth();
+
+  if (!user) {
+    return (
+      <Routes>
+        <Route path="/login" element={<LoginAndSignin />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    );
+  }
+
   return (
     <Routes>
       <Route path="/login" element={<LoginAndSignin />} />
-      <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/home" element={<HomePage />} />
       <Route path="/company-setup" element={<CompanySetup />} />
       <Route path="/company-picker" element={<CompanyPicker />} />
@@ -22,6 +33,7 @@ export const Router = () => {
       <Route path="/recipes" element={<RecipesPage />} />
       <Route path="/tags" element={<TagsPage />} />
       <Route path="/employees" element={<EmployeesPage />} />
+      <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>
   );
 };

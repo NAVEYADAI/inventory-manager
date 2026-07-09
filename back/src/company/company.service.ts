@@ -102,13 +102,28 @@ async create(createCompanyDto: CreateCompanyDto): Promise<{ company: Company; su
       const txPermissionRepo = manager.withRepository(this.permissionRepo);
       const txUserRepo = manager.withRepository(this.userRepo);
 
-      // Check if username/email already exists
-      let user = await txUserRepo.findOne({ where: { name: dto.name } });
-      let isNewUser = false;
-
-      if (!user) {
-        user = await txUserRepo.findOne({ where: { email: dto.email } });
+      // Check if username/email/tz already exists
+      let user = null;
+      if (dto.identifier) {
+        user = await txUserRepo.findOne({ where: { tz: dto.identifier } });
+        if (!user) {
+          user = await txUserRepo.findOne({ where: { name: dto.identifier } });
+        }
+        if (!user) {
+          user = await txUserRepo.findOne({ where: { email: dto.identifier } });
+        }
+      } else {
+        if (dto.tz) {
+          user = await txUserRepo.findOne({ where: { tz: dto.tz } });
+        }
+        if (!user && dto.name) {
+          user = await txUserRepo.findOne({ where: { name: dto.name } });
+        }
+        if (!user && dto.email) {
+          user = await txUserRepo.findOne({ where: { email: dto.email } });
+        }
       }
+      let isNewUser = false;
 
       if (user) {
         // User exists! Check if they are already in the subscription for this company
@@ -116,9 +131,12 @@ async create(createCompanyDto: CreateCompanyDto): Promise<{ company: Company; su
           where: { company: { id: companyId }, users: { id: user.id } },
         });
         if (subscription) {
-          throw new Error('העובד כבר רשום בחברה זו');
+          throw new ConflictException('העובד כבר רשום בחברה זו');
         }
       } else {
+        if (!dto.password) {
+          throw new NotFoundException('משתמש עם פרטים אלו לא נמצא במערכת');
+        }
         isNewUser = true;
         // 1. Create the new user
         user = txUserRepo.create({
@@ -128,6 +146,7 @@ async create(createCompanyDto: CreateCompanyDto): Promise<{ company: Company; su
           address: dto.address ?? '',
           phone: dto.phone ?? '',
           email: dto.email,
+          tz: dto.tz ?? '',
         });
         user = await txUserRepo.save(user);
 

@@ -8,6 +8,7 @@ test.describe('Raw Materials, Employee and Recipe E2E Flow', () => {
     const emailA = `usera_${timestamp}@test.com`;
     const companyAName = `חברה א_${timestamp}`;
     const companyAId = `hpa_${timestamp}`;
+    const tzA = `33333333${timestamp % 10}`;
     const empUser = `employee_${timestamp}`;
     const empEmail = `employee_${timestamp}@test.com`;
     const rawMaterialName = `קמח לבן_${timestamp}`;
@@ -27,6 +28,7 @@ test.describe('Raw Materials, Employee and Recipe E2E Flow', () => {
     await page.getByLabel(UI_STRINGS.auth.userName).fill(userA);
     await page.getByLabel(UI_STRINGS.auth.phone).fill('0501111111');
     await page.getByLabel(UI_STRINGS.auth.email).fill(emailA);
+    await page.getByLabel(UI_STRINGS.auth.tz).fill(tzA);
     await page.getByLabel(UI_STRINGS.auth.address, { exact: true }).fill('רחוב א');
     await page.getByLabel(UI_STRINGS.auth.password).fill('password123');
 
@@ -76,6 +78,7 @@ test.describe('Raw Materials, Employee and Recipe E2E Flow', () => {
     await page.getByLabel('סיסמה').fill('pass123456');
     await page.getByLabel('שם פרטי').fill('עובד');
     await page.getByLabel('שם משפחה').fill('ראשון');
+    await page.getByLabel('תעודת זהות').fill('312345678');
     await page.getByLabel('כתובת אימייל').fill(empEmail);
     await page.getByLabel('טלפון').fill('0502222222');
     await page.getByLabel('כתובת מגורים').fill('רחוב ב');

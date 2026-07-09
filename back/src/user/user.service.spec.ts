@@ -65,6 +65,7 @@ describe('UserService', () => {
         phone: '1234567890',
         email: 'test@example.com',
         password: 'securePassword123',
+        tz: '123456789',
       };
 
       const mockSavedUser = {
@@ -75,6 +76,7 @@ describe('UserService', () => {
         address: '123 Main St',
         phone: '1234567890',
         email: 'test@example.com',
+        tz: '123456789',
       };
 
       userRepo.create.mockReturnValue(mockSavedUser as any);
@@ -91,6 +93,7 @@ describe('UserService', () => {
         address: createUserDto.address,
         phone: createUserDto.phone,
         email: createUserDto.email,
+        tz: createUserDto.tz,
       });
       expect(userRepo.save).toHaveBeenCalledWith(mockSavedUser);
       expect(passwordRepo.create).toHaveBeenCalledWith(

@@ -26,6 +26,9 @@ export class User {
   @Column()
   email: string;
 
+  @Column({ default: '' })
+  tz: string;
+
   @ManyToMany(() => Subscription, (subscription) => subscription.users)
   subscriptions: Subscription[];
 
