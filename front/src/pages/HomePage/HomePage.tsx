@@ -1,20 +1,20 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Box, CardContent, Grid, Typography, Stack } from '@mui/material';
-import {
-  HomeContainer,
-  WelcomeCard,
-  CompanyBadge,
-  ShortcutCard,
-  ShortcutButton
-} from './HomePage.style';
+import { Grid } from '@mui/material';
+import { HomeContainer } from './HomePage.style';
 import CreateRawMaterialDialog from '../../dialogs/createRawMaterialDialog/CreateRawMaterialDialog';
 import { createRawMaterials } from '../../api/rawMaterial';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import LocalFloristIcon from '@mui/icons-material/LocalFlorist';
-import DashboardIcon from '@mui/icons-material/Dashboard';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import HistoryIcon from '@mui/icons-material/History';
+import PeopleIcon from '@mui/icons-material/People';
+import WelcomeHeader from './WelcomeHeader';
+import DashboardTile from './DashboardTile';
+import { AppRoutes } from '../../routes/routes.enum';
 import { UI_STRINGS } from '../../constants/uiStrings';
+
 
 const HomePage = () => {
   const [createRawMaterialOpen, setCreateRawMaterialOpen] = useState(false);
@@ -26,111 +26,99 @@ const HomePage = () => {
     try {
       const user = JSON.parse(userStr);
       currentCompany = user.selectedCompany;
-      userName = user.name || user.email || "";
+      userName = user.firstName || user.name || user.email || "";
     } catch { }
   }
 
+  const isAdmin = currentCompany?.role === 'admin' || currentCompany?.role === 'owner';
+
   return (
     <HomeContainer dir="rtl">
-      {/* Welcome Header Card */}
-      <WelcomeCard elevation={0}>
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={3} alignItems={{ xs: "flex-start", sm: "center" }}>
-          <DashboardIcon sx={{ fontSize: 50, opacity: 0.95 }} />
-          <Box>
-            <Typography variant="h4" fontWeight={800} gutterBottom>
-              {UI_STRINGS.home.welcomePrefix} {userName || "אורח"}!
-            </Typography>
-            <Typography variant="body1" sx={{ opacity: 0.9, fontSize: "1.1rem" }}>
-              {UI_STRINGS.home.welcomeDescription}
-            </Typography>
-            {currentCompany && (
-              <CompanyBadge>
-                <Typography variant="subtitle2" fontWeight={700}>
-                  {UI_STRINGS.home.activeCompanyPrefix} {currentCompany.name}
-                </Typography>
-              </CompanyBadge>
-            )}
-          </Box>
-        </Stack>
-      </WelcomeCard>
+      {/* Welcome Header Component */}
+      <WelcomeHeader userName={userName} currentCompany={currentCompany} />
 
-      {/* Dashboard Section */}
-      <Typography variant="h5" fontWeight={800} color="text.primary" sx={{ mb: 3 }}>
-        קיצורי דרך מהירים
-      </Typography>
-
-      <Grid container spacing={4}>
+      {/* Tiles Grid */}
+      <Grid container spacing={3} justifyContent="center">
         {/* Card 1: Recipes */}
-        <Grid size={{ xs: 12, md: 4 }}>
-          <ShortcutCard variant="outlined">
-            <CardContent sx={{ p: 4, flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box display="flex" alignItems="center" gap={1.5}>
-                <MenuBookIcon color="primary" sx={{ fontSize: 35 }} />
-                <Typography variant="h6" fontWeight={800} color="text.primary">
-                  ספר המתכונים
-                </Typography>
-              </Box>
-              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6, flexGrow: 1 }}>
-                ניהול כל מתכוני העסק, רכיבים, יחידות מידה וכמויות. רישום הכנת מתכונים בפועל לעדכון המלאי.
-              </Typography>
-              <ShortcutButton
-                component={Link}
-                to="/recipes"
-                variant="contained"
-              >
-                לספר המתכונים
-              </ShortcutButton>
-            </CardContent>
-          </ShortcutCard>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <DashboardTile
+            to={AppRoutes.RECIPES}
+            colorTheme="primary"
+            icon={<MenuBookIcon sx={{ fontSize: 40, mb: 1.5 }} />}
+            title={UI_STRINGS.home.recipesTitle}
+            description="ניהול מתכונים, רכיבים והרצות ייצור"
+          />
         </Grid>
 
         {/* Card 2: Calendar */}
-        <Grid size={{ xs: 12, md: 4 }}>
-          <ShortcutCard variant="outlined">
-            <CardContent sx={{ p: 4, flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box display="flex" alignItems="center" gap={1.5}>
-                <CalendarMonthIcon color="primary" sx={{ fontSize: 35 }} />
-                <Typography variant="h6" fontWeight={800} color="text.primary">
-                  לוח שנה ואירועים
-                </Typography>
-              </Box>
-              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6, flexGrow: 1 }}>
-                מעקב אחר ביצועי הכנת מתכונים, תזמון אירועים ולוח זמנים שבועי וחודשי לייצור מלאי.
-              </Typography>
-              <ShortcutButton
-                component={Link}
-                to="/calendar2"
-                variant="contained"
-                color="secondary"
-              >
-                למעבר ללוח
-              </ShortcutButton>
-            </CardContent>
-          </ShortcutCard>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <DashboardTile
+            to={AppRoutes.CALENDAR2}
+            colorTheme="secondary"
+            icon={<CalendarMonthIcon sx={{ fontSize: 40, mb: 1.5 }} />}
+            title={UI_STRINGS.home.calendarTitle}
+            description="מעקב הכנות ולוחות זמנים לייצור"
+          />
         </Grid>
 
-        {/* Card 3: Raw Materials */}
-        <Grid size={{ xs: 12, md: 4 }}>
-          <ShortcutCard variant="outlined">
-            <CardContent sx={{ p: 4, flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box display="flex" alignItems="center" gap={1.5}>
-                <LocalFloristIcon color="primary" sx={{ fontSize: 35 }} />
-                <Typography variant="h6" fontWeight={800} color="text.primary">
-                  חומרי גלם
-                </Typography>
-              </Box>
-              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6, flexGrow: 1 }}>
-                הוספה ועדכון מהיר של חומרי גלם וסוגי מדידה לתוך המלאי של העסק שלך.
-              </Typography>
-              <ShortcutButton
-                onClick={() => setCreateRawMaterialOpen(true)}
-                variant="outlined"
-              >
-                הוספת חומרי גלם
-              </ShortcutButton>
-            </CardContent>
-          </ShortcutCard>
+        {/* Card 3: Pending Preparations */}
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <DashboardTile
+            to={AppRoutes.PENDING_PREPARATIONS}
+            colorTheme="success"
+            icon={<FactCheckIcon sx={{ fontSize: 40, mb: 1.5 }} />}
+            title={UI_STRINGS.home.preparationsTitle}
+            description="אישור תפוקת ייצור ועדכון חומרי גלם"
+          />
         </Grid>
+
+        {/* Card 4: Raw Materials */}
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <DashboardTile
+            onClick={() => setCreateRawMaterialOpen(true)}
+            colorTheme="info"
+            icon={<LocalFloristIcon sx={{ fontSize: 40, mb: 1.5 }} />}
+            title={UI_STRINGS.home.rawMaterialsTitle}
+            description="הוספת חומרים והגדרת המרות יחידות"
+          />
+        </Grid>
+
+        {/* Card 5: Production Reports */}
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <DashboardTile
+            to={AppRoutes.TAGS}
+            colorTheme="warning"
+            icon={<AssessmentIcon sx={{ fontSize: 40, mb: 1.5 }} />}
+            title={UI_STRINGS.home.reportsTitle}
+            description="אצוות עבודה ושימושי חומרים במטבח"
+          />
+        </Grid>
+
+        {/* Card 6: Activity Log */}
+        {isAdmin && (
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+            <DashboardTile
+              to={AppRoutes.ACTIVITY_LOG}
+              colorTheme="activity"
+              icon={<HistoryIcon sx={{ fontSize: 40, mb: 1.5 }} />}
+              title={UI_STRINGS.home.activityLogTitle}
+              description="מעקב וביקורת אחר פעולות משתמשים"
+            />
+          </Grid>
+        )}
+
+        {/* Card 7: Employee Management */}
+        {isAdmin && (
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+            <DashboardTile
+              to={AppRoutes.EMPLOYEES}
+              colorTheme="employees"
+              icon={<PeopleIcon sx={{ fontSize: 40, mb: 1.5 }} />}
+              title={UI_STRINGS.home.employeesTitle}
+              description="הוספת עובדים ועדכון תפקידים והרשאות"
+            />
+          </Grid>
+        )}
       </Grid>
 
       {/* Dialog for adding raw materials */}

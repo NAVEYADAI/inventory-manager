@@ -1,9 +1,9 @@
-import { Box, Typography, Stack, Fab, Tooltip } from "@mui/material";
+import { Box, Typography, Fab, Tooltip } from "@mui/material";
 import {
   CalendarContainer,
-  CalendarHeader,
   CalendarCard
 } from "./FullCalendarManeger.style";
+import PageHeader from "../../components/PageHeader/PageHeader";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -104,18 +104,12 @@ const FullCalendarManeger = () => {
 
   return (
     <CalendarContainer dir="rtl">
-      {/* Premium Header Card */}
-      <CalendarHeader elevation={0}>
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="center" sx={{ width: "100%", justifyContent: { xs: "center", sm: "flex-start" } }}>
-          <CalendarMonthIcon sx={{ fontSize: 40 }} />
-          <Box sx={{ textAlign: { xs: "center", sm: "right" } }}>
-            <Typography variant="h4" fontWeight={800}>לוח שנה ומועדים</Typography>
-            <Typography variant="body2" sx={{ opacity: 0.85, mt: 0.5 }}>
-              ניהול אירועים עסקיים לצד תאריכים עבריים וחגי ישראל
-            </Typography>
-          </Box>
-        </Stack>
-      </CalendarHeader>
+      <PageHeader
+        title="לוח שנה ומועדים"
+        subtitle="ניהול אירועים עסקיים לצד תאריכים עבריים וחגי ישראל"
+        colorTheme="secondary"
+        icon={<CalendarMonthIcon />}
+      />
 
       {/* Main Calendar Card */}
       <CalendarCard>

@@ -47,14 +47,21 @@ export const UI_STRINGS = {
   },
   navbar: {
     employeeManagement: "ניהול עובדים",
-    logout: "התנתק מהמערכת",
+    logout: "התנתק",
     hello: "שלום,",
   },
   home: {
     welcomePrefix: "שלום,",
-    activeCompanyPrefix: "חברה פעילה כעת:",
+    activeCompanyPrefix: "חברה פעילה:",
     welcomeDescription: "ברוך הבא למערכת ניהול המלאי החכמה של העסק שלך.",
     shortcutsHeader: "קיצורי דרך מהירים",
+    recipesTitle: "ספר המתכונים",
+    calendarTitle: "לוח שנה ואירועים",
+    preparationsTitle: "השלמת הכנות",
+    rawMaterialsTitle: "חומרי גלם",
+    reportsTitle: "דוחות ייצור",
+    activityLogTitle: "יומן פעולות",
+    employeesTitle: "ניהול עובדים",
   },
   employees: {
     pageTitle: "ניהול עובדי חברה",
@@ -65,5 +72,12 @@ export const UI_STRINGS = {
     searchPlaceholder: "הקלד שם משתמש, שם פרטי או אימייל...",
     searchTzOrUsername: "שם משתמש או תעודת זהות",
     roleEditor: "עובד (Editor)",
-  }
+  },
+  roles: {
+    owner: "בעלים",
+    admin: "מנהל חברה",
+    editor: "עובד",
+    viewer: "צופה",
+  } as Record<string, string>,
 };
+

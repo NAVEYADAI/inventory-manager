@@ -8,15 +8,18 @@ import { User } from 'src/user/user.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { UserModule } from 'src/user/user.module';
 import { UserPermission } from 'src/use-permissions/use-permission.entity';
+import { ActivityLogModule } from 'src/activity-log/activity-log.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Company, Subscription, User, UserPermission]),
     AuthModule,
     UserModule,
+    ActivityLogModule,
   ],
   controllers: [CompanyController],
   providers: [CompanyService],
   exports: [CompanyService],
 })
 export class CompanyModule {}
+

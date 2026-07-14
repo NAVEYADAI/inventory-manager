@@ -26,3 +26,9 @@ dist-ssr
 # Playwright
 **/playwright-report/
 **/test-results/
+
+# Test Results JSON
+*results.json
+*results [0-9]*.json
+.test-results/
+

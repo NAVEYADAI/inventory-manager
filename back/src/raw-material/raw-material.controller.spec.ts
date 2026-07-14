@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RawMaterialController } from './raw-material.controller';
 import { RawMaterialService } from './raw-material.service';
+import { AuthService } from '../auth/auth.service';
 
 describe('RawMaterialController', () => {
   let controller: RawMaterialController;
@@ -13,6 +14,12 @@ describe('RawMaterialController', () => {
           provide: RawMaterialService,
           useValue: {},
         },
+        {
+          provide: AuthService,
+          useValue: {
+            validateToken: jest.fn().mockResolvedValue({ id: 1 }),
+          },
+        },
       ],
     }).compile();
 
@@ -23,3 +30,4 @@ describe('RawMaterialController', () => {
     expect(controller).toBeDefined();
   });
 });
+

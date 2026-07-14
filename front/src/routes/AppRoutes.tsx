@@ -8,7 +8,10 @@ import CompanyPicker from "../pages/CompanyPicker/CompanyPicker";
 import RecipesPage from "../pages/RecipesPage/RecipesPage";
 import TagsPage from "../pages/TagsPage/TagsPage";
 import EmployeesPage from "../pages/EmployeesPage/EmployeesPage";
+import PendingPreparationsPage from "../pages/PendingPreparationsPage/PendingPreparationsPage";
+import ActivityLogPage from "../pages/ActivityLogPage/ActivityLogPage";
 import { useAuth } from "../providers/AuthProvider";
+import { AppRoutes } from "./routes.enum";
 
 export const Router = () => {
   const { user } = useAuth();
@@ -16,24 +19,27 @@ export const Router = () => {
   if (!user) {
     return (
       <Routes>
-        <Route path="/login" element={<LoginAndSignin />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path={AppRoutes.LOGIN} element={<LoginAndSignin />} />
+        <Route path="*" element={<Navigate to={AppRoutes.LOGIN} replace />} />
       </Routes>
     );
   }
 
   return (
     <Routes>
-      <Route path="/login" element={<LoginAndSignin />} />
-      <Route path="/home" element={<HomePage />} />
-      <Route path="/company-setup" element={<CompanySetup />} />
-      <Route path="/company-picker" element={<CompanyPicker />} />
-      <Route path="/calendar" element={<CalendarPage />} />
-      <Route path="/calendar2" element={<FullCalendarManeger />} />
-      <Route path="/recipes" element={<RecipesPage />} />
-      <Route path="/tags" element={<TagsPage />} />
-      <Route path="/employees" element={<EmployeesPage />} />
-      <Route path="*" element={<Navigate to="/home" replace />} />
+      <Route path={AppRoutes.LOGIN} element={<LoginAndSignin />} />
+      <Route path={AppRoutes.HOME} element={<HomePage />} />
+      <Route path={AppRoutes.COMPANY_SETUP} element={<CompanySetup />} />
+      <Route path={AppRoutes.COMPANY_PICKER} element={<CompanyPicker />} />
+      <Route path={AppRoutes.CALENDAR} element={<CalendarPage />} />
+      <Route path={AppRoutes.CALENDAR2} element={<FullCalendarManeger />} />
+      <Route path={AppRoutes.RECIPES} element={<RecipesPage />} />
+      <Route path={AppRoutes.TAGS} element={<TagsPage />} />
+      <Route path={AppRoutes.EMPLOYEES} element={<EmployeesPage />} />
+      <Route path={AppRoutes.PENDING_PREPARATIONS} element={<PendingPreparationsPage />} />
+      <Route path={AppRoutes.ACTIVITY_LOG} element={<ActivityLogPage />} />
+      <Route path="*" element={<Navigate to={AppRoutes.HOME} replace />} />
     </Routes>
   );
 };
+

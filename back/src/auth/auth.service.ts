@@ -104,6 +104,8 @@ export class AuthService {
         id: (user as any).id,
         email: (user as any).email,
         name: (user as any).name,
+        firstName: (user as any).firstName,
+        lastName: (user as any).lastName,
         activeCompanies,
         inactiveCompanies,
         selectedCompany,

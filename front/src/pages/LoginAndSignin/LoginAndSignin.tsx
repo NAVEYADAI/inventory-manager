@@ -9,6 +9,7 @@ import type { Login, Signup } from "./util";
 import { GhostButton } from "./LoginAndSignin.style";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../providers/AuthProvider";
+import { AppRoutes } from "../../routes/routes.enum";
 
 const LoginAndSignin = () => {
   const { user } = useAuth();
@@ -17,9 +18,9 @@ const LoginAndSignin = () => {
   useEffect(() => {
     if (user) {
       if (user.selectedCompany) {
-        navigate("/home");
+        navigate(AppRoutes.HOME);
       } else {
-        navigate("/company-picker");
+        navigate(AppRoutes.COMPANY_PICKER);
       }
     }
   }, [user, navigate]);

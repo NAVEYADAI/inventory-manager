@@ -5,6 +5,7 @@ import { Recipe } from './recipe.entity';
 import { Subscription } from 'src/subscription/subscription.entity';
 import { RawMaterial } from 'src/raw-material/raw-material.entity';
 import { RecipeProduct } from 'src/recipe-product/recipe-product.entity';
+import { ActivityLogService } from 'src/activity-log/activity-log.service';
 
 describe('RecipeService', () => {
   let service: RecipeService;
@@ -29,6 +30,12 @@ describe('RecipeService', () => {
           provide: getRepositoryToken(RecipeProduct),
           useValue: {},
         },
+        {
+          provide: ActivityLogService,
+          useValue: {
+            log: jest.fn().mockResolvedValue({}),
+          },
+        },
       ],
     }).compile();
 
@@ -39,3 +46,4 @@ describe('RecipeService', () => {
     expect(service).toBeDefined();
   });
 });
+

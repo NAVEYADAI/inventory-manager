@@ -5,11 +5,12 @@ test.describe('Authentication and Company Onboarding E2E Flow', () => {
   test('should register a new user, set up a company, and log out successfully', async ({ page }) => {
     // Generate unique values for registration
     const timestamp = Date.now();
-    const userName = `user_${timestamp}`;
-    const email = `email_${timestamp}@example.com`;
+    const random = Math.floor(Math.random() * 1000000);
+    const userName = `user_${timestamp}_${random}`;
+    const email = `email_${timestamp}_${random}@example.com`;
     const tz = `12345678${timestamp % 10}`;
-    const companyName = `חברת נווה_${timestamp}`;
-    const companyId = `hp_${timestamp}`;
+    const companyName = `חברת נווה_${timestamp}_${random}`;
+    const companyId = `hp_${timestamp}_${random}`;
 
     // 1. Go to the login page
     await page.goto('/login');
@@ -53,12 +54,14 @@ test.describe('Authentication and Company Onboarding E2E Flow', () => {
     await expect(page).toHaveURL(/\/home/);
 
     // 9. Verify homepage greeting and active company badge
-    await expect(page.locator(`text=${UI_STRINGS.home.welcomePrefix}`)).toBeVisible();
-    await expect(page.locator(`text=${UI_STRINGS.home.activeCompanyPrefix} ${companyName}`)).toBeVisible();
+    await expect(page.getByRole('heading', { name: new RegExp(UI_STRINGS.home.welcomePrefix) })).toBeVisible();
+    await expect(page.getByText(UI_STRINGS.home.activeCompanyPrefix)).toBeVisible();
+    await expect(page.getByText(companyName, { exact: true })).toBeVisible();
 
     // 10. Log out
-    const logoutBtn = page.getByRole('button', { name: UI_STRINGS.navbar.logout });
-    await logoutBtn.click();
+    await page.getByLabel('פרופיל והגדרות').click();
+    await page.getByRole('menuitem', { name: UI_STRINGS.navbar.logout }).click();
+
 
     // 11. Verify redirection back to login
     await page.waitForURL(/\/login/, { timeout: 10000 });

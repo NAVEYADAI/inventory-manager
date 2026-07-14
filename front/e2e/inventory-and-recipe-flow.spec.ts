@@ -4,16 +4,18 @@ import { UI_STRINGS } from '../src/constants/uiStrings';
 test.describe('Raw Materials, Employee and Recipe E2E Flow', () => {
   test('should handle raw material creation, employee registration, and recipe creation with inline quick-add', async ({ page }) => {
     const timestamp = Date.now();
-    const userA = `usera_${timestamp}`;
-    const emailA = `usera_${timestamp}@test.com`;
-    const companyAName = `חברה א_${timestamp}`;
-    const companyAId = `hpa_${timestamp}`;
+    const random = Math.floor(Math.random() * 1000000);
+    const userA = `usera_${timestamp}_${random}`;
+    const emailA = `usera_${timestamp}_${random}@test.com`;
+    const companyAName = `חברה א_${timestamp}_${random}`;
+    const companyAId = `hpa_${timestamp}_${random}`;
     const tzA = `33333333${timestamp % 10}`;
-    const empUser = `employee_${timestamp}`;
-    const empEmail = `employee_${timestamp}@test.com`;
-    const rawMaterialName = `קמח לבן_${timestamp}`;
-    const inlineMaterialName = `חמאה הולנדית_${timestamp}`;
-    const recipeName = `לחם מחמצת_${timestamp}`;
+    const empUser = `employee_${timestamp}_${random}`;
+    const empEmail = `employee_${timestamp}_${random}@test.com`;
+    const empTz = `5555555${timestamp % 100}`;
+    const rawMaterialName = `קמח לבן_${timestamp}_${random}`;
+    const inlineMaterialName = `חמאה הולנדית_${timestamp}_${random}`;
+    const recipeName = `לחם מחמצת_${timestamp}_${random}`;
 
     // --- 1. Register User A and create Company A ---
     await page.goto('/login');
@@ -50,7 +52,7 @@ test.describe('Raw Materials, Employee and Recipe E2E Flow', () => {
     await expect(page).toHaveURL(/\/home/);
 
     // --- 2. Add Raw Material from HomePage ---
-    const addRawMaterialBtn = page.getByRole('button', { name: 'הוספת חומרי גלם' });
+    const addRawMaterialBtn = page.getByText(UI_STRINGS.home.rawMaterialsTitle, { exact: true });
     await expect(addRawMaterialBtn).toBeVisible();
     await addRawMaterialBtn.click();
 
@@ -78,7 +80,7 @@ test.describe('Raw Materials, Employee and Recipe E2E Flow', () => {
     await page.getByLabel('סיסמה').fill('pass123456');
     await page.getByLabel('שם פרטי').fill('עובד');
     await page.getByLabel('שם משפחה').fill('ראשון');
-    await page.getByLabel('תעודת זהות').fill('312345678');
+    await page.getByLabel('תעודת זהות').fill(empTz);
     await page.getByLabel('כתובת אימייל').fill(empEmail);
     await page.getByLabel('טלפון').fill('0502222222');
     await page.getByLabel('כתובת מגורים').fill('רחוב ב');

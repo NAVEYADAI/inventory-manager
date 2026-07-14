@@ -29,6 +29,7 @@ import { useAuth } from "../../providers/AuthProvider";
 import ActiveCompanyItem from "./components/ActiveCompanyItem";
 import InactiveCompanyItem from "./components/InactiveCompanyItem";
 import { UI_STRINGS } from "../../constants/uiStrings";
+import { AppRoutes } from "../../routes/routes.enum";
 
 const CompanyPicker = () => {
   const { setUser } = useAuth();
@@ -89,7 +90,7 @@ const CompanyPicker = () => {
       handlePick(active[0].subscriptionId);
     }
     if (active.length === 0 && inactive.length === 0) {
-      navigate("/company-setup");
+      navigate(AppRoutes.COMPANY_SETUP);
     }
   }, [active, inactive, loading]);
 
@@ -110,7 +111,7 @@ const CompanyPicker = () => {
         localStorage.setItem("token", res.data.accessToken);
       }
       setUser(user);
-      navigate("/home");
+      navigate(AppRoutes.HOME);
     } catch (e: any) {
       setError(e?.response?.data?.message || "הפעלת המנוי נכשלה. אנא נסה שוב.");
     } finally {
@@ -130,7 +131,7 @@ const CompanyPicker = () => {
         localStorage.setItem("token", res.data.accessToken);
       }
       setUser(user);
-      navigate("/home");
+      navigate(AppRoutes.HOME);
     } catch (e: any) {
       setError(e?.response?.data?.message || "בחירת החברה נכשלה. אנא נסה שוב.");
     } finally {
@@ -220,7 +221,7 @@ const CompanyPicker = () => {
             <Stack spacing={2} sx={{ mt: 4 }}>
               <CreateCompanyButton
                 variant="outlined"
-                onClick={() => navigate("/company-setup")}
+                onClick={() => navigate(AppRoutes.COMPANY_SETUP)}
               >
                 {UI_STRINGS.companyPicker.createNewCompany}
               </CreateCompanyButton>
@@ -232,7 +233,7 @@ const CompanyPicker = () => {
                   <CancelButton
                     variant="text"
                     color="inherit"
-                    onClick={() => navigate("/home")}
+                    onClick={() => navigate(AppRoutes.HOME)}
                   >
                     {UI_STRINGS.companyPicker.backToHome}
                   </CancelButton>

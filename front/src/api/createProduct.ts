@@ -36,3 +36,8 @@ export async function deleteProductExecution(id: number): Promise<{ id: number; 
   const response = await axiosInstance.delete<{ id: number; deleted: boolean }>(`/create-product/${id}`);
   return response.data;
 }
+
+export async function updateProductExecution(id: number, payload: { actualYield: number }): Promise<CreateProductDto> {
+  const response = await axiosInstance.patch<CreateProductDto>(`/create-product/${id}`, payload);
+  return response.data;
+}

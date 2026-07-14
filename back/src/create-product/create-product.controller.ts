@@ -42,12 +42,38 @@ export class CreateProductController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCreateProductDto: UpdateCreateProductDto) {
-    return this.createProductService.update(+id, updateCreateProductDto);
+  async update(
+    @Headers('authorization') authHeader: string,
+    @Param('id') id: string,
+    @Body() updateCreateProductDto: UpdateCreateProductDto,
+  ) {
+    let userId: number | undefined;
+    if (authHeader) {
+      try {
+        const user = await this.authService.validateToken(authHeader);
+        userId = user.id;
+      } catch (e) {
+        // Ignore or log error
+      }
+    }
+    return this.createProductService.update(+id, updateCreateProductDto, userId);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.createProductService.remove(+id);
+  async remove(
+    @Headers('authorization') authHeader: string,
+    @Param('id') id: string,
+  ) {
+    let userId: number | undefined;
+    if (authHeader) {
+      try {
+        const user = await this.authService.validateToken(authHeader);
+        userId = user.id;
+      } catch (e) {
+        // Ignore or log error
+      }
+    }
+    return this.createProductService.remove(+id, userId);
   }
 }
+

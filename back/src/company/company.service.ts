@@ -7,6 +7,15 @@ import { Company } from './company.entity';
 import { Subscription } from 'src/subscription/subscription.entity';
 import { User } from 'src/user/user.entity';
 import { UserPermission, PermissionRole } from 'src/use-permissions/use-permission.entity';
+import { ActivityLogService } from 'src/activity-log/activity-log.service';
+import { ActivityCategory, ActivityAction } from 'src/activity-log/activity-log.entity';
+
+const roleLabels: Record<string, string> = {
+  owner: 'בעלים',
+  admin: 'מנהל',
+  editor: 'עובד',
+  viewer: 'צופה',
+};
 
 @Injectable()
 export class CompanyService {
@@ -20,7 +29,9 @@ export class CompanyService {
     @InjectRepository(UserPermission)
     private readonly permissionRepo: Repository<UserPermission>,
     private readonly dataSource: DataSource,
+    private readonly activityLogService: ActivityLogService,
   ) {}
+
 
   /**
    * Create a company. if ownerId is provided we also create a subscription
@@ -96,8 +107,8 @@ async create(createCompanyDto: CreateCompanyDto): Promise<{ company: Company; su
     });
   }
 
-  async registerEmployee(companyId: number, dto: any) {
-    return this.dataSource.transaction(async (manager: EntityManager) => {
+  async registerEmployee(companyId: number, dto: any, callerId?: number) {
+    const result = await this.dataSource.transaction(async (manager: EntityManager) => {
       const txSubscriptionRepo = manager.withRepository(this.subscriptionRepo);
       const txPermissionRepo = manager.withRepository(this.permissionRepo);
       const txUserRepo = manager.withRepository(this.userRepo);
@@ -195,10 +206,30 @@ async create(createCompanyDto: CreateCompanyDto): Promise<{ company: Company; su
 
       return { user, isNewUser };
     });
+
+    try {
+      const subscription = await this.subscriptionRepo.findOne({
+        where: { company: { id: companyId } },
+      });
+      if (subscription) {
+        const roleLabel = roleLabels[dto.role || 'editor'] || (dto.role || 'עובד');
+        await this.activityLogService.log(
+          subscription.id,
+          callerId,
+          ActivityAction.REGISTER_EMPLOYEE,
+          ActivityCategory.EMPLOYEE_MANAGEMENT,
+          `עובד חדש נרשם למערכת: ${result.user.firstName} ${result.user.lastName} (${result.user.name}) בתפקיד ${roleLabel}`,
+        );
+      }
+    } catch (e) {
+      // ignore log error
+    }
+
+    return result;
   }
 
   async updateEmployeeRole(companyId: number, targetUserId: number, newRole: string, callerId: number) {
-    return this.dataSource.transaction(async (manager: EntityManager) => {
+    const result = await this.dataSource.transaction(async (manager: EntityManager) => {
       const txPermissionRepo = manager.withRepository(this.permissionRepo);
 
       // 1. Get all employees in company to find caller and target
@@ -251,10 +282,30 @@ async create(createCompanyDto: CreateCompanyDto): Promise<{ company: Company; su
       targetPermission.role = newRole as PermissionRole;
       return await txPermissionRepo.save(targetPermission);
     });
+
+    try {
+      const subscription = await this.subscriptionRepo.findOne({
+        where: { company: { id: companyId } },
+      });
+      if (subscription) {
+        const roleLabel = roleLabels[newRole] || newRole;
+        await this.activityLogService.log(
+          subscription.id,
+          callerId,
+          ActivityAction.UPDATE_EMPLOYEE_ROLE,
+          ActivityCategory.EMPLOYEE_MANAGEMENT,
+          `תפקיד העובד ${result.user.firstName} ${result.user.lastName} (${result.user.name}) עודכן ל-${roleLabel}`,
+        );
+      }
+    } catch (e) {
+      // ignore log error
+    }
+
+    return result;
   }
 
   async removeEmployee(companyId: number, targetUserId: number, callerId: number) {
-    return this.dataSource.transaction(async (manager: EntityManager) => {
+    const result = await this.dataSource.transaction(async (manager: EntityManager) => {
       const txPermissionRepo = manager.withRepository(this.permissionRepo);
       const txSubscriptionRepo = manager.withRepository(this.subscriptionRepo);
 
@@ -305,7 +356,26 @@ async create(createCompanyDto: CreateCompanyDto): Promise<{ company: Company; su
 
       // 3. Delete the UserPermission record
       await txPermissionRepo.remove(targetPermission);
-      return { success: true };
+      return { success: true, targetUser: targetPermission.user };
     });
+
+    try {
+      const subscription = await this.subscriptionRepo.findOne({
+        where: { company: { id: companyId } },
+      });
+      if (subscription && result.targetUser) {
+        await this.activityLogService.log(
+          subscription.id,
+          callerId,
+          ActivityAction.REMOVE_EMPLOYEE,
+          ActivityCategory.EMPLOYEE_MANAGEMENT,
+          `העובד ${result.targetUser.firstName} ${result.targetUser.lastName} (${result.targetUser.name}) הוסר מהחברה`,
+        );
+      }
+    } catch (e) {
+      // ignore log error
+    }
+
+    return { success: true };
   }
 }

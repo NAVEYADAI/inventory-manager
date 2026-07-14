@@ -4,17 +4,18 @@ import { UI_STRINGS } from '../src/constants/uiStrings';
 test.describe('Add Existing Employee E2E Flow', () => {
   test('should register two users and link the second user to the first company', async ({ page }) => {
     const timestamp = Date.now();
-    const userA = `usera_${timestamp}`;
-    const emailA = `usera_${timestamp}@test.com`;
+    const random = Math.floor(Math.random() * 1000000);
+    const userA = `usera_${timestamp}_${random}`;
+    const emailA = `usera_${timestamp}_${random}@test.com`;
     const tzA = `11111111${timestamp % 10}`;
-    const companyAName = `חברה א_${timestamp}`;
-    const companyAId = `hpa_${timestamp}`;
+    const companyAName = `חברה א_${timestamp}_${random}`;
+    const companyAId = `hpa_${timestamp}_${random}`;
 
-    const userB = `userb_${timestamp}`;
-    const emailB = `userb_${timestamp}@test.com`;
+    const userB = `userb_${timestamp}_${random}`;
+    const emailB = `userb_${timestamp}_${random}@test.com`;
     const tzB = `22222222${timestamp % 10}`;
-    const companyBName = `חברה ב_${timestamp}`;
-    const companyBId = `hpb_${timestamp}`;
+    const companyBName = `חברה ב_${timestamp}_${random}`;
+    const companyBId = `hpb_${timestamp}_${random}`;
 
     // --- 1. Register User A and create Company A ---
     await page.goto('/login');
@@ -38,7 +39,8 @@ test.describe('Add Existing Employee E2E Flow', () => {
     await page.waitForURL(/\/home/);
 
     // Log out User A
-    await page.getByRole('button', { name: UI_STRINGS.navbar.logout }).click();
+    await page.getByLabel('פרופיל והגדרות').click();
+    await page.getByRole('menuitem', { name: UI_STRINGS.navbar.logout }).click();
     await page.waitForURL(/\/login/);
 
     // --- 2. Register User B and create Company B ---
@@ -62,7 +64,8 @@ test.describe('Add Existing Employee E2E Flow', () => {
     await page.waitForURL(/\/home/);
 
     // Log out User B
-    await page.getByRole('button', { name: UI_STRINGS.navbar.logout }).click();
+    await page.getByLabel('פרופיל והגדרות').click();
+    await page.getByRole('menuitem', { name: UI_STRINGS.navbar.logout }).click();
     await page.waitForURL(/\/login/);
 
     // --- 3. Log back in as User A, go to Employees Page and add User B ---
@@ -95,7 +98,8 @@ test.describe('Add Existing Employee E2E Flow', () => {
     await expect(page.locator(`text=${emailB}`)).toBeVisible();
 
     // Log out User A
-    await page.getByRole('button', { name: UI_STRINGS.navbar.logout }).click();
+    await page.getByLabel('פרופיל והגדרות').click();
+    await page.getByRole('menuitem', { name: UI_STRINGS.navbar.logout }).click();
     await page.waitForURL(/\/login/);
 
     // --- 4. Log in as User B and verify they can switch to Company A ---
@@ -109,6 +113,7 @@ test.describe('Add Existing Employee E2E Flow', () => {
     await page.waitForURL(/\/home/);
 
     // Verify Company A is now active
-    await expect(page.locator(`text=${UI_STRINGS.home.activeCompanyPrefix} ${companyAName}`)).toBeVisible();
+    await expect(page.getByText(UI_STRINGS.home.activeCompanyPrefix)).toBeVisible();
+    await expect(page.getByText(companyAName, { exact: true })).toBeVisible();
   });
 });

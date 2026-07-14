@@ -7,6 +7,7 @@ import { User } from 'src/user/user.entity';
 import { UserPermission, PermissionRole } from 'src/use-permissions/use-permission.entity';
 import { DataSource } from 'typeorm';
 import { NotFoundException, ForbiddenException } from '@nestjs/common';
+import { ActivityLogService } from 'src/activity-log/activity-log.service';
 
 describe('CompanyService', () => {
   let service: CompanyService;
@@ -62,6 +63,10 @@ describe('CompanyService', () => {
     transaction: jest.fn(async (cb) => cb(mockEntityManager)),
   };
 
+  const mockActivityLogService = {
+    log: jest.fn().mockResolvedValue({}),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -85,6 +90,10 @@ describe('CompanyService', () => {
         {
           provide: DataSource,
           useValue: mockDataSource,
+        },
+        {
+          provide: ActivityLogService,
+          useValue: mockActivityLogService,
         },
       ],
     }).compile();

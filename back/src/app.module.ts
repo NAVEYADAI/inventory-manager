@@ -16,6 +16,7 @@ import { CreateProductModule } from './create-product/create-product.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { ActivityLogModule } from './activity-log/activity-log.module';
 import config from './config/config';
 
 @Module({
@@ -48,8 +49,10 @@ import config from './config/config';
     SubscriptionModule,
     UserModule,
     AuthModule,
+    ActivityLogModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule { }
+

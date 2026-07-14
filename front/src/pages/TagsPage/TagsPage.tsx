@@ -6,16 +6,14 @@ import {
   Button,
   IconButton,
   CircularProgress,
-  Stack,
   CardContent,
   Chip,
 } from '@mui/material';
 import {
   TagsContainer,
-  TagsHeader,
   TagCard,
-  CreateTagButton,
 } from './TagsPage.style';
+import PageHeader from '../../components/PageHeader/PageHeader';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import AddIcon from '@mui/icons-material/Add';
@@ -83,32 +81,32 @@ const TagsPage = () => {
 
   return (
     <TagsContainer dir="rtl">
-      {/* Header section */}
-      <TagsHeader elevation={0}>
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="center" sx={{ width: "100%", justifyContent: { xs: "center", sm: "flex-start" } }}>
-          <AnalyticsIcon sx={{ fontSize: 40 }} />
-          <Box sx={{ textAlign: { xs: "center", sm: "right" } }}>
-            <Typography variant="h4" fontWeight={700}>דוחות ייצור ותקופות</Typography>
-            <Typography variant="body2" sx={{ opacity: 0.85 }}>
-              עקוב וסכם כמויות ייצור וחומרי גלם לפי תקופות מרוכזות בלוח השנה
-            </Typography>
-          </Box>
-        </Stack>
-        <CreateTagButton
-          variant="contained"
-          color="secondary"
-          startIcon={<AddIcon />}
-          onClick={() => {
-            setSelectedTag(null);
-            setIsCreateOpen(true);
-          }}
-          sx={{
-            background: 'linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%)',
-          }}
-        >
-          תג ייצור חדש
-        </CreateTagButton>
-      </TagsHeader>
+      <PageHeader
+        title="דוחות ייצור ותקופות"
+        subtitle="עקוב וסכם כמויות ייצור וחומרי גלם לפי תקופות מרוכזות בלוח השנה"
+        colorTheme="warning"
+        icon={<AnalyticsIcon />}
+        action={
+          <Button
+            variant="contained"
+            sx={{
+              bgcolor: 'rgba(255, 255, 255, 0.25)',
+              color: '#ffffff',
+              borderRadius: '10px',
+              fontWeight: 700,
+              boxShadow: 'none',
+              '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.35)', boxShadow: 'none' },
+            }}
+            startIcon={<AddIcon />}
+            onClick={() => {
+              setSelectedTag(null);
+              setIsCreateOpen(true);
+            }}
+          >
+            תג ייצור חדש
+          </Button>
+        }
+      />
 
       {/* Main Content */}
       {isLoading ? (

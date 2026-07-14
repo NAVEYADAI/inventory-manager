@@ -69,7 +69,7 @@ export class CompanyController {
       throw new ForbiddenException('Cannot register another owner');
     }
 
-    return this.companyService.registerEmployee(+companyId, body);
+    return this.companyService.registerEmployee(+companyId, body, caller.id);
   }
 
   @Patch(':companyId/employees/:userId/role')

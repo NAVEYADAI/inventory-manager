@@ -8,6 +8,8 @@ import { Subscription } from '../subscription/subscription.entity';
 import { RawMaterial } from '../raw-material/raw-material.entity';
 import { RecipeProduct } from '../recipe-product/recipe-product.entity';
 import { MeasurementType } from '../enums';
+import { ActivityLogService } from '../activity-log/activity-log.service';
+import { ActivityCategory, ActivityAction } from '../activity-log/activity-log.entity';
 
 @Injectable()
 export class RecipeService {
@@ -20,9 +22,11 @@ export class RecipeService {
     private readonly rawMaterialRepo: Repository<RawMaterial>,
     @InjectRepository(RecipeProduct)
     private readonly recipeProductRepo: Repository<RecipeProduct>,
+    private readonly activityLogService: ActivityLogService,
   ) {}
 
-  async create(createRecipeDto: CreateRecipeDto) {
+
+  async create(createRecipeDto: CreateRecipeDto, userId?: number) {
     const { name, subscriptionId, ingredients, yieldType, isIntermediate } = createRecipeDto;
 
     const subscription = await this.subscriptionRepo.findOne({ where: { id: subscriptionId } });
@@ -62,6 +66,19 @@ export class RecipeService {
     await this.recipeProductRepo.save(recipeProducts);
 
     savedRecipe.recipe_product = recipeProducts;
+
+    try {
+      await this.activityLogService.log(
+        subscriptionId,
+        userId,
+        ActivityAction.CREATE_RECIPE,
+        ActivityCategory.WORK_MANAGEMENT,
+        `נוצר מתכון חדש: ${savedRecipe.name}`,
+      );
+    } catch (e) {
+      // ignore log error
+    }
+
     return savedRecipe;
   }
 
@@ -102,7 +119,7 @@ export class RecipeService {
     return recipe;
   }
 
-  async update(id: number, updateRecipeDto: UpdateRecipeDto) {
+  async update(id: number, updateRecipeDto: UpdateRecipeDto, userId?: number) {
     const recipe = await this.recipeRepo.findOne({
       where: { id, is_deleted: false },
       relations: ['subscription'],
@@ -151,10 +168,24 @@ export class RecipeService {
       savedRecipe.recipe_product = recipeProducts;
     }
 
+    try {
+      if (savedRecipe.subscription) {
+        await this.activityLogService.log(
+          savedRecipe.subscription.id,
+          userId,
+          ActivityAction.UPDATE_RECIPE,
+          ActivityCategory.WORK_MANAGEMENT,
+          `עודכן מתכון: ${savedRecipe.name}`,
+        );
+      }
+    } catch (e) {
+      // ignore log error
+    }
+
     return savedRecipe;
   }
 
-  async remove(id: number) {
+  async remove(id: number, userId?: number) {
     const recipe = await this.recipeRepo.findOne({ where: { id }, relations: ['subscription'] });
     if (!recipe) {
       throw new NotFoundException(`Recipe with ID ${id} not found`);
@@ -174,6 +205,20 @@ export class RecipeService {
       if (rawMaterial) {
         await this.rawMaterialRepo.remove(rawMaterial);
       }
+    }
+
+    try {
+      if (recipe.subscription) {
+        await this.activityLogService.log(
+          recipe.subscription.id,
+          userId,
+          ActivityAction.DELETE_RECIPE,
+          ActivityCategory.WORK_MANAGEMENT,
+          `נמחק מתכון: ${recipe.name}`,
+        );
+      }
+    } catch (e) {
+      // ignore log error
     }
 
     return { success: true };

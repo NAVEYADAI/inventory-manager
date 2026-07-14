@@ -10,6 +10,7 @@
     "deploy:front": "npm run test --prefix front && cd front && fly deploy",
     "deploy": "./deploy.sh",
     "test": "npm run test --prefix back && npm run test --prefix front",
+    "test:all": "node test-runner.js",
     "test:back": "npm run test --prefix back",
     "test:front": "npm run test --prefix front",
     "test:e2e": "npm run test:e2e --prefix front",

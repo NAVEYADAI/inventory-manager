@@ -3,6 +3,7 @@ import { CreateProductService } from './create-product.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { CreateProduct } from './create-product.entity';
 import { Recipe } from 'src/recipe/recipe.entity';
+import { ActivityLogService } from 'src/activity-log/activity-log.service';
 
 describe('CreateProductService', () => {
   let service: CreateProductService;
@@ -19,6 +20,12 @@ describe('CreateProductService', () => {
           provide: getRepositoryToken(Recipe),
           useValue: {},
         },
+        {
+          provide: ActivityLogService,
+          useValue: {
+            log: jest.fn().mockResolvedValue({}),
+          },
+        },
       ],
     }).compile();
 
@@ -29,3 +36,4 @@ describe('CreateProductService', () => {
     expect(service).toBeDefined();
   });
 });
+

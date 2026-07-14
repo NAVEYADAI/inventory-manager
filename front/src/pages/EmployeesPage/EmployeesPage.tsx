@@ -17,11 +17,12 @@ import { useNavigate } from 'react-router-dom';
 import EmployeeCardItem from './components/EmployeeCardItem';
 import { UI_STRINGS } from '../../constants/uiStrings';
 import {
-  PageHeader,
   AccessDeniedWrapper,
-  AddEmployeeButton,
   CancelEmployeeButton
 } from './EmployeesPage.style';
+import ThemedPageHeader from '../../components/PageHeader/PageHeader';
+import { Button } from '@mui/material';
+import { AppRoutes } from '../../routes/routes.enum';
 
 
 
@@ -102,7 +103,7 @@ const EmployeesPage = () => {
           </Typography>
           <CancelEmployeeButton
             variant="contained"
-            onClick={() => navigate('/home')}
+            onClick={() => navigate(AppRoutes.HOME)}
           >
             חזרה לדף הבית
           </CancelEmployeeButton>
@@ -113,25 +114,29 @@ const EmployeesPage = () => {
 
   return (
     <Container maxWidth="lg" dir="rtl" sx={{ py: 4 }}>
-      <PageHeader>
-        <Box>
-          <Typography variant="h4" fontWeight={800} color="text.primary" display="flex" alignItems="center" gap={1.5}>
-            <BadgeIcon sx={{ fontSize: 38, color: '#4f46e5' }} />
-            {UI_STRINGS.employees.pageTitle}
-          </Typography>
-          <Typography variant="subtitle1" color="text.secondary" sx={{ mt: 0.5, fontWeight: 500 }}>
-            {UI_STRINGS.employees.activeCompanyPrefix} <span style={{ fontWeight: 700, color: '#1e3c72' }}>{selectedCompany?.name}</span>
-          </Typography>
-        </Box>
-
-        <AddEmployeeButton
-          variant="contained"
-          startIcon={<AddIcon sx={{ ml: 1, mr: 0 }} />}
-          onClick={() => setIsRegisterOpen(true)}
-        >
-          {UI_STRINGS.employees.registerNewEmployee}
-        </AddEmployeeButton>
-      </PageHeader>
+      <ThemedPageHeader
+        title={UI_STRINGS.employees.pageTitle}
+        subtitle={`${UI_STRINGS.employees.activeCompanyPrefix} ${selectedCompany?.name}`}
+        colorTheme="employees"
+        icon={<BadgeIcon />}
+        action={
+          <Button
+            variant="contained"
+            sx={{
+              bgcolor: 'rgba(255, 255, 255, 0.25)',
+              color: '#ffffff',
+              borderRadius: '10px',
+              fontWeight: 700,
+              boxShadow: 'none',
+              '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.35)', boxShadow: 'none' },
+            }}
+            startIcon={<AddIcon sx={{ ml: 1, mr: 0 }} />}
+            onClick={() => setIsRegisterOpen(true)}
+          >
+            {UI_STRINGS.employees.registerNewEmployee}
+          </Button>
+        }
+      />
 
       <Divider sx={{ mb: 4 }} />
 

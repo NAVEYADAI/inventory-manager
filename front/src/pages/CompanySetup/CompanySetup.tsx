@@ -23,6 +23,7 @@ import { selectSubscription } from "../../api/subscription";
 import { useAuth } from "../../providers/AuthProvider";
 import { useNotification } from "../../providers/NotificationProvider/NotificationProvider";
 import { UI_STRINGS } from "../../constants/uiStrings";
+import { AppRoutes } from "../../routes/routes.enum";
 
 interface CompanyFields {
   name: string;
@@ -46,7 +47,7 @@ const CompanySetup = () => {
 
   useEffect(() => {
     if (!localStorage.getItem("token")) {
-      navigate("/login");
+      navigate(AppRoutes.LOGIN);
     }
   }, [navigate]);
 
@@ -82,7 +83,7 @@ const CompanySetup = () => {
         setUser(existingUser);
         showSuccess(`חברת ${res.data.company.name} נוצרה בהצלחה!`);
       }
-      navigate("/home");
+      navigate(AppRoutes.HOME);
     } catch (err: any) {
       const errMsg = err?.response?.data?.message || "יצירת החברה נכשלה. אנא נסה שוב.";
       setError(errMsg);

@@ -10,6 +10,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { EmployeeCard, AvatarWrapper } from '../EmployeesPage.style';
 import { updateEmployeeRole, removeEmployee } from '../../../api/company';
+import { UI_STRINGS } from '../../../constants/uiStrings';
+
 
 interface EmployeePermission {
   id: number;
@@ -51,18 +53,6 @@ const EmployeeCardItem: React.FC<EmployeeCardItemProps> = ({ employeePermission,
     loggedInUserRole === 'admin' && (role === 'editor' || role === 'viewer')
   );
 
-  const getRoleLabel = (role: string) => {
-    switch (role) {
-      case 'owner':
-        return 'בעלים';
-      case 'admin':
-        return 'מנהל חברה';
-      case 'viewer':
-        return 'צופה';
-      default:
-        return 'עובד';
-    }
-  };
 
   const getRoleBackground = (role: string) => {
     switch (role) {
@@ -213,7 +203,7 @@ const EmployeeCardItem: React.FC<EmployeeCardItemProps> = ({ employeePermission,
                 </>
               )}
               <Chip
-                label={getRoleLabel(role)}
+                label={UI_STRINGS.roles[role] || UI_STRINGS.roles.editor}
                 size="small"
                 sx={{
                   fontWeight: 700,

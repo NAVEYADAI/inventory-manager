@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react';
 import {
   Box, Button, Grid, Typography,
-  CircularProgress, Stack
+  CircularProgress
 } from '@mui/material';
 import TextInput from '../../components/Inputs/TextInput';
 import {
   RecipesContainer,
-  RecipesHeader,
-  AddRecipeButton,
   SearchWrapper,
   EmptyStateWrapper,
 } from './RecipesPage.style';
+import PageHeader from '../../components/PageHeader/PageHeader';
 import SearchIcon from '@mui/icons-material/Search';
 import LocalFloristIcon from '@mui/icons-material/LocalFlorist';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -97,28 +96,32 @@ const RecipesPage = () => {
   return (
     <RecipesContainer dir="rtl">
       {/* Header section */}
-      <RecipesHeader elevation={0}>
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="center" sx={{ width: "100%", justifyContent: { xs: "center", sm: "flex-start" } }}>
-          <MenuBookIcon sx={{ fontSize: 40 }} />
-          <Box sx={{ textAlign: { xs: "center", sm: "right" } }}>
-            <Typography variant="h4" fontWeight={700}>ספר המתכונים</Typography>
-            <Typography variant="body2" sx={{ opacity: 0.8 }}>
-              נהל את כל המתכונים והרכיבים של העסק שלך במקום אחד
-            </Typography>
-          </Box>
-        </Stack>
-        <AddRecipeButton
-          variant="contained"
-          color="secondary"
-          startIcon={<AddIcon />}
-          onClick={() => {
-            setEditingRecipe(null);
-            setIsCreateOpen(true);
-          }}
-        >
-          מתכון חדש
-        </AddRecipeButton>
-      </RecipesHeader>
+      <PageHeader
+        title="ספר המתכונים"
+        subtitle="נהל את כל המתכונים והרכיבים של העסק שלך במקום אחד"
+        colorTheme="primary"
+        icon={<MenuBookIcon />}
+        action={
+          <Button
+            variant="contained"
+            sx={{
+              bgcolor: 'rgba(255, 255, 255, 0.25)',
+              color: '#ffffff',
+              borderRadius: '10px',
+              fontWeight: 700,
+              boxShadow: 'none',
+              '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.35)', boxShadow: 'none' },
+            }}
+            startIcon={<AddIcon />}
+            onClick={() => {
+              setEditingRecipe(null);
+              setIsCreateOpen(true);
+            }}
+          >
+            מתכון חדש
+          </Button>
+        }
+      />
 
       {/* Search Bar */}
       {recipes.length > 0 && (

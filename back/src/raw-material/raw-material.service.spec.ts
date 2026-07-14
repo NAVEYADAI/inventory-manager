@@ -4,6 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { RawMaterial } from './raw-material.entity';
 import { Subscription } from 'src/subscription/subscription.entity';
 import { RawMaterialConversion } from './raw-material-conversion.entity';
+import { ActivityLogService } from 'src/activity-log/activity-log.service';
 
 describe('RawMaterialService', () => {
   let service: RawMaterialService;
@@ -24,6 +25,12 @@ describe('RawMaterialService', () => {
           provide: getRepositoryToken(RawMaterialConversion),
           useValue: {},
         },
+        {
+          provide: ActivityLogService,
+          useValue: {
+            log: jest.fn().mockResolvedValue({}),
+          },
+        },
       ],
     }).compile();
 
@@ -34,3 +41,4 @@ describe('RawMaterialService', () => {
     expect(service).toBeDefined();
   });
 });
+

@@ -129,6 +129,7 @@ const RegisterEmployeeDialog = ({ open, onClose, companyId, onSave }: Props) => 
           borderRadius: 2,
           px: 4,
           fontWeight: 700,
+          color: '#ffffff',
           background: 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)',
           boxShadow: '0 4px 12px rgba(79, 70, 229, 0.25)',
           '&:hover': {

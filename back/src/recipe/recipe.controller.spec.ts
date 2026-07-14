@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RecipeController } from './recipe.controller';
 import { RecipeService } from './recipe.service';
+import { AuthService } from '../auth/auth.service';
 
 describe('RecipeController', () => {
   let controller: RecipeController;
@@ -13,6 +14,12 @@ describe('RecipeController', () => {
           provide: RecipeService,
           useValue: {},
         },
+        {
+          provide: AuthService,
+          useValue: {
+            validateToken: jest.fn().mockResolvedValue({ id: 1 }),
+          },
+        },
       ],
     }).compile();
 
@@ -23,3 +30,4 @@ describe('RecipeController', () => {
     expect(controller).toBeDefined();
   });
 });
+
