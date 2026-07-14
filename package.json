@@ -14,7 +14,8 @@
     "test:back": "npm run test --prefix back",
     "test:front": "npm run test --prefix front",
     "test:e2e": "npm run test:e2e --prefix front",
-    "test:e2e:ui": "npm run test:e2e:ui --prefix front"
+    "test:e2e:ui": "npm run test:e2e:ui --prefix front",
+    "db:clear": "npm run db:clear --prefix back"
   },
   "dependencies": {
     "class-transformer": "^0.5.1",
