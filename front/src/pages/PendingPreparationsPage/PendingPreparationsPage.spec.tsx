@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import PendingPreparationsPage from './PendingPreparationsPage';
 import { getProductExecutions, updateProductExecution } from '../../api/createProduct';
 import { BrowserRouter } from 'react-router-dom';
+import { UI_STRINGS } from '../../constants/uiStrings';
 
 // Mock the API client
 vi.mock('../../api/createProduct', () => ({
@@ -99,8 +100,8 @@ describe('PendingPreparationsPage', () => {
     renderWithRouter(<PendingPreparationsPage />);
 
     await waitFor(() => {
-      expect(screen.getByText('השלמת כמויות הכנה')).toBeInTheDocument();
-      expect(screen.getByText('אין הכנות להשלמה!')).toBeInTheDocument();
+      expect(screen.getByText(UI_STRINGS.preparations.pageTitle)).toBeInTheDocument();
+      expect(screen.getByText(UI_STRINGS.preparations.emptyStateTitle)).toBeInTheDocument();
     });
   });
 
@@ -114,7 +115,7 @@ describe('PendingPreparationsPage', () => {
       expect(screen.getByText('עוגת שוקולד')).toBeInTheDocument();
     });
 
-    expect(screen.queryByText('אין הכנות להשלמה!')).not.toBeInTheDocument();
+    expect(screen.queryByText(UI_STRINGS.preparations.emptyStateTitle)).not.toBeInTheDocument();
   });
 
   it('filters executions by recipe name when searching', async () => {
@@ -126,7 +127,7 @@ describe('PendingPreparationsPage', () => {
       expect(screen.getByText('לחם מחמצת')).toBeInTheDocument();
     });
 
-    const searchInput = screen.getByPlaceholderText('חפש לפי שם מתכון...');
+    const searchInput = screen.getByPlaceholderText(UI_STRINGS.preparations.searchPlaceholder);
     fireEvent.change(searchInput, { target: { value: 'עוגת' } });
 
     expect(screen.queryByText('לחם מחמצת')).not.toBeInTheDocument();
@@ -147,7 +148,7 @@ describe('PendingPreparationsPage', () => {
     const inputs = screen.getAllByPlaceholderText('למשל: 50');
     fireEvent.change(inputs[0], { target: { value: '45' } });
 
-    const saveButtons = screen.getAllByRole('button', { name: 'שמור' });
+    const saveButtons = screen.getAllByRole('button', { name: UI_STRINGS.preparations.saveButton });
     fireEvent.click(saveButtons[0]);
 
     expect(updateProductExecution).toHaveBeenCalledWith(1, { actualYield: 45 });

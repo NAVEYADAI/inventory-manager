@@ -79,5 +79,21 @@ export const UI_STRINGS = {
     editor: "עובד",
     viewer: "צופה",
   } as Record<string, string>,
+  preparations: {
+    pageTitle: "השלמת כמויות הכנה",
+    pageSubtitle: "הכנות מוצרים שבוצעו ללא הזנת כמות יציאה בפועל. הזן כמויות כדי לעדכן את המלאי בהתאם.",
+    searchPlaceholder: "חפש לפי שם מתכון...",
+    loadError: "שגיאה בטעינת ההכנות הממתינות. נא לנסות שנית.",
+    invalidVolumeError: "נא להזין כמות תקינה הגדולה מ-0",
+    saveError: "שגיאה בשמירת הכמות. נא לנסות שנית.",
+    emptyStateTitle: "אין הכנות להשלמה!",
+    emptyStateSubtitle: "כל כמויות היציאה של ההכנות שלך מעודכנות במערכת בצורה מלאה. עבודה מצוינת!",
+    untitledRecipe: "מתכון ללא שם",
+    yieldTypePrefix: "סוג תוצר: ",
+    dateTimeLabel: "תאריך ושעה:",
+    batchesLabel: "כמות הכפלה (Batches):",
+    saveSuccess: "הכמות נשמרה בהצלחה!",
+    saveButton: "שמור",
+  },
 };
 
