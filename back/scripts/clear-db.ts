@@ -20,7 +20,7 @@ async function main() {
   console.log('Your manual development users, companies, and configurations will remain untouched.');
   console.log(`Database URL: ${process.env.DATABASE_URL?.split('@')[1] || 'Unknown'}\n`);
   
-  const confirmed = await askConfirmation('Do you want to clean test data now? (y/N): ');
+  const confirmed = process.env.FORCE_CLEAN === 'true' || await askConfirmation('Do you want to clean test data now? (y/N): ');
   if (!confirmed) {
     console.log('Operation cancelled.');
     process.exit(0);

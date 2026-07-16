@@ -7,7 +7,7 @@ import {
   Alert,
   InputAdornment,
   Fade,
-  Stack
+  Stack,
 } from '@mui/material';
 import TextInput from '../../components/Inputs/TextInput';
 import SearchIcon from '@mui/icons-material/Search';
