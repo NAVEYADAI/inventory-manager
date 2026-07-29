@@ -9,6 +9,7 @@ interface CustomCalendarToolbarProps {
   selectedMonth: number;
   selectedYear: number;
   currentView: string;
+  viewTitle?: string;
   onToday: () => void;
   onPrev: () => void;
   onNext: () => void;
@@ -20,6 +21,7 @@ const CustomCalendarToolbar: React.FC<CustomCalendarToolbarProps> = ({
   selectedMonth,
   selectedYear,
   currentView,
+  viewTitle,
   onToday,
   onPrev,
   onNext,
@@ -74,7 +76,9 @@ const CustomCalendarToolbar: React.FC<CustomCalendarToolbarProps> = ({
             },
           }}
         >
-          {MONTHS[selectedMonth]?.label} {selectedYear}
+          {((currentView === "timeGridWeek" || currentView === "timeGridDay") && viewTitle)
+            ? viewTitle
+            : `${MONTHS[selectedMonth]?.label} ${selectedYear}`}
         </Button>
         <MonthYearPopover
           open={Boolean(anchorEl)}
