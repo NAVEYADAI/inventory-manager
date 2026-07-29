@@ -8,14 +8,16 @@ import {
   TableCell,
   TableRow,
   InputAdornment,
-  ToggleButton,
   Stack,
   Alert,
+  Button,
+  Box,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import LockIcon from '@mui/icons-material/Lock';
 import HistoryIcon from '@mui/icons-material/History';
-import TextInput from '../../components/Inputs/TextInput';
+import ClearIcon from '@mui/icons-material/Clear';
+import Input from '../../components/Inputs/Input';
 import { getActivityLogs, type ActivityLogDto } from '../../api/activityLog';
 import {
   PageContainer,
@@ -23,7 +25,6 @@ import {
   LockIconContainer,
   FilterPaper,
   SearchWrapper,
-  FilterToggleButtonGroup,
   LoadingContainer,
   EmptyStatePaper,
   LogCard,
@@ -46,6 +47,10 @@ const ActivityLogPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<LogCategoryFilter>(LogCategoryFilter.ALL);
+  const [selectedUser, setSelectedUser] = useState<string>('all');
+  const [selectedAction, setSelectedAction] = useState<string>('all');
+  const [fromDate, setFromDate] = useState<string>('');
+  const [toDate, setToDate] = useState<string>('');
 
   // Load active company and user roles from local storage
   const userStr = localStorage.getItem('user');
@@ -80,21 +85,67 @@ const ActivityLogPage = () => {
     loadLogs();
   }, [subscriptionId, hasAccess]);
 
-  const handleCategoryChange = (
-    _event: React.MouseEvent<HTMLElement>,
-    newCategory: LogCategoryFilter | null,
-  ) => {
-    if (newCategory !== null) {
-      setCategoryFilter(newCategory);
-    }
+
+  // Dynamic filter options based on logs
+  const uniqueUsers = useMemo(() => {
+    const users = new Set<string>();
+    logs.forEach((log) => {
+      if (log.userName) {
+        users.add(log.userName);
+      }
+    });
+    return Array.from(users).sort();
+  }, [logs]);
+
+  const uniqueActions = useMemo(() => {
+    const actions = new Set<string>();
+    logs.forEach((log) => {
+      if (log.action) {
+        actions.add(log.action);
+      }
+    });
+    return Array.from(actions).sort();
+  }, [logs]);
+
+  const handleClearFilters = () => {
+    setSearchQuery('');
+    setCategoryFilter(LogCategoryFilter.ALL);
+    setSelectedUser('all');
+    setSelectedAction('all');
+    setFromDate('');
+    setToDate('');
   };
 
-  // Filter logs based on search and category tab selection
+  // Filter logs based on search, category, employee, action type, and date range
   const filteredLogs = useMemo(() => {
     return logs.filter((log) => {
       // Category filter (Admins can only see work_management anyway, backend handles safety)
       if (categoryFilter !== LogCategoryFilter.ALL && log.category !== categoryFilter) {
         return false;
+      }
+
+      // User filter
+      if (selectedUser !== 'all' && log.userName !== selectedUser) {
+        return false;
+      }
+
+      // Action filter
+      if (selectedAction !== 'all' && log.action !== selectedAction) {
+        return false;
+      }
+
+      // Date range filter
+      if (fromDate) {
+        const logDate = new Date(log.createdTime);
+        const start = new Date(fromDate);
+        start.setHours(0, 0, 0, 0);
+        if (logDate < start) return false;
+      }
+      if (toDate) {
+        const logDate = new Date(log.createdTime);
+        const end = new Date(toDate);
+        end.setHours(23, 59, 59, 999);
+        if (logDate > end) return false;
       }
 
       // Search query filter (search by user name or action details)
@@ -108,7 +159,7 @@ const ActivityLogPage = () => {
 
       return true;
     });
-  }, [logs, categoryFilter, searchQuery]);
+  }, [logs, categoryFilter, selectedUser, selectedAction, fromDate, toDate, searchQuery]);
 
   const formatDate = (dateStr: string) => {
     try {
@@ -155,56 +206,167 @@ const ActivityLogPage = () => {
         </Alert>
       )}
 
-      {/* Toolbar - Search & Category Filter */}
+      {/* Toolbar - Search & Column Filters */}
       <FilterPaper variant="outlined">
-        <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          spacing={3}
-          alignItems={{ xs: 'stretch', sm: 'center' }}
-          justifyContent="space-between"
-        >
-          {/* Search bar */}
-          <SearchWrapper>
-            <TextInput
-              placeholder="חפש לפי שם עובד או פעולה..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              fullWidth
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon sx={{ color: '#94a3b8' }} />
-                    </InputAdornment>
-                  ),
-                  style: { borderRadius: 12, backgroundColor: '#f8fafc' },
-                },
-              }}
-            />
-          </SearchWrapper>
+        <Stack spacing={2.5}>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={3}
+            alignItems={{ xs: 'stretch', sm: 'center' }}
+            justifyContent="space-between"
+          >
+            {/* Search bar */}
+            <SearchWrapper>
+              <Input
+                placeholder="חפש לפי שם עובד או פעולה..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                fullWidth
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon sx={{ color: '#94a3b8' }} />
+                      </InputAdornment>
+                    ),
+                    style: { borderRadius: 12, backgroundColor: '#f8fafc' },
+                  },
+                }}
+              />
+            </SearchWrapper>
 
-          {/* Category filter tabs (Only visible/available if Owner has access to both) */}
-          {isOwner && (
-            <FilterToggleButtonGroup
-              value={categoryFilter}
-              exclusive
-              onChange={handleCategoryChange}
-              aria-label="log category filter"
-              size="small"
+            {isAdmin && (
+              <Alert severity="info" icon={false} sx={{ py: 0, px: 2, borderRadius: 2 }}>
+                <Typography variant="body2" fontWeight={700}>
+                  גישה: ניהול עבודה בלבד
+                </Typography>
+              </Alert>
+            )}
+          </Stack>
+
+          {/* New row for advanced filters (Category, User, Action, Date range, Reset) */}
+          <Stack
+            direction={{ xs: 'column', md: 'row' }}
+            spacing={2}
+            sx={{ pt: 2, borderTop: '1px solid #f1f5f9' }}
+            alignItems={{ xs: 'stretch', md: 'center' }}
+            justifyContent="space-between"
+          >
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={2}
+              flexGrow={1}
+              useFlexGap
+              flexWrap="wrap"
             >
-              <ToggleButton value={LogCategoryFilter.ALL}>כל הלוגים</ToggleButton>
-              <ToggleButton value={LogCategoryFilter.WORK_MANAGEMENT}>ניהול עבודה</ToggleButton>
-              <ToggleButton value={LogCategoryFilter.EMPLOYEE_MANAGEMENT}>ניהול עובדים</ToggleButton>
-            </FilterToggleButtonGroup>
-          )}
+              {/* Category Filter */}
+              {isOwner && (
+                <Box sx={{ minWidth: 150, flexGrow: 1 }}>
+                  <Input
+                    type="select"
+                    label="קטגוריה"
+                    size="small"
+                    state={categoryFilter}
+                    setState={(val) => setCategoryFilter(val as LogCategoryFilter)}
+                    options={[
+                      { label: 'כל הקטגוריות', value: LogCategoryFilter.ALL },
+                      { label: 'ניהול עבודה', value: LogCategoryFilter.WORK_MANAGEMENT },
+                      { label: 'ניהול עובדים', value: LogCategoryFilter.EMPLOYEE_MANAGEMENT },
+                    ]}
+                    fullWidth
+                  />
+                </Box>
+              )}
 
-          {isAdmin && (
-            <Alert severity="info" icon={false} sx={{ py: 0, px: 2, borderRadius: 2 }}>
-              <Typography variant="body2" fontWeight={700}>
-                גישה: ניהול עבודה בלבד
-              </Typography>
-            </Alert>
-          )}
+              {/* Employee Filter */}
+              <Box sx={{ minWidth: 150, flexGrow: 1 }}>
+                <Input
+                  type="autocomplete"
+                  label="עובד מבצע"
+                  size="small"
+                  state={selectedUser}
+                  setState={setSelectedUser}
+                  options={[
+                    { label: 'כל העובדים', value: 'all' },
+                    ...uniqueUsers.map((user) => ({ label: user, value: user })),
+                  ]}
+                  fullWidth
+                />
+              </Box>
+
+              {/* Action Filter */}
+              <Box sx={{ minWidth: 180, flexGrow: 1 }}>
+                <Input
+                  type="autocomplete"
+                  label="סוג פעולה"
+                  size="small"
+                  state={selectedAction}
+                  setState={setSelectedAction}
+                  options={[
+                    { label: 'כל הפעולות', value: 'all' },
+                    ...uniqueActions.map((action) => ({
+                      label: actionLabels[action]?.label || action,
+                      value: action,
+                    })),
+                  ]}
+                  fullWidth
+                />
+              </Box>
+
+              {/* Date range filters */}
+              <Box sx={{ display: 'flex', gap: 2, flexGrow: 1, minWidth: 280 }}>
+                <Input
+                  label="מתאריך"
+                  type="date"
+                  size="small"
+                  state={fromDate}
+                  setState={setFromDate}
+                  fullWidth
+                  slotProps={{
+                    inputLabel: { shrink: true },
+                    input: {
+                      style: { borderRadius: 12, backgroundColor: '#f8fafc' },
+                    },
+                  }}
+                />
+                <Input
+                  label="עד תאריך"
+                  type="date"
+                  size="small"
+                  state={toDate}
+                  setState={setToDate}
+                  fullWidth
+                  slotProps={{
+                    inputLabel: { shrink: true },
+                    input: {
+                      style: { borderRadius: 12, backgroundColor: '#f8fafc' },
+                    },
+                  }}
+                />
+              </Box>
+            </Stack>
+
+            {/* Reset Filters button */}
+            {(searchQuery || categoryFilter !== LogCategoryFilter.ALL || selectedUser !== 'all' || selectedAction !== 'all' || fromDate || toDate) && (
+              <Button
+                onClick={handleClearFilters}
+                variant="text"
+                color="error"
+                size="small"
+                startIcon={<ClearIcon />}
+                sx={{
+                  fontWeight: 700,
+                  borderRadius: 2,
+                  px: 2,
+                  py: 1,
+                  whiteSpace: 'nowrap',
+                  '&:hover': { bgcolor: '#fef2f2' }
+                }}
+              >
+                נקה מסננים
+              </Button>
+            )}
+          </Stack>
         </Stack>
       </FilterPaper>
 

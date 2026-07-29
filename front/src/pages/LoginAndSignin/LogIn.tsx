@@ -1,7 +1,7 @@
 import { Typography, Box, Alert, CircularProgress } from "@mui/material";
 import { StyledForm, ActionButton, LoginFormContainer, FormHeader, LogoImage, InputFieldsStack } from "./LoginAndSignin.style";
 import { LoginFields, LogInFieldsHebNames, type Login } from "./util";
-import TextInput from "../../components/Inputs/TextInput";
+import Input from "../../components/Inputs/Input";
 import { login } from "../../api/login";
 import { useState } from "react";
 import { UI_STRINGS } from "../../constants/uiStrings";
@@ -59,7 +59,7 @@ const LogIn = ({ setIsLogin, logIn, setLogIn }: LogInProps) => {
       <StyledForm onSubmit={handleSubmit}>
         <InputFieldsStack>
           {Object.values(LoginFields).map((value) => (
-            <TextInput
+            <Input
               key={value}
               label={LogInFieldsHebNames[value]}
               type={value === LoginFields.PASSWORD ? "password" : "text"}

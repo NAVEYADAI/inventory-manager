@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import {
-  TextField,
   Button,
   Box,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Stack,
   Alert,
   CircularProgress,
@@ -17,6 +12,7 @@ import BadgeIcon from '@mui/icons-material/Badge';
 import BaseDialog from '../../components/BaseDialog/BaseDialog';
 import axiosInstance from '../../api/axiosInstance';
 import { UI_STRINGS } from '../../constants/uiStrings';
+import Input from '../../components/Inputs/Input';
 
 interface Props {
   open: boolean;
@@ -180,132 +176,115 @@ const RegisterEmployeeDialog = ({ open, onClose, companyId, onSave }: Props) => 
 
         {tabValue === 0 ? (
           <Stack spacing={2.5}>
-            <TextField
+            <Input
               required
               fullWidth
               label="שם משתמש או תעודת זהות של העובד"
               placeholder="הזן את שם המשתמש או תעודת הזהות של העובד הקיים במערכת"
-              value={existingIdentifier}
-              onChange={(e) => {
-                setExistingIdentifier(e.target.value);
+              state={existingIdentifier}
+              setState={(val) => {
+                setExistingIdentifier(val);
                 setError(null);
               }}
-              slotProps={{ input: { style: { borderRadius: 8 } } }}
             />
 
-            <FormControl fullWidth>
-              <InputLabel id="role-select-label">{UI_STRINGS.employees.roleLabel}</InputLabel>
-              <Select
-                labelId="role-select-label"
-                value={formData.role}
-                label={UI_STRINGS.employees.roleLabel}
-                onChange={handleChange('role')}
-                sx={{ borderRadius: 2 }}
-              >
-                {userRole === 'owner' && (
-                  <MenuItem value="admin">מנהל חברה (Admin)</MenuItem>
-                )}
-                <MenuItem value="editor">{UI_STRINGS.employees.roleEditor}</MenuItem>
-                <MenuItem value="viewer">צופה (Viewer)</MenuItem>
-              </Select>
-            </FormControl>
+            <Input
+              type="select"
+              label={UI_STRINGS.employees.roleLabel}
+              state={formData.role}
+              setState={(val) => setFormData((prev) => ({ ...prev, role: val }))}
+              options={[
+                ...(userRole === 'owner' ? [{ label: 'מנהל חברה (Admin)', value: 'admin' }] : []),
+                { label: UI_STRINGS.employees.roleEditor, value: 'editor' },
+                { label: 'צופה (Viewer)', value: 'viewer' },
+              ]}
+              fullWidth
+            />
           </Stack>
         ) : (
           <Stack spacing={2.5}>
             <Box display="flex" gap={2}>
-              <TextField
+              <Input
                 required
                 fullWidth
                 label="שם משתמש"
-                value={formData.userName}
-                onChange={handleChange('userName')}
-                slotProps={{ input: { style: { borderRadius: 8 } } }}
+                state={formData.userName}
+                setState={(val) => setFormData((prev) => ({ ...prev, userName: val }))}
               />
-              <TextField
+              <Input
                 required
                 fullWidth
                 type="password"
                 label="סיסמה"
-                value={formData.password}
-                onChange={handleChange('password')}
-                slotProps={{ input: { style: { borderRadius: 8 } } }}
+                state={formData.password}
+                setState={(val) => setFormData((prev) => ({ ...prev, password: val }))}
               />
             </Box>
 
             <Box display="flex" gap={2}>
-              <TextField
+              <Input
                 required
                 fullWidth
                 label="שם פרטי"
-                value={formData.firstName}
-                onChange={handleChange('firstName')}
-                slotProps={{ input: { style: { borderRadius: 8 } } }}
+                state={formData.firstName}
+                setState={(val) => setFormData((prev) => ({ ...prev, firstName: val }))}
               />
-              <TextField
+              <Input
                 required
                 fullWidth
                 label="שם משפחה"
-                value={formData.lastName}
-                onChange={handleChange('lastName')}
-                slotProps={{ input: { style: { borderRadius: 8 } } }}
+                state={formData.lastName}
+                setState={(val) => setFormData((prev) => ({ ...prev, lastName: val }))}
               />
             </Box>
 
             <Box display="flex" gap={2}>
-              <TextField
+              <Input
                 required
                 fullWidth
                 label="תעודת זהות"
-                value={formData.tz}
-                onChange={(e) => {
-                  handleChange('tz')(e);
+                state={formData.tz}
+                setState={(val) => {
+                  setFormData((prev) => ({ ...prev, tz: val }));
                   setError(null);
                 }}
-                slotProps={{ input: { style: { borderRadius: 8 } } }}
               />
-              <TextField
+              <Input
                 required
                 fullWidth
                 type="email"
                 label="כתובת אימייל"
-                value={formData.email}
-                onChange={handleChange('email')}
-                slotProps={{ input: { style: { borderRadius: 8 } } }}
+                state={formData.email}
+                setState={(val) => setFormData((prev) => ({ ...prev, email: val }))}
               />
             </Box>
 
             <Box display="flex" gap={2}>
-              <TextField
+              <Input
                 fullWidth
                 label="טלפון"
-                value={formData.phone}
-                onChange={handleChange('phone')}
-                slotProps={{ input: { style: { borderRadius: 8 } } }}
+                state={formData.phone}
+                setState={(val) => setFormData((prev) => ({ ...prev, phone: val }))}
               />
-              <FormControl fullWidth>
-                <InputLabel id="role-select-label-new">{UI_STRINGS.employees.roleLabel}</InputLabel>
-                <Select
-                  labelId="role-select-label-new"
-                  value={formData.role}
-                  label={UI_STRINGS.employees.roleLabel}
-                  onChange={handleChange('role')}
-                  sx={{ borderRadius: 2 }}
-                >
-                  {userRole === 'owner' && (
-                    <MenuItem value="admin">מנהל חברה (Admin)</MenuItem>
-                  )}
-                  <MenuItem value="editor">עובד (Editor)</MenuItem>
-                  <MenuItem value="viewer">צופה (Viewer)</MenuItem>
-                </Select>
-              </FormControl>
+              <Input
+                type="select"
+                label={UI_STRINGS.employees.roleLabel}
+                state={formData.role}
+                setState={(val) => setFormData((prev) => ({ ...prev, role: val }))}
+                options={[
+                  ...(userRole === 'owner' ? [{ label: 'מנהל חברה (Admin)', value: 'admin' }] : []),
+                  { label: 'עובד (Editor)', value: 'editor' },
+                  { label: 'צופה (Viewer)', value: 'viewer' },
+                ]}
+                fullWidth
+              />
             </Box>
 
-            <TextField
+            <Input
               fullWidth
               label="כתובת מגורים"
-              value={formData.address}
-              onChange={handleChange('address')}
-              slotProps={{ input: { style: { borderRadius: 8 } } }}
+              state={formData.address}
+              setState={(val) => setFormData((prev) => ({ ...prev, address: val }))}
             />
           </Stack>
         )}

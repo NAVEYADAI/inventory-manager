@@ -31,9 +31,7 @@ async function bootstrap() {
       const duration = Date.now() - startTime;
       const statusCode = res.statusCode;
       const ok = statusCode >= 200 && statusCode < 300 ? 'OK' : 'ERR';
-      const responseBody =
-        typeof data === 'string' ? data : data ? safeStringify(data) : '-';
-      logger.log(`<-${ok} ${statusCode} ${req.method} ${req.originalUrl} | ${duration}ms | response=${responseBody}`);
+      logger.log(`<-${ok} ${statusCode} ${req.method} ${req.originalUrl} | ${duration}ms`);
       return originalSend.call(this, data);
     };
 

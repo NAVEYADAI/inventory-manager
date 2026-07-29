@@ -12,7 +12,7 @@ import DateRangeIcon from '@mui/icons-material/DateRange';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { createTag, updateTag, deleteTag, type TagDto } from '../../api/tag';
 import BaseDialog from '../../components/BaseDialog/BaseDialog';
-import TextInput from '../../components/Inputs/TextInput';
+import Input from '../../components/Inputs/Input';
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog';
 
 interface Props {
@@ -181,7 +181,7 @@ const CreateTagDialog = ({ open, onClose, onSave, subscriptionId, tagToEdit, pre
           </Typography>
         )}
 
-        <TextInput
+        <Input
           label="שם התג"
           state={name}
           setState={setName}
@@ -191,7 +191,7 @@ const CreateTagDialog = ({ open, onClose, onSave, subscriptionId, tagToEdit, pre
           placeholder="למשל: סבב פסח, שבוע ייצור יוני"
         />
 
-        <TextInput
+        <Input
           label="תיאור (אופציונלי)"
           state={description}
           setState={setDescription}
@@ -202,7 +202,7 @@ const CreateTagDialog = ({ open, onClose, onSave, subscriptionId, tagToEdit, pre
         />
 
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-          <TextInput
+          <Input
             label="תאריך התחלה"
             type="date"
             state={startDate}
@@ -212,7 +212,7 @@ const CreateTagDialog = ({ open, onClose, onSave, subscriptionId, tagToEdit, pre
             required
             InputLabelProps={{ shrink: true }}
           />
-          <TextInput
+          <Input
             label="תאריך סיום"
             type="date"
             state={endDate}

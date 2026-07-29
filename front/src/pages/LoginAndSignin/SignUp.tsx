@@ -1,6 +1,6 @@
 import { Typography, Box, Alert, CircularProgress, Grid } from "@mui/material";
 import { StyledForm, ActionButton, LoginFormContainer, FormHeader, LogoImage } from "./LoginAndSignin.style";
-import TextInput from "../../components/Inputs/TextInput";
+import Input from "../../components/Inputs/Input";
 import { SignUpFields, SignUpFieldsHebNames, type Signup } from "./util";
 import { register, login } from "../../api/login";
 import { useState } from "react";
@@ -55,7 +55,7 @@ const SignUp = ({ setIsLogin, signUp, setSignUp }: SignUpProps) => {
 
   const renderField = (field: SignUpFields, xsWidth: number) => (
     <Grid size={{ xs: xsWidth }} key={field}>
-      <TextInput
+      <Input
         label={SignUpFieldsHebNames[field]}
         type={field === SignUpFields.PASSWORD ? "password" : "text"}
         sx={{

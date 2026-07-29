@@ -1,6 +1,6 @@
 import { styled } from "@mui/material/styles";
 import { Typography, Box, Alert, Grid } from "@mui/material";
-import TextInput from "../../components/Inputs/TextInput";
+import TextInput from "../../components/Inputs/Input";
 import { ActionButton } from "../LoginAndSignin/LoginAndSignin.style";
 
 export const BannerTitle = styled(Typography)(() => ({
